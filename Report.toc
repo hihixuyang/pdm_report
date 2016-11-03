@@ -1,0 +1,47 @@
+\select@language {english}
+\contentsline {section}{Symbols and Abbreviations}{i}
+\contentsline {section}{List of Tables}{ii}
+\contentsline {section}{List of Figures}{iii}
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Setup}{2}
+\contentsline {subsection}{\numberline {2.1}Crazyflie 2.0 Quadrotor}{2}
+\contentsline {subsubsection}{Firmware}{3}
+\contentsline {subsection}{\numberline {2.2}Robot Operating System}{3}
+\contentsline {subsection}{\numberline {2.3}OptiTrack Motion Capture System}{3}
+\contentsline {section}{\numberline {3}Quadrotor dynamics}{4}
+\contentsline {subsection}{\numberline {3.1}State representation}{4}
+\contentsline {subsubsection}{Attitude Representation}{5}
+\contentsline {subsection}{\numberline {3.2}Newton-Euler equations}{7}
+\contentsline {subsection}{\numberline {3.3}Full model}{8}
+\contentsline {section}{\numberline {4}Low-Level Control}{10}
+\contentsline {subsection}{\numberline {4.1}Control Architecture}{10}
+\contentsline {subsection}{\numberline {4.2}Inner Controller}{10}
+\contentsline {subsubsection}{State and reference acquisition}{10}
+\contentsline {subsubsection}{Controllers}{11}
+\contentsline {subsubsection}{Motor distribution}{12}
+\contentsline {subsection}{\numberline {4.3}Force to Angle and Thrust Commands}{12}
+\contentsline {subsection}{\numberline {4.4}Outer Controller}{12}
+\contentsline {subsubsection}{Implementation}{12}
+\contentsline {subsubsection}{Model}{13}
+\contentsline {subsubsection}{Constraints}{15}
+\contentsline {section}{\numberline {5}High-Level Control - Formation Control}{16}
+\contentsline {subsection}{\numberline {5.1}Taxonomy}{16}
+\contentsline {subsection}{\numberline {5.2}Implementation}{17}
+\contentsline {subsection}{\numberline {5.3}Measuring stability}{20}
+\contentsline {subsection}{\numberline {5.4}Measuring robustness}{20}
+\contentsline {subsection}{\numberline {5.5}Evaluation}{20}
+\contentsline {section}{\numberline {6}Results - Experiment}{21}
+\contentsline {subsection}{\numberline {6.1}Radio Delay Estimation}{21}
+\contentsline {subsection}{\numberline {6.2}Motion Capture Caracterization}{21}
+\contentsline {subsection}{\numberline {6.3}Yaw Control}{21}
+\contentsline {subsection}{\numberline {6.4}Posiiton Control}{21}
+\contentsline {subsection}{\numberline {6.5}Controlled Trajectory}{21}
+\contentsline {subsection}{\numberline {6.6}Without Speed Reference}{21}
+\contentsline {subsection}{\numberline {6.7}With Speed Reference}{21}
+\contentsline {subsection}{\numberline {6.8}Control Loop Timing}{21}
+\contentsline {subsection}{\numberline {6.9}Other Results}{21}
+\contentsline {section}{\numberline {7}Improvement}{22}
+\contentsline {section}{\numberline {8}Conclusion}{23}
+\contentsline {section}{Appendices}{I}
+\contentsline {subsection}{\numberline {A}Attitude estimation}{I}
+\contentsline {subsection}{\numberline {B}Install ROS package from Git}{I}

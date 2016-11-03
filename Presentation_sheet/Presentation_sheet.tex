@@ -1,0 +1,75 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a4paper, 12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern, textcomp}
+\usepackage[report]{ragged2e}
+\usepackage{amsmath, amssymb} %math
+\usepackage[super]{nth}
+\usepackage{gensymb}
+\usepackage{graphicx, subfig} %images
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage[left=1.5cm, right=1.5cm, top=2cm, bottom=2cm, headheight = 15pt]{geometry}
+\usepackage{caption}
+\captionsetup[table]{skip=6pt}
+\usepackage{pdfpages}
+
+\pagenumbering{gobble}
+% paragraph indentation and spacing
+\setlength{\parskip}{1.5em}
+\setlength{\parindent}{1em}
+
+\pagestyle{headings}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[L]{\includegraphics[height=2cm]{logo/faculty.png}}
+\fancyhead[R]{\includegraphics[height=2cm]{logo/Shinshu.png}}
+
+\begin{document}
+$\ $
+
+\vspace{3cm}
+\Huge{Project Summary}
+\vspace{1.5cm}
+
+\begin{table}[h]
+\begin{tabular}{p{3cm} p{10cm}}
+\textbf{Student:} & \textbf{Loïc Dubois} \\[.5cm]
+\textbf{Title:} & \textbf{Formation Control of Multiple Small Quadrotors by Using Model Predictive Control} \\
+\end{tabular}
+\end{table}
+\vspace{1cm}
+
+ 
+\normalsize 
+Formation control is a high-level process coordinating the motion of several units positioned along a defined shape. By implementing formation control in small unmanned aerial vehicles (UAV), new applications, unthinkable with a single UAV, arise. For example wider coverage, cooperative tasks. Furthermore, the robustness of the system is improved.
+
+The final goal of the project is to achieve formation control of 4 drones.\\
+The first step is to adapt the numerical simulation of one small helicopter controlled using Model Predictive Control (MPC) for several CrazyFlie quadrotors also controlled using MPC. The second step is, using the Robot Operating System (ROS) environment and the OptiTrack motion capture system, to implement formation control using a centralized control architecture. Finally, if time allows it, the formation control should be implemented in a decentralized manner.
+
+The output of this project is a C++ control architecture, scalable and adaptable to any flying platform, conceding minor changes.
+
+\flushright{Associate Prof. Suzuki Satoshi}
+\vspace{.5cm}
+
+\begin{table}[h]
+\flushright
+\footnotesize
+\begin{tabular}{r l}
+\textbf{E-mail} &  s-s-2208@shinshu-u.ac.jp\\
+\textbf{Telephon} &  +81-268-21-5605\\
+\textbf{Adress} &  3-15-1 Tokida\\
+&  Ueda, Nagano, 386-8567\\
+&  Japan\\
+\end{tabular}
+\end{table}
+
+
+
+
+\end{document}

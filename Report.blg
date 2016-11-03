@@ -1,0 +1,66 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: Report.aux
+The style file: ieeetr.bst
+Database file #1: biblio.bib
+I was expecting a `,' or a `}'---line 52 of file biblio.bib
+ :    
+ :    year= 2014,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 66 of file biblio.bib
+ : 
+ : @article{Arkin1999,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 161 of file biblio.bib
+ : 
+ : year = "2006"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 168 of file biblio.bib
+ : 
+ : year = "2006"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 175 of file biblio.bib
+ : 
+ : year = "2010"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--entry type for "bitcraze" isn't style-file defined
+--line 185 of file biblio.bib
+You're missing a field name---line 211 of file biblio.bib
+ : 
+ : %   author* = {Charalambos D. Aliprantis and Kim C. Border},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 219 of file biblio.bib
+ : 
+ : %   author={Maskin, Eric S.},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 230 of file biblio.bib
+ : 
+ : %   author={Aggarwal, Gagan and Hartline, Jason D.},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 240 of file biblio.bib
+ : 
+ : %  author       = {Peter Joslin},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 250 of file biblio.bib
+ : 
+ : %  title = {A theory of learning, experimentation, and equilibrium in games},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 257 of file biblio.bib
+ : 
+ : %author = {Professor Z. S. Spackovsky},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--there's a month but no year in Suzuki2014
+Warning--empty year in Diebel2006
+Warning--empty year in Lewis2006
+Warning--empty year in Murray2010
+Warning--empty year in Reynolds1987
+(There were 11 error messages)

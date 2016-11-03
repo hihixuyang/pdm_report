@@ -1,0 +1,16 @@
+\select@language {english}
+\contentsline {figure}{\numberline {1}{\ignorespaces Overview of the complete setup\relax }}{2}
+\contentsline {figure}{\numberline {2}{\ignorespaces The CrazyFlie quadrotor from BitCraze\relax }}{3}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Picture from \cite {bitcraze}}}}{3}
+\contentsline {figure}{\numberline {3}{\ignorespaces Body frames in the two main configurations\relax }}{4}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Body frame in $+$ configuration}}}{4}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Body frame in $\times $ configuration}}}{4}
+\contentsline {figure}{\numberline {4}{\ignorespaces Roll $\phi $, Pitch $\theta $ and Yaw $\psi $ Angles\relax }}{6}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Drawing from \cite {Diebel2006}}}}{6}
+\contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{8}
+\contentsline {figure}{\numberline {6}{\ignorespaces Roll cascade controller architecture\relax }}{11}
+\contentsline {figure}{\numberline {7}{\ignorespaces PID controller architecture\relax }}{11}
+\contentsline {figure}{\numberline {8}{\ignorespaces An example of attractive potential field\relax }}{18}
+\contentsline {figure}{\numberline {9}{\ignorespaces The directed graphs for a leader-referenced formation and a neighbor-referenced\relax }}{19}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The leader-referenced graph}}}{19}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {A neighbor referenced graph}}}{19}

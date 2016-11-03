@@ -1,0 +1,103 @@
+\begin{thebibliography}{10}
+
+\bibitem{Suzuki2014}
+S.~Suzuki, T.~Ishii, Y.~Aida, Y.~Fujisawa, K.~Iizuka, and T.~Kawamura,
+  ``Collision-free guidance control of small unmanned helicopter using
+  nonlinear model predictive control,'' {\em SICE Journal of Control,
+  Measurement and System Integration}, vol.~7 (6), November.
+
+\bibitem{bitcraze}
+BitCraze, ``bitcraze.io,'' Oct. 2016.
+
+\bibitem{Diebel2006}
+J.~Diebel, ``Representing attitude: Euler angles, unit quaternions and rotation
+  vectors,'' tech. rep., Stanford University.
+
+\bibitem{Borelli2015}
+F.~Borrelli, A.~Bemporad, and M.~Morari, {\em Predictive Control for linear and
+  hybrid systems}.
+\newblock Cambridge University Press, 2015.
+
+\bibitem{Lewis2006}
+A.~D. Lewis, ``The maximum principle of pontryagin in control and optimal
+  control,'' tech. rep., University of Catalonia.
+
+\bibitem{Murray2010}
+R.~M. Murray, ``Optimization-based control,'' tech. rep., California Institute
+  of Technology.
+
+\bibitem{Ohtsuka2004}
+T.~Ohtsuka, ``A continuation/gmres method for fast computation of nonlinear
+  receding horizon control,'' {\em Automatica}, vol.~40 (4), pp.~563--574,
+  2004.
+
+\bibitem{Krause2002}
+J.~Krause and G.~D. Ruxton, {\em Living in Groups}.
+\newblock Oxford University Press, 2002.
+
+\bibitem{Parrish1997}
+J.~K. Parrish and H.~W. M., {\em Animal Groups in Three Dimensions}.
+\newblock Cambridge University Press, 1997.
+
+\bibitem{Bonabeau1999}
+E.~Bonabeau, M.~Dorigo, and G.~Theraulaz, {\em Swarm Intelligence: From Natural
+  to Artificial Systems}.
+\newblock Oxford University Press, 1999.
+
+\bibitem{Reynolds1987}
+C.~W. Reynolds, ``Flocks, herds, and schools: A distributed behavioral model,''
+  {\em Computer Graphics, volume= {21 (4)}, month={July}, year= 1987,
+  pages={25-34}}.
+
+\bibitem{Beni2004}
+G.~Beni, ``From swarm intelligence to swarm robotics,'' in {\em 2004 Workshop
+  on Swarm Robotics, Proceedings of SAB}, pp.~1--9, 2004.
+
+\bibitem{Arkin1999}
+T.~Balch and R.~C. Arkin, ``Behavior-based formation control for multi-robot
+  teams,'' {\em IEEE Transactions on Robotics and Automation}, vol.~14 (6),
+  pp.~926--939, 1999.
+
+\bibitem{Mataric2002}
+J.~Fredslund and M.~J. Matari\'c, ``A general algorithm for robot formations
+  using local sensing and minimal communication,'' {\em IEEE Transactions on
+  Robotics and Automation}, vol.~18 (5), pp.~837--846, October 2002.
+
+\bibitem{Pugh2009}
+J.~Pugh, X.~Raemy, C.~Favre, R.~Falconi, and A.~Martinoli, ``A fast onboard
+  relative positioning module for multirobot systems,'' {\em IEEE/ASME
+  Transaction on Mechatronics}, vol.~14 (2), pp.~151--162, April 2009.
+
+\bibitem{Gowal2013}
+S.~Gowal, {\em A Framework for Graph-Based Distributed Rendezvous of
+  Nonholonomic Multi-Robot Systems}.
+\newblock PhD thesis, EPFL Thesis no. 5845, 2013.
+
+\bibitem{Falconi2010}
+R.~Falconi, S.~Gowal, and A.~Martinoli, ``Graph based distributed control of
+  non-holonomic vehicles endowed with local positioning information engaged in
+  escorting missions,'' in {\em Robotics and Automation, 2010 IEEE
+  International Conference on}, pp.~3207--3214, IEEE, 2010.
+
+\bibitem{Ren2005}
+W.~Ren, R.~W. Beard, and E.~M. Atkins, ``A survey of consensus problems in
+  multi-agent coordination,'' in {\em Proceedings of the 2005, American Control
+  Conference}, pp.~1859--1964, IEEE, 2005.
+
+\bibitem{Moreau2005}
+L.~Moreau, ``Stability of multiagent systems with time-dependent communication
+  links,'' {\em IEEE Transactions on Automatic Control}, vol.~50 (2),
+  pp.~169--182, February 2005.
+
+\bibitem{Hoenig2015}
+W.~Hoenig, C.~Milanes, L.~Scaria, T.~Phan, M.~Bolas, and N.~Ayanian, ``Mixed
+  reality for robotics,'' in {\em IEEE/RSJ Intl Conf. Intelligent Robots and
+  Systems}, pp.~5382 -- 5387, Sept 2015.
+
+\bibitem{Meyer2012}
+J.~Meyer, A.~Sendobry, S.~Kohlbrecher, U.~Klingauf, and O.~von Stryk,
+  ``Comprehensive simulation of quadrotor uavs using ros and gazebo,'' in {\em
+  3rd Int. Conf. on Simulation, Modeling and Programming for Autonomous Robots
+  (SIMPAR)}, p.~to appear, 2012.
+
+\end{thebibliography}
