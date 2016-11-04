@@ -1,0 +1,38 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdftex 2014.12.1)  4 NOV 2016 08:00
+entering extended mode
+**C:/Users/Loic/Documents/PDM/Project/pdm_report/biblio.bib
+(C:/Users/Loic/Documents/PDM/Project/pdm_report/biblio.bib
+Overfull \hbox (2.52371pt too wide) in paragraph at lines 95--104
+[]\tenrm @articleMoreau2005, au-thor = Moreau, L., ti-tle = Sta-bil-ity of Mul-
+ti-a-gent Sys-tems With Time-Dependent|
+
+\hbox(6.94444+1.94444)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm a
+.\tenrm r
+.\tenrm t
+.etc.
+
+
+Overfull \hbox (2.18942pt too wide) in paragraph at lines 95--104
+\tenrm Com-mu-ni-ca-tion Links, jour-nal=IEEE Trans-ac-tions on Au-to-matic Con
+-trol, vol-ume= 50 (2), month=February,|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\tenrm C
+.\tenrm o
+.\tenrm m
+.\discretionary
+..\tenrm -
+.\tenrm m
+.etc.
+
+[1{C:/Users/Loic/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}])
+*
+! Emergency stop.
+<*> ...Documents/PDM/Project/pdm_report/biblio.bib
+                                                  
+End of file on the terminal!
+
+!  ==> Fatal error occurred, no output PDF file produced!

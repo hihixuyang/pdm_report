@@ -8,9 +8,9 @@
 \contentsline {figure}{\numberline {4}{\ignorespaces Roll $\phi $, Pitch $\theta $ and Yaw $\psi $ Angles\relax }}{6}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Drawing from \cite {Diebel2006}}}}{6}
 \contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{8}
-\contentsline {figure}{\numberline {6}{\ignorespaces Roll cascade controller architecture\relax }}{11}
-\contentsline {figure}{\numberline {7}{\ignorespaces PID controller architecture\relax }}{11}
-\contentsline {figure}{\numberline {8}{\ignorespaces An example of attractive potential field\relax }}{18}
-\contentsline {figure}{\numberline {9}{\ignorespaces The directed graphs for a leader-referenced formation and a neighbor-referenced\relax }}{19}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The leader-referenced graph}}}{19}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {A neighbor referenced graph}}}{19}
+\contentsline {figure}{\numberline {6}{\ignorespaces An example of attractive potential field\relax }}{12}
+\contentsline {figure}{\numberline {7}{\ignorespaces The directed graphs for a leader-referenced formation and a neighbor-referenced\relax }}{13}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The leader-referenced graph}}}{13}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {A neighbor referenced graph}}}{13}
+\contentsline {figure}{\numberline {8}{\ignorespaces Roll cascade controller architecture\relax }}{16}
+\contentsline {figure}{\numberline {9}{\ignorespaces PID controller architecture\relax }}{16}

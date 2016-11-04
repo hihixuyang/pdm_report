@@ -18,6 +18,10 @@ F.~Borrelli, A.~Bemporad, and M.~Morari, {\em Predictive Control for linear and
   hybrid systems}.
 \newblock Cambridge University Press, 2015.
 
+\bibitem{Pontryagin1987}
+L.~Pontryagin, {\em Mathematical Theory of Optimal Processes}.
+\newblock CRC Press, 1987.
+
 \bibitem{Lewis2006}
 A.~D. Lewis, ``The maximum principle of pontryagin in control and optimal
   control,'' tech. rep., University of Catalonia.
@@ -30,6 +34,19 @@ R.~M. Murray, ``Optimization-based control,'' tech. rep., California Institute
 T.~Ohtsuka, ``A continuation/gmres method for fast computation of nonlinear
   receding horizon control,'' {\em Automatica}, vol.~40 (4), pp.~563--574,
   2004.
+
+\bibitem{Allgower1987}
+E.~L. Allgower and K.~Georg, {\em Introduction to numerical continuation
+  methods}.
+\newblock Society for Industrial Mathematics, 1987.
+
+\bibitem{Kelley1995}
+C.~T. kelley, {\em Iterative methods for Linear and Nonlinear Equations}.
+\newblock Society for Industrial and Applied Mathematics, 1995.
+
+\bibitem{Bjorck1996}
+A.~Bjõrck, {\em Numerical methods for least squares problems}.
+\newblock Society for Industrial and Applied Mathematics, 1996.
 
 \bibitem{Krause2002}
 J.~Krause and G.~D. Ruxton, {\em Living in Groups}.

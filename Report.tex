@@ -31,6 +31,9 @@
 % arabic sections for appendices
 \renewcommand{\thesection}{\arabic{section}}
 
+% norm of a vector
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
 \makeatletter
 \renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
   \hskip -\arraycolsep
@@ -134,7 +137,7 @@ $c_{\alpha}$ \dotfill & Cosinus of angle $\alpha$ \\
 $s_{\alpha}$ \dotfill & Sinus of angle $\alpha$ \\
 $\boldsymbol{v}$ \dotfill & A vector in world frame \\
 $\boldsymbol{v}_B$ \dotfill & A vector in body frame \\
-$\left\Vert \boldsymbol{v} \right\Vert$ \dotfill & $L^2$ norm of vector $\boldsymbol{v}$ \\
+$\norm{\boldsymbol{v}}$ \dotfill & $L^2$ norm of vector $\boldsymbol{v}$ \\
 $\boldsymbol{v}_{i:j}$ \dotfill & Sub vector from composant \emph{i} to \emph{j} of vector $\boldsymbol{v}$\\
 $V$ \dotfill & A matrix \\
 $V^T,\boldsymbol{v}^T$ \dotfill & Transpose of a matrix $V$ or a vector $\boldsymbol{v}$ \\
@@ -215,8 +218,6 @@ A description of the core control C modules is given in section~\ref{sec:innerCo
 \subsection{Robot Operating System}
 \textcolor{red}{A ECRIRE}
 \subsection{OptiTrack Motion Capture System}
-\textcolor{red}{A ECRIRE}
-
 The motion capture system consists, on one side, of eight Prime 13 cameras from OptiTrack and, on the other side, Motive:Tracker, a motion analysis software also from OptiTrack, capable of performing all steps from calibration to the motion capture itself.
 This system allow a frame rate of 240 FPS and capture the drone position and attitude, or orientation. \textcolor{red}{Specs Camera: buffer size and length}.
 
@@ -286,11 +287,11 @@ The mapping between Euler angles and rotation matrix, consisting of the multipli
 \[R_{BW}(\phi, \theta, \psi)= R_{Ox}(\phi) R_{Oy}(\theta) R_{Oz}(\psi)  = 
 \begin{bmatrix}  c_\theta c_\psi  & c_\theta s_\psi  & -s_\theta  \\ s_\phi s_\theta c_\psi -c_\phi s_\psi  & s_\phi s_\theta s_\psi  + c_\phi c_\psi  & c_\theta s_\phi  \\ c_\phi s_\theta c_\psi +s_\phi s_\psi  & c_\phi s_\theta s_\psi -s_\phi c_\psi  & c_\theta c_\phi  \end{bmatrix} \]
 
-Finally the last convention is the unit quaternion. The unit quaternion is a 4-dimensional generalization of complex numbers whose norm $\left\Vert \boldsymbol{q}\right\Vert = 1$.
+Finally the last convention is the unit quaternion. The unit quaternion is a 4-dimensional generalization of complex numbers whose norm $\norm{\boldsymbol{q}} = 1$.
 \[ \boldsymbol{q} =  q_0 + q_1 \cdot i + q_2 \cdot j + q_3 \cdot k = \begin{bmatrix} q_0 \\ q_1 \\ q_2 \\ q_3 \end{bmatrix} = \begin{bmatrix} q_0 \\ q_{1:3} \end{bmatrix} \]
 
 They profit from most of the tools of complex algebra such:
-\[ \boldsymbol{\bar q} = \begin{bmatrix} q_0 \\ -\boldsymbol{q}_{1:3} \end{bmatrix},  \quad \left\Vert \boldsymbol{q}\right\Vert = \sqrt{q_0^2 + q_2^2 + q_3^2 + q_4^2}, \quad \boldsymbol{q}^{-1} = \frac{\boldsymbol{\bar q}}{  \left\Vert \boldsymbol{q}\right\Vert} \]
+\[ \boldsymbol{\bar q} = \begin{bmatrix} q_0 \\ -\boldsymbol{q}_{1:3} \end{bmatrix},  \quad \norm{\boldsymbol{q}} = \sqrt{q_0^2 + q_2^2 + q_3^2 + q_4^2}, \quad \boldsymbol{q}^{-1} = \frac{\boldsymbol{\bar q}}{ \norm{\boldsymbol{q}}} \]
 
 However, multiplication is non-commutative:
 \[\boldsymbol{q} \cdot \boldsymbol{p} = \begin{bmatrix} q_0p_0 - \boldsymbol{q}^T_{1:3}\boldsymbol{p}_{1:3} \\ q_0\boldsymbol{p}_{1:3} + p_0\boldsymbol{q}_{1:3} - \boldsymbol{q}_{1:3} \times \boldsymbol{p}_{1:3} \end{bmatrix} \]
@@ -355,6 +356,114 @@ To fully define the quadrotor, the attitude rates to body rate matrix $W(\phi,\t
 \end{matrix} \right.\]
 
 \newpage
+\section{High-Level Control - Formation Control}
+Collective movement is widely observed phenomenon in the wild and civilized worlds. In animal societies, the phenomenon, called flocking, herding, schooling or swarming, depending on the species, happens for all size of groups, for all size of individuals, homo- or heterogeneous groups and sometimes can be circumstance-driven, like migrations. A flock, generally used to describe any of the denomination introduced before, is characterized by directed movement and quick reactions to obstacle at the global scale, even though there is no leader. Among the benefits of group motion, dilution of risk, improved exploration, foraging and sensing capabilities, energy saving are the most interesting. Of course costs arise also from group formation like the diminution of resource per capita but these concern mostly living entities \cite{Krause2002, Parrish1997}.
+
+Flocks of robots are a perfect example of swarm or distributed intelligence, in which global structure appears solely through numerous local interactions \cite{Bonabeau1999, Reynolds1987}. Indeed, computing trajectories for every robots, taking into account other robots, obstacles and some other constraints can soon become intractable when the number of robots increase. For collective motion in robotics, however, another kind of collective movement exists, motion in formation. Compared to flocking, where the relative location and the neighborhood of an individual is in permanent evolution, motion in formation assigns a specific position to each member and its neighborhood becomes static. Despite these constraints, this collective motion can also be implemented using a distributed control architecture, knowing that each individual needs to be assign a specific position in the formation. While flocking benefits more from robustness, flexibility and scalability, formations are more efficient, require less individuals for an equivalent coverage and are more intuitively commanded. Of course, the ideal group configuration depends on the application, the environment and the type of robot. Concerning this work, it will focus on motion in formation.\\
+In a more global point of view, swarm robotics, compared to a single robot achieving the identical task, require simpler units and increase reliability \cite{Beni2004}. The former implies simpler hardware, software, as well as sensing, acting and communicating capabilities. But, often in distributed intelligence, the cost of robustness is efficiency, in terms of time, total energy required or eventually another metrics. Or, restated, swarm robotics needs to carefully balance exploration et exploitation behaviors.
+
+\subsection{Taxonomy}
+When studying formations, the taxonomy defined in \cite{Arkin1999} about position determination serves as reference. In each possibility, each robot compute its place in the formation with respect to a given physical or mathematical landmark.
+\begin{itemize}
+\item \emph{Unit-centered formation}. The unit center of a formation corresponds to its center of mass. While, this position determination configuration seems to achieve the best results, it can often be inadequate given the application. Moreover in case of fully distributed control, it requires a global knowledge of the position of every member of the formation, which can be implemented through communication channels or sufficiently performing sensing capabilities.
+\item \emph{Leader-referenced formation}. The reference is one of the member of the group, the leader. This configuration achieves also good results and is ideal when the leader is human-controlled. However, it is constantly necessary to know, or being able to measure, the (relative) position of the leader, which can require either a long range-communication, or sensing module, depending on the application and the localization method.
+\item \emph{Neighbor-referenced formation}. In this case, there is no common reference. Each member of the formation determines its position from the position of a unique other member. Although it is more demanding in terms of emitters than a leader referenced formation, the range of communication can be considerably reduced. In case of relative localization without communication, this configuration has the lowest requirements in term of range. Note also that mixed leader-neighbor referenced formations can exist \cite{Mataric2002}. This is suitable when one leader is human-controlled and the individuals have low-range communication capabilities.
+\end{itemize}
+
+\subsection{Implementation}
+Formation control can be implemented in various ways but we will focus on two, already widely implemented, from behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009} to graph-based control  \cite{Gowal2013, Falconi2010}. Both of these methods can easily be implemented in a distributed system for any of the configuration presented previously using relative localization sensors and IDs. But before selecting one of these methods, constraints of the actual control architecture have to be considered required. Indeed the MPC position controller can takes specific input vectors. Therefore, if a formation control block is devised, it can take as many input as wanted but the output must necessarily be a 6-state vector of three positions and three velocities for each drone.
+
+Behavioral controllers, used in the form of motor-schema or, also called, potential field methods \cite{Arkin1999, Pugh2009} is an elegant way for designing adaptive controllers. Several zone can be defined, in which the potential can be chosen freely in order to induce the desired reaction. Typically the potential provides a speed vector from which position can be integrated. This approach can be implemented for any type of formation. An example of three-zones potential could be the following:
+\[ \dot r_i =  \left\{ \begin{matrix*}[l] 0 & if\ r_{f,i}-r_i\ \in [0; d_1] \\ \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_1; d_2] \\  \beta(r_{f,i}-r_i-d_2)^2 + \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_2; \inf] \end{matrix*} \right. \ for\ i = 1,2,3\]
+Where $r_{f,i}$ is the reference position in formation, $r_i$ the current position in one dimension, $d_1$, $d_2$, $\alpha$ and $\beta$ are parameters
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.8\textwidth]{Images/potentialEx}
+\caption{An example of attractive potential field}
+\label{fig:potentialEx}
+\end{figure}
+
+Graph-based control seems well adapted to provide a reference vector for leader- or neighbor-referenced formations. This kind of controllers are derived from so-called consensus problems, which try to make a set of agent with different initial states converge to a single final state, identical for all agents. \cite{Ren2005}. The Rendez-vous problem \cite{Gowal2013} is one of these problems perfectly adapted to formation control. Required notions of graph theory are: 
+\begin{itemize}
+\item $\mathcal{G} = <\mathcal{N}, \mathcal{E}>$, an (un)directed graph.
+\item $\mathcal{N} = \{R_1, \cdots, R_n\}$, the finite nodes set,  with $n$, the number of robots.
+\item $\mathcal{E} \in \mathcal{N}^2, \mathcal{E} = \{(Ri,Rj)| R_i, R_j \in \mathcal{N} and\ i \neq j\} = \{e_1, \cdots, e_m\} $, the (un)directed finite edges set.
+\item $A \in  \mathbb{R}^{n \times n} $, the adjacency matrix is a symmetric matrix, the image of the connections between the nodes:
+\[a_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ (R_i, R_j)\ or\ (R_j, R_i) \in \mathcal{E} \\ 0 & else \end{matrix*} \right.\]
+\item $D \in  \mathbb{R}^{n \times n} $, the degree matrix is a symmetric matrix, whose diagonal elements represent the cardinality of each node (i.e.: the sum of edges originating or arriving in this node):
+\[d_{ii} =  \sum_{j=1}^{N} a_{ij}\]
+\item $B \in  \mathbb{R}^{n \times m} $, the incidence matrix is a matrix, describe which node is connected using which edge. In undirected graphs, edge are given a random direction.
+\[b_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ e_j = (R_i, \bullet) \\-1 & if\ e_j = (\bullet, R_i)  \\ 0 & else \end{matrix*} \right.\]
+\item $W \in \mathbb{R}^{m\times m} $, a diagonal weight matrix whose element $w_{i,i}$ corresponds to the weight of edge $e_i \in \mathbb{E}$.
+\item $L$ and $L_w\in \mathbb{R}^{n\times n} $, the Laplacian and the weighted Laplacian matrices:
+\[ L = D-A = BB^T \qquad L_w = BWB^T\]
+\end{itemize}  
+The Laplacian and the weighted Laplacian matrices benefits from interesting properties: They positive-semidefinite. This implies that all eigenvalues are nonnegative. Moreover, at least one eigenvalue isequal to zero. Proofs can be found in \cite{Gowal2013}. 
+
+The feedback law, for state $i$ of all nodes in a N-state system is:
+\[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, \cdots, N \]
+\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
+Below, in figure~\ref{fig:graphs}, we show the directed graph for the leader-referenced formation and one possible graph for a neighbor-referenced formation. we will quickly compute the matrices $A$, $D$, $B$ and $L$. We assume $W = I_{n}$, however in the neighbor-referenced case, it could be a good interesting to increase the weight of the edges $(R_1, R_3)$ and $(R_3, R_1)$, as they are central to the formation directed graph.
+
+\begin{figure}[h]
+\centering
+\subfloat[The leader-referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphLeader}\label{fig:graphLeader}}
+\hspace{0.5cm}
+\subfloat[A neighbor referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphNeighbor}\label{fig:graphNeighbor}}
+\caption{The directed graphs for a leader-referenced formation and a neighbor-referenced}
+\label{fig:graphs}
+\end{figure}
+
+\begin{displaymath}
+\begin{aligned}
+A_{leader} &= \begin{bmatrix} 0 & 1 & 1 & 1 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0\end{bmatrix} 		& A_{neighbor} &= \begin{bmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{bmatrix} \\
+D_{leader} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix}		& D_{neighbor} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 3 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
+B_{leader} &= \begin{bmatrix} -1 & -1 & -1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix} 				& B_{neighbor} &= \begin{bmatrix} 1 & -1 & -1 & 0 \\ 0 & 1 & 0 & 0 \\ -1 & 0 & 1 & -1 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
+L_{leader} &= \begin{bmatrix} 3 & -1 & -1 & -1 \\ -1 & 1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1\end{bmatrix} 	& L_{neighbor} &= \begin{bmatrix} 3 & -1 & -2 & 0 \\ -1 & 1 & 0 & 0 \\ -2 & 0 & 3 & -1 \\ 0 & 0 & -1 & 1\end{bmatrix}
+\end{aligned}
+\end{displaymath}
+
+The discrete equivalent of the Laplacian feedback control requires another matrix \cite{Moreau2005}, $L_k \in \mathbb{R}^{n \times n}$, the stochastic weight of links matrix. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
+\[l_{ij} =  \left\{ \begin{matrix*}[l] \omega_{ij} > 0 & if\  = (R_i, R_j) \in \mathbb{E}\ or\ i=j\\ 0 & else \end{matrix*} \right.\]
+
+The feedback law become, for state $i$ of all nodes in a N-state system:
+\[ \boldsymbol{x_i}(k+1) = L_k\boldsymbol{x_i}(k)\ for\ i=1, \cdots, N \]
+\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
+
+Again for the graphs in figure~\ref{fig:graphs}, assuming a equal weight for all edges, we provide the discrete equivalent of the Laplacian matrix:
+\begin{displaymath}
+\begin{aligned}
+L_{k,leader} &= \begin{bmatrix} 1 & 0 & 0 & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & 0 & 0 & \frac{1}{2}\end{bmatrix} 		& L_{k,neighbor} &= \begin{bmatrix} \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ 0 & 0 & \frac{1}{2} & \frac{1}{2}\end{bmatrix} \\
+\end{aligned}
+\end{displaymath}
+
+Another control method can be devised, taking the control architecture into account. It consists of directly acting on the MPC controller constraints or objective function\textcolor{red}{[CITATIONS]}.  By implementing formation control in such a way, no additional block needs to be integrated in the current architecture. However, a more in-depth work in the controller is required as, an ideal formulation of cost and a weight need to be found. Moreover this approach reduce the modularity of the control system in its global aspect.
+
+\subsection{Measuring stability}
+\cite{Mataric2002}
+\begin{itemize}
+\item distance on formation line.
+\item distance perpendicular to formation line.
+\item angle deviation.
+\end{itemize}
+
+\subsection{Measuring robustness}
+
+\subsection{Evaluation}
+\begin{itemize}
+\item time to formation (static ref) tToForm\_refStatic.
+\item time to formation (dynamic ref) tToForm\_refDynamic.
+\item \% time in formation (normalized by (tTot-tToForm).
+\item average deviation from formation position (after tToForm).
+\item max deviation from formation position (after tToForm).
+
+\end{itemize}
+
+\cite{Arkin1999}
+\cite{Mataric2002}
+
+\newpage
 \section{Low-Level Control}
 \subsection{Control Architecture}
 \subsection{Inner Controller}
@@ -363,7 +472,7 @@ The inner controller, responsible for attitude control can be found in the stabi
 \begin{itemize}
 \item State acquisition (\emph{sensors\_stock.c} and \emph{estimator\_complementary.c}  or \emph{estimator\_kalman.c}).
 \item Reference acquisition (\emph{commander.c}).
-\item Control step (\emph{controller\_pid.c} and then \emph{attitude\_pid\_controller.c} and \emph{pid.c})
+\item Control step (\emph{controller\_pid.c} and then \emph{attitude\_pid\_controller.c} and \emph{pid.c}).
 \item Motor distribution (\emph{power\_distribution\_stock.c}).
 \end{itemize}
 
@@ -460,42 +569,128 @@ The output of the 3 attitude cascade controllers and the thrust input are combin
 \subsection{Force to Angle and Thrust Commands}
 \subsection{Outer Controller}
 
-The outter posiiton controller is part of the receiding horizon controllers, or model prective controller, family. This type of controllers are well suited for constrained situations, strongly non-linear systems or, as the name implies, for some future knowledge \cite{Borelli2015}. In a standard closed-loop implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps. $N$ is called the horizon length. Because the model is often inacurate, or because the environment is evolving, after executing the first action command, the controller measures the state and/or its surrounding and re-plans a serie of $N$ actions acoordingly, which act as feedback. The longer the horizon length, the closer the prediction (the $N$ planned actions) from the closed-loop response. Despite it's power, MPC suffers from chalenges to attain: feasibility, stability, robustness and implementation. \textcolor{red}{A DEVELOPPER}.
+The outter posiiton controller is part of the receiding horizon controllers, or model prective controller, family. This type of controllers are well suited for constrained situations, strongly nonlinear systems or, as the name implies, for some future knowledge \cite{Borelli2015}. In a standard closed-loop implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps. $N$ is called the horizon length. Because the model is often inacurate, or because the environment is evolving, after executing the first action command, the controller measures the state and/or its surrounding and re-plans a serie of $N$ actions acoordingly, which act as feedback. The longer the horizon length, the closer the prediction (the $N$ planned actions) from the closed-loop response. Despite it's power, MPC suffers from chalenges to attain: feasibility, stability, robustness and implementation. \textcolor{red}{A DEVELOPPER}.
 
 \subsubsection{Implementation}
-In optimization-based control, such as MPC, the optimal law for a control system $\Sigma$ can be derived from Pontryagin maximum principle \cite{Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \in \mathbb{R}^n$, the state set and $\mathcal{U} \in \mathbb{R}^m$, the input set
+In optimization-based control, such as MPC, a necessary condition for optimal trajectory in a control system $\Sigma$ is the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set
 \[ \Sigma = (\mathcal{X}, f, \mathcal{U}) \]
-\[ \dot x = f(x,u),\ x \in \mathcal{X},\ u \in \mathcal{U} \]
+\[ \Sigma: \dot x = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
 
 Two important objects need to be presented, the Lagrangian $\mathcal{L}$ and the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$. The Lagrangian is a continuous function defined as follow, and subsequently used to define an objective function $J_{\Sigma,\mathcal{L}}$:
 \[ \mathcal{L}: \mathcal{X} \times \bar{\mathcal{U}} \rightarrow \mathbb{R} \]
-\[ \mathcal{L}:= \mathcal{L}(x, u),\ x \in \mathcal{X},\ u \in \mathcal{U} \]
-\[ J_{\Sigma,\mathcal{L}} = \int_{t}^{t+T} \mathcal{L}(\xi(t), \mu(t))dt, \ (\xi(t), \mu(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
+\[ \mathcal{L} := \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
+\[ J_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R_+} \rightarrow \mathbb{R} \]
+\[ J_{\Sigma,\mathcal{L}}(\boldsymbol{\xi}, \boldsymbol{\mu}, t) = \int_{t}^{t+T} \mathcal{L}(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))dt, \ (\boldsymbol{\xi}(t), \boldsymbol{\mu}(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
 
-The couple $(\xi(t), \mu(t))$ is called a trajectory.
+The couple $(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))$ is called a trajectory.
 
-In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. However another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the costate variable $\lambda$:
-\[ \mathcal{H}_{\Sigma,\mathcal{L}} = \lambda^Tf(x,u) + L(x,u) \]
+In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. However another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R}^n \rightarrow \mathbb{R} \]
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}) = \boldsymbol{p}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
+To simplify equation and improve comprehensibility, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and written $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be simplified as $J$
 
-To simplify equation and improve comprehensivity, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply called Hamiltonian and written $\mathcal{H}$
+The maximum principle states that, for an optimal trajectory $(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*)$ for cost function:
+\[ J(\boldsymbol{x}, \boldsymbol{u}, t) = V(\boldsymbol{x}(t+T))  + \int_t^{t+T} \mathcal{L}(\boldsymbol{x}, \boldsymbol{u})dt\]
+\[ V: \mathcal{X} \rightarrow \mathbb{R} \]
+With $ V(\boldsymbol{x}(t+T))$, the terminal cost. Subject to:
+\[ \boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u}) \]
+\[ \psi_i(\boldsymbol{x}) = 0,\ i = 1, \cdots, q \]
+With $\psi(x)$, equality state constraints (often only for the terminal state). These constraints can be adjoined to the Hamiltonian with the help of another multiplier $\boldsymbol{v}$:
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = p^T f(\boldsymbol{x}, \boldsymbol{u}) + v^T\psi(\boldsymbol{x}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{v} \in \mathbb{R}^q \]
 
-The maximum principle states that, for an optimal trajectory $(\xi^*, \mu^*)$ for cost function:
-\[ J = \int_t^{t+T} L(x,u)dt + V(x(t+T)) \]
-\[ V: \mathbb{R}^n \rightarrow \mathbb{R} \]
-With $V$, the terminal cost. Subject to:
-\[ dot x = f(x,u) \]
-\[ \psi_i(x(T)) = 0,\ i = 1, ..., q \]
-With $\psi(x(T))$, the terminal constraints. There exist $\lambda^*$ such that:
-\[ \dot x_i = \frac{\partial \mathcal{H}}{\partial \lambda_i} \qquad \lambda_i  = - \frac{\partial \mathcal{H}}{\partial x_i}\]
-\[ \lambda(T) = \frac{\partial V}{\partial x}(x(T)) + \nu^T \frac{\partial \psi}{\partial x} \]
+Then, there exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\nu}^*$ such that:
+\[ \boldsymbol{\dot \xi}^* = \mathcal{H}_p^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)  \qquad \boldsymbol{\dot \lambda}^*  = -\mathcal{H}_x^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)\]
+\[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{\xi}^*(t+T)) \]
 And:
-\[ H(\xi^*, \mu^*, \lambda^*) \leq H(\xi^*, u, \lambda^*) \forall u \in \mathcal{U} \]
+\[ H(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \leq H(\boldsymbol{\xi}^*, u, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \forall \boldsymbol{u} \in \mathcal{U} \]
 Moreover, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
-\[ \frac{\partial H}{\partial u} = 0 \]
+\[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = \boldsymbol{0}_m \]
 
-This last condition is part of the core of the C/GMRES method. Instead of constraining the input set, a penalty cost will be included in the Lagrangian.
+Where $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
+\[ A_b = \nabla A = \left [ \frac{\partial \mathcal{A}}{\partial b_1} \cdots \frac{\partial \mathcal{A}}{\partial b_n} \right ] \]
+\[ A_b =  \begin{bmatrix} \frac{\partial A_1}{\partial b_1} & \frac{\partial A_1}{\partial b_2} & \cdots & \frac{\partial A_1}{\partial b_s}  \\ 
+ \frac{\partial A_2}{\partial b_1} &  \frac{\partial A_2}{\partial b_2} & \cdots & \frac{\partial A_2}{\partial b_s}  \\ 
+ \vdots &  \vdots & \ddots & \vdots  \\ 
+ \frac{\partial A_r}{\partial b_1} &  \frac{\partial A_r}{\partial b_2} & \cdots & \frac{\partial A_r}{\partial b_s} \end{bmatrix}  \]
 
-In order to run the position controller sufficiently fast, any method cannot be chosen. In this project, C/GMRES method from \cite{Ohtsuka2004} is chosen.  \textcolor{red}{Maximum Pontryagin principle}.
+This last characteristic is part of the core of the Continuation-Generalized Minimum Residual Method (C/GMRES)\cite{Ohtsuka2004} used to solve the optimization process. Therefore, instead of constraining the input set, a penalty cost will be included in the Lagrangian such that the previous condition is satisfied.
+
+Note that Pontryagin maximum principle is only a necessary condition of optimal trajectory. A sufficient and necessary condition is the Hamilton-Jacobi-Bellman equation, but it must be satisfied on the whole state space. Note also that all the result are presented on a continuous time scale but they can be discretized.
+
+The C/GMRES method is a fast algorithm for nonlinear MPC exploiting the fact that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence using standard iterative methods.
+
+Starting from a approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
+\[ J_k = V(\boldsymbol{x}(N)) + \sum_{k = 0}^{N-1} \mathcal{L}(\boldsymbol{x}(k), \boldsymbol{u}(k))T_s \]
+Subject to:
+\[ \boldsymbol{x}(k+1) = \boldsymbol{x}(k) + f(\boldsymbol{x}(k),\boldsymbol{u}(k))T_s \]
+\[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \cdots, q_k \]
+
+Then we can rewrite a discretized version of the Pontryagin principle for unconstrained input:
+\[ \mathcal{H}_u(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) = \boldsymbol{0}_m \]
+\[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) T_s\]
+\[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{\xi}^*(N)) \]
+The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. We introduce also the vector U:
+\[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{v}(0), \boldsymbol{u}(1), \boldsymbol{v}(1), \cdots, \boldsymbol{u}(N-1), \boldsymbol{v}(N-1)]^T \]
+\[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{p}(1), \boldsymbol{v}(0)) \\ \psi(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{p}(N), \boldsymbol{v}(N-1)) \\ \psi(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
+
+To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which we have few knowledge concerning solutions, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to our controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
+\[ F(\boldsymbol{U} + \boldsymbol{\dot U}T_s,\boldsymbol{x} + \boldsymbol{\dot x} T_s) = \boldsymbol{0}_{N(m+q)} \]
+\[ \boldsymbol{\dot U} = F_U^{-1}(A_s F - F_x \boldsymbol{\dot x}) \]
+$A_s$ is a matrix whose role is to stabilize $F = \boldsymbol{0}_{N(m+q)}$ and $F_u$ is required to be nonsingular. \textcolor{red}{conditions on $A_s$}. A noticeable constraint of this method is the requirement to solve the system $F=0$ at least once at $t=0$.
+
+In order to reduce the cost of solving the linear equations, two additional tools are used, forward difference approximation for Jacobian and vector products, and the GMRES method for solving linear equations.
+The product approximation is computed as follow:
+\[ F_U(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{W} + F_x(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{w} \approx D_h F(\boldsymbol{U}, \boldsymbol{x} : \boldsymbol{W}, \boldsymbol{w}) := \frac{F(\boldsymbol{U} + h\boldsymbol{W}, \boldsymbol{x} + h\boldsymbol{w}) - F(\boldsymbol{U}, \boldsymbol{x})}{h} \]
+
+Then the linear equation to solve to compute $\boldsymbol{\dot U}$ is:
+\[ D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\dot U}, 0) = A_s F(\boldsymbol{U}, \boldsymbol{x}) - D_h F(\boldsymbol{U}, \boldsymbol{x} : 0, \boldsymbol{\dot x}) := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) \]
+
+The GMRES tool (or Forward Difference GMRES, FDGMRES, in \cite{Kelley1995}) is an iterative Krylov subspace method to solve linear systems of equations. It can be decomposed in three steps.
+
+First, the initialization of the residual $\hat r$ and the Krylov basis $\mathcal{V}_\mathcal{K}$ with an initial guess $\boldsymbol{\hat{ \dot U}}$ on the control input derivative:
+\[ \boldsymbol{\hat r} := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) - D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\hat{\dot U}}, 0) \]
+\[\boldsymbol{v_1} := \frac{\boldsymbol{\hat r}}{\norm{\boldsymbol{\hat r}}},\ \rho = \norm{\boldsymbol{\hat r}},\ \beta: = \rho \].
+
+Then, the loop iteration while $k_{loop} < k_{loop,max}$:
+\begin{enumerate}
+\item $k = k+1$
+\item Compute a new basis vector for $\mathcal{V}_\mathcal{K}$: $\boldsymbol{v}_{k+1} =  D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{v_k}, 0)$.
+\item Normalization, orthogonalization using Gramm-Schmidt process and construction of matrix $H_k$:
+\[ Loop: h_{j,k} = \boldsymbol{v}_{k+1}^T \boldsymbol{v}_j,\ \boldsymbol{v}_{k+1} = \boldsymbol{v}_{k+1} - h_{j,k}\boldsymbol{v}_j, \quad for\ j = 1, \cdots, k \]
+\[ h_{k+1,k} = \norm{\boldsymbol{v}_{k+1}} \]
+\[ h_{k+1, j} =  0\quad for\ j = 1, \cdots, k-1 \]
+\[ \boldsymbol{v}_{k+1} = \frac{\boldsymbol{v}_{k+1}}{\norm{\boldsymbol{v}_{k+1}}} \]
+\item Solve $\min\limits_{y_k}\norm{\beta \boldsymbol{e}_1 - H_k\boldsymbol{y}_k}$, with $\boldsymbol{y}_k in \mathbb{R}^k$.
+\item Residual length $\rho = \norm{\beta \boldsymbol{e_1} - H_k\boldsymbol{y}_k}$.
+\end{enumerate}
+
+The minimization step can be solved efficiently using Givens rotations \cite{Bjorck1996}. Which consists of applying consecutive rotations $G_i(\theta_i)$ to the system untill $\prod_i G_i(\theta_i) H_k$ is upper triangular.
+We define a Givens rotation matrix $G(p, q, \theta)$ as follow:
+\[ g_{ij} = \left\{ \begin{matrix*}[l] \cos{\theta} &  if\ i = j = p, q \\ 1 & if\ i = j \neq p, q  \\  -\sin{\theta} &  if\ i = p,\ j = q \\ \sin{\theta} &  if\ i = q,\ j = p \\ 0 & else \end{matrix*} \right.\]
+For our algorithm, at iteration $k$, we compute the matrix $G_k$:
+\[ G_k := G_k(k, k+1, \theta_k) \quad with\ \theta_k = atan2(h_{k+1, k}, h_{k,k})\]
+And we solve easily:
+\[ \min\limits_{y_k}(\norm{\prod\limits_{i=1}^k G_i(i, i+1, \theta_i) (\beta \boldsymbol{e}_1 - H_k \boldsymbol{y}_k)} \]
+
+Moreover, despite being iterative, this step is limited in number of iterations ($k_{max}$) to keep its influence small on the whole algorithm duration
+
+The final step is the computation of solution:
+\[ \boldsymbol{\dot U} = \boldsymbol{\hat{ \dot U}} + V_k \boldsymbol{y}_k \]
+With $V_k = [v_1, \cdots, v_k]$ the Krylov subspace basis $\mathcal{V}_\mathcal{K}$.
+
+Now, continuation and GMRES method can be combined to produce C/GMRES:
+\begin{enumerate}
+\item Initialization: compute $\boldsymbol{U}(0)$ numerically or anatically.
+\item Loop over k:
+\begin{enumerate}
+\item Apply first input of sequence: $\boldsymbol{u}(k) = \boldsymbol{U}_{1:m}(k)$.
+\item Measure $\boldsymbol{x}(k)$, Compute $\Delta x = \boldsymbol{x}(k) - \boldsymbol{x}(k-1)$.
+\item Compute $\boldsymbol{\dot U}(k)$ using GMRES with $\dot x = \frac{\Delta x}{Ts}$ and $\boldsymbol{\hat{\dot U}}(k) = [\boldsymbol{\dot U}^T_{m+q+1:N(m+q)}(k-1)\ \boldsymbol{0}_{m+q}]^T $ (i.e.: the input of last time step, without the first elements corresponding to the input applied and padded with zeros).
+\end{enumerate}
+\item k = k+1.
+\end{enumerate}
+
+\textcolor{red}{EFFICIENCY, CONVERGENCE SPEED, ROBUSTNESS, APPROXIMATION ERROR}
 
 
 
@@ -508,9 +703,9 @@ Moreover, to remove the dependency of the position on the attitude and on the fl
 The inner controller, taking as references $\boldsymbol{r_{ic}} = [F_{zB} \ \phi \  \theta \ \dot \psi]^T$, an intermediary block, proper to quadrotors will be implemented to translate the output of the reduced model into adequate commands for the quadrotor.
 
 The drag force, in a turbulent air flow, is usually defined as:
-\[ \boldsymbol{D} = -(\frac{1}{2} \left\Vert \boldsymbol{\dot r} \right\Vert^2 C_D A) \frac{\boldsymbol{\dot r}}{\left\Vert \boldsymbol{\dot r} \right\Vert}\]
+\[ \boldsymbol{D} = -(\frac{1}{2} \norm{\boldsymbol{\dot r}}^2 C_D A) \frac{\boldsymbol{\dot r}}{\\norm{\boldsymbol{\dot r}}}\]
 Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid, $\rho$ is the air density, $C_D$  the drag coefficient and $A$t the cross-sectional area (i.e.: the maximal area of the quadrotor in the plane perpendicular to the speed vector $\boldsymbol{\dot r}$). For modeling purpose, it can be simplified as follow:
-\[ \boldsymbol{D} \approx -K_d(\psi) \left\Vert \boldsymbol{\dot r} \right\Vert \boldsymbol{\dot r}\]
+\[ \boldsymbol{D} \approx -K_d(\psi) \norm{\boldsymbol{\dot r}} \boldsymbol{\dot r}\]
 
 \textcolor{red}{A DEVELOPPER}
 
@@ -530,119 +725,6 @@ Finally, the model is discretized, with sampling time $T_s$:
 \begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
 
 \subsubsection{Constraints}
-
-\newpage
-\section{High-Level Control - Formation Control}
-Collective movement is widely observed phenomenon in the wild and civilized worlds. In animal societies, the phenomenon, called flocking, herding, schooling or swarming, depending on the species, happens for all size of groups, for all size of individuals, homo- or heterogeneous groups and sometimes can be circumstance-driven, like migrations. A flock, generally used to describe any of the denomination introduced before, is characterized by directed movement and quick reactions to obstacle at the global scale, even though there is no leader. Among the benefits of group motion, dilution of risk, improved exploration, foraging and sensing capabilities, energy saving are the most interesting. Of course costs arise also from group formation like the diminution of resource per capita but these concern mostly living entities \cite{Krause2002, Parrish1997}.
-
-Flocks of robots are a perfect example of swarm or distributed intelligence, in which global structure appears solely through numerous local interactions \cite{Bonabeau1999, Reynolds1987}. Indeed, computing trajectories for every robots, taking into account other robots, obstacles and some other constraints can soon become intractable when the number of robots increase. For collective motion in robotics, however, another kind of collective movement exists, motion in formation. Compared to flocking, where the relative location and the neighborhood of an individual is in permanent evolution, motion in formation assigns a specific position to each member and its neighborhood becomes static. Despite these constraints, this collective motion can also be implemented using a distributed control architecture, knowing that each individual needs to be assign a specific position in the formation. While flocking benefits more from robustness, flexibility and scalability, formations are more efficient, require less individuals for an equivalent coverage and are more intuitively commanded. Of course, the ideal group configuration depends on the application, the environment and the type of robot. Concerning this work, it will focus on motion in formation.\\
-In a more global point of view, swarm robotics, compared to a single robot achieving the identical task, require simpler units and increase reliability \cite{Beni2004}. The former implies simpler hardware, software, as well as sensing, acting and communicating capabilities. But, often in distributed intelligence, the cost of robustness is efficiency, in terms of time, total energy required or eventually another metrics. Or, restated, swarm robotics needs to carefully balance exploration et exploitation behaviors.
-
-\subsection{Taxonomy}
-When studying formations, the taxonomy defined in \cite{Arkin1999} about position determination serves as reference. In each possibility, each robot compute its place in the formation with respect to a given physical or mathematical landmark.
-\begin{itemize}
-\item \emph{Unit-centered formation}. The unit center of a formation corresponds to its center of mass. While, this position determination configuration seems to achieve the best results, it can often be inadequate given the application. Moreover in case of fully distributed control, it requires a global knowledge of the position of every member of the formation, which can be implemented through communication channels or sufficiently performing sensing capabilities.
-\item \emph{Leader-referenced formation}. The reference is one of the member of the group, the leader. This configuration achieves also good results and is ideal when the leader is human-controlled. However, it is constantly necessary to know, or being able to measure, the (relative) position of the leader, which can require either a long range-communication, or sensing module, depending on the application and the localization method.
-\item \emph{Neighbor-referenced formation}. In this case, there is no common reference. Each member of the formation determines its position from the position of a unique other member. Although it is more demanding in terms of emitters than a leader referenced formation, the range of communication can be considerably reduced. In case of relative localization without communication, this configuration has the lowest requirements in term of range. Note also that mixed leader-neighbor referenced formations can exist \cite{Mataric2002}. This is suitable when one leader is human-controlled and the individuals have low-range communication capabilities.
-\end{itemize}
-
-\subsection{Implementation}
-Formation control can be implemented in various ways but we will focus on two, already widely implemented, from behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009} to graph-based control  \cite{Gowal2013, Falconi2010}. Both of these methods can easily be implemented in a distributed system for any of the configuration presented previously using relative localization sensors and IDs. But before selecting one of these methods, constraints of the actual control architecture have to be considered required. Indeed the MPC position controller can takes specific input vectors. Therefore, if a formation control block is devised, it can take as many input as wanted but the output must necessarily be a 6-state vector of three positions and three velocities for each drone.
-
-Behavioral controllers, used in the form of motor-schema or, also called, potential field methods \cite{Arkin1999, Pugh2009} is an elegant way for designing adaptive controllers. Several zone can be defined, in which the potential can be chosen freely in order to induce the desired reaction. Typically the potential provides a speed vector from which position can be integrated. This approach can be implemented for any type of formation. An example of three-zones potential could be the following:
-\[ \dot r_i =  \left\{ \begin{matrix*}[l] 0 & if\ r_{f,i}-r_i\ \in [0; d_1] \\ \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_1; d_2] \\  \beta(r_{f,i}-r_i-d_2)^2 + \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_2; \inf] \end{matrix*} \right. \ for\ i = 1,2,3\]
-Where $r_{f,i}$ is the reference position in formation, $r_i$ the current position in one dimension, $d_1$, $d_2$, $\alpha$ and $\beta$ are parameters
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=.8\textwidth]{Images/potentialEx}
-\caption{An example of attractive potential field}
-\label{fig:potentialEx}
-\end{figure}
-
-Graph-based control seems well adapted to provide a reference vector for leader- or neighbor-referenced formations. This kind of controllers are derived from so-called consensus problems, which try to make a set of agent with different initial states converge to a single final state, identical for all agents. \cite{Ren2005}. The Rendez-vous problem \cite{Gowal2013} is one of these problems perfectly adapted to formation control. Required notions of graph theory are: 
-\begin{itemize}
-\item $\mathcal{G} = <\mathcal{N}, \mathcal{E}>$, an (un)directed graph.
-\item $\mathcal{N} = \{R_1, ..., R_n\}$, the finite nodes set,  with $n$, the number of robots.
-\item $\mathcal{E} \in \mathcal{N}^2, \mathcal{E} = \{(Ri,Rj)| R_i, R_j \in \mathcal{N} and\ i \neq j\} = \{e_1, ..., e_m\} $, the (un)directed finite edges set.
-\item $A \in  \mathbb{R}^{n \times n} $, the adjacency matrix is a symmetric matrix, the image of the connections between the nodes
-\[a_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ (R_i, R_j)\ or\ (R_j, R_i) \in \mathcal{E} \\ 0 & else \end{matrix*} \right.\]
-\item $D \in  \mathbb{R}^{n \times n} $, the degree matrix is a symmetric matrix, whose diagonal elements represent the cardinality of each node (i.e.: the sum of edges originating or arriving in this node)
-\[d_{ii} =  \sum_{j=1}^{N} a_{ij}\]
-\item $B \in  \mathbb{R}^{n \times m} $, the incidence matrix is a matrix, describe which node is connected using which edge. In undirected graphs, edge are given a random direction.
-\[b_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ e_j = (R_i, \bullet) \\-1 & if\ e_j = (\bullet, R_i)  \\ 0 & else \end{matrix*} \right.\]
-\item $W \in \mathbb{R}^{m\times m} $, a diagonal weight matrix whose element $w_{i,i}$ corresponds to the weight of edge $e_i \in \mathbb{E}$.
-\item $L$ and $L_w\in \mathbb{R}^{n\times n} $, the Laplacian and the weighted Laplacian matrices.
-\[ L = D-A = BB^T \qquad L_w = BWB^T\]
-\end{itemize}  
-The Laplacian and the weighted Laplacian matrices benefits from interesting properties: They positive-semidefinite. This implies that all eigenvalues are non-negative. Moreover, at least one eigenvalue isequal to zero. Proofs can be found in \cite{Gowal2013}. 
-
-The feedback law, for state $i$ of all nodes in a N-state system is:
-\[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, ..., N \]
-\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
-Below, in figure~\ref{fig:graphs}, we show the directed graph for the leader-referenced formation and one possible graph for a neighbor-referenced formation. we will quickly compute the matrices $A$, $D$, $B$ and $L$. We assume $W = I_{n}$, however in the neighbor-referenced case, it could be a good interesting to increase the weight of the edges $(R_1, R_3)$ and $(R_3, R_1)$, as they are central to the formation directed graph.
-
-\begin{figure}[h]
-\centering
-\subfloat[The leader-referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphLeader}\label{fig:graphLeader}}
-\hspace{0.5cm}
-\subfloat[A neighbor referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphNeighbor}\label{fig:graphNeighbor}}
-\caption{The directed graphs for a leader-referenced formation and a neighbor-referenced}
-\label{fig:graphs}
-\end{figure}
-
-\begin{displaymath}
-\begin{aligned}
-A_{leader} &= \begin{bmatrix} 0 & 1 & 1 & 1 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0\end{bmatrix} 		& A_{neighbor} &= \begin{bmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{bmatrix} \\
-D_{leader} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix}		& D_{neighbor} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 3 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-B_{leader} &= \begin{bmatrix} -1 & -1 & -1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix} 				& B_{neighbor} &= \begin{bmatrix} 1 & -1 & -1 & 0 \\ 0 & 1 & 0 & 0 \\ -1 & 0 & 1 & -1 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-L_{leader} &= \begin{bmatrix} 3 & -1 & -1 & -1 \\ -1 & 1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1\end{bmatrix} 	& L_{neighbor} &= \begin{bmatrix} 3 & -1 & -2 & 0 \\ -1 & 1 & 0 & 0 \\ -2 & 0 & 3 & -1 \\ 0 & 0 & -1 & 1\end{bmatrix}
-\end{aligned}
-\end{displaymath}
-
-The discrete equivalent of the Laplacian feedback control requires another matrix \cite{Moreau2005}:
-\begin{itemize}
-\item $L_k \in \mathbb{R}^{n \times n}$, the stochastic weight of links matrix. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
-\[l_{ij} =  \left\{ \begin{matrix*}[l] \omega_{ij} > 0 & if\  = (R_i, R_j) \in \mathbb{E}\ or\ i=j\\ 0 & else \end{matrix*} \right.\]
-\end{itemize}
-
-The feedback law become, for state $i$ of all nodes in a N-state system:
-\[ \boldsymbol{x_i}(k+1) = L_k\boldsymbol{x_i}(k)\ for\ i=1, ..., N \]
-\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
-
-Again for the graphs in figure~\ref{fig:graphs}, assuming a equal weight for all edges, we provide the discrete equivalent of the Laplacian matrix:
-\begin{displaymath}
-\begin{aligned}
-L_{k,leader} &= \begin{bmatrix} 1 & 0 & 0 & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & 0 & 0 & \frac{1}{2}\end{bmatrix} 		& L_{k,neighbor} &= \begin{bmatrix} \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ 0 & 0 & \frac{1}{2} & \frac{1}{2}\end{bmatrix} \\
-\end{aligned}
-\end{displaymath}
-
-Another control method can be devised, taking the control architecture into account. It consists of directly acting on the MPC controller constraints or objective function\textcolor{red}{[CITATIONS]}.  By implementing formation control in such a way, no additional block needs to be integrated in the current architecture. However, a more in-depth work in the controller is required as, an ideal formulation of cost and a weight need to be found. Moreover this approach reduce the modularity of the control system in its global aspect.
-
-\subsection{Measuring stability}
-\cite{Mataric2002}
-\begin{itemize}
-\item distance on formation line
-\item distance perpendicular to formation line
-\item angle deviation
-\end{itemize}
-
-\subsection{Measuring robustness}
-
-\subsection{Evaluation}
-\begin{itemize}
-\item time to formation (static ref) tToForm\_refStatic
-\item time to formation (dynamic ref) tToForm\_refDynamic
-\item \% time in formation (normalized by (tTot-tToForm)
-\item average deviation from formation position (after tToForm)
-\item max deviation from formation position (after tToForm)
-
-\end{itemize}
-
-\cite{Arkin1999}
-\cite{Mataric2002}
-
- 
 
 \newpage
 \section{Results - Experiment}
