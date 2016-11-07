@@ -16,32 +16,31 @@
 \contentsline {section}{\numberline {4}High-Level Control - Formation Control}{10}
 \contentsline {subsection}{\numberline {4.1}Taxonomy}{10}
 \contentsline {subsection}{\numberline {4.2}Implementation}{11}
-\contentsline {subsection}{\numberline {4.3}Measuring stability}{14}
-\contentsline {subsection}{\numberline {4.4}Measuring robustness}{14}
-\contentsline {subsection}{\numberline {4.5}Evaluation}{14}
-\contentsline {section}{\numberline {5}Low-Level Control}{15}
-\contentsline {subsection}{\numberline {5.1}Control Architecture}{15}
-\contentsline {subsection}{\numberline {5.2}Inner Controller}{15}
-\contentsline {subsubsection}{State and reference acquisition}{15}
-\contentsline {subsubsection}{Controllers}{16}
-\contentsline {subsubsection}{Motor distribution}{17}
-\contentsline {subsection}{\numberline {5.3}Force to Angle and Thrust Commands}{17}
-\contentsline {subsection}{\numberline {5.4}Outer Controller}{17}
-\contentsline {subsubsection}{Implementation}{17}
-\contentsline {subsubsection}{Model}{22}
-\contentsline {subsubsection}{Constraints}{23}
-\contentsline {section}{\numberline {6}Results - Experiment}{24}
-\contentsline {subsection}{\numberline {6.1}Radio Delay Estimation}{24}
-\contentsline {subsection}{\numberline {6.2}Motion Capture Caracterization}{24}
-\contentsline {subsection}{\numberline {6.3}Yaw Control}{24}
-\contentsline {subsection}{\numberline {6.4}Posiiton Control}{24}
-\contentsline {subsection}{\numberline {6.5}Controlled Trajectory}{24}
-\contentsline {subsection}{\numberline {6.6}Without Speed Reference}{24}
-\contentsline {subsection}{\numberline {6.7}With Speed Reference}{24}
-\contentsline {subsection}{\numberline {6.8}Control Loop Timing}{24}
-\contentsline {subsection}{\numberline {6.9}Other Results}{24}
+\contentsline {subsection}{\numberline {4.3}Control Architecture}{13}
+\contentsline {subsection}{\numberline {4.4}Outer Controller}{13}
+\contentsline {subsubsection}{Implementation}{14}
+\contentsline {subsubsection}{Model}{18}
+\contentsline {subsubsection}{Constraints}{19}
+\contentsline {section}{\numberline {5}Low-Level Control}{20}
+\contentsline {subsection}{\numberline {5.1}Inner Controller}{20}
+\contentsline {subsubsection}{State and reference acquisition}{20}
+\contentsline {subsubsection}{Controllers}{21}
+\contentsline {subsubsection}{Motor distribution}{22}
+\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{22}
+\contentsline {section}{\numberline {6}Results - Experiment}{23}
+\contentsline {subsection}{\numberline {6.1}Measuring stability}{23}
+\contentsline {subsection}{\numberline {6.2}Measuring robustness}{23}
+\contentsline {subsection}{\numberline {6.3}Evaluation}{23}
+\contentsline {subsection}{\numberline {6.4}Radio Delay Estimation}{24}
+\contentsline {subsection}{\numberline {6.5}Motion Capture Caracterization}{24}
+\contentsline {subsection}{\numberline {6.6}Yaw Control}{24}
+\contentsline {subsection}{\numberline {6.7}Posiiton Control}{24}
+\contentsline {subsection}{\numberline {6.8}Controlled Trajectory}{24}
+\contentsline {subsection}{\numberline {6.9}Without Speed Reference}{24}
+\contentsline {subsection}{\numberline {6.10}With Speed Reference}{24}
+\contentsline {subsection}{\numberline {6.11}Control Loop Timing}{24}
+\contentsline {subsection}{\numberline {6.12}Other Results}{24}
 \contentsline {section}{\numberline {7}Improvement}{25}
 \contentsline {section}{\numberline {8}Conclusion}{26}
 \contentsline {section}{Appendices}{I}
 \contentsline {subsection}{\numberline {A}Attitude estimation}{I}
-\contentsline {subsection}{\numberline {B}Install ROS package from Git}{I}

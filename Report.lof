@@ -8,9 +8,10 @@
 \contentsline {figure}{\numberline {4}{\ignorespaces Roll $\phi $, Pitch $\theta $ and Yaw $\psi $ Angles\relax }}{6}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Drawing from \cite {Diebel2006}}}}{6}
 \contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{8}
-\contentsline {figure}{\numberline {6}{\ignorespaces An example of attractive potential field\relax }}{12}
-\contentsline {figure}{\numberline {7}{\ignorespaces The directed graphs for a leader-referenced formation and a neighbor-referenced\relax }}{13}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The leader-referenced graph}}}{13}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {A neighbor referenced graph}}}{13}
-\contentsline {figure}{\numberline {8}{\ignorespaces Roll cascade controller architecture\relax }}{16}
-\contentsline {figure}{\numberline {9}{\ignorespaces PID controller architecture\relax }}{16}
+\contentsline {figure}{\numberline {6}{\ignorespaces The taxonomy illustrated for a diamond-shaped formation\relax }}{11}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The unit-centered formation}}}{11}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {The leader-referenced formation}}}{11}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {A neighbor referenced formation}}}{11}
+\contentsline {figure}{\numberline {7}{\ignorespaces An example of attractive potential field\relax }}{12}
+\contentsline {figure}{\numberline {8}{\ignorespaces Roll cascade controller architecture\relax }}{21}
+\contentsline {figure}{\numberline {9}{\ignorespaces PID controller architecture\relax }}{21}

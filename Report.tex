@@ -127,7 +127,7 @@ $\ $
 \section*{Symbols and Abbreviations}
 \addcontentsline{toc}{section}{Symbols and Abbreviations}
 \subsection*{Symbols}
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{p{8cm} p{8cm}}
 $v$ \dotfill & A scalar \\
@@ -156,7 +156,7 @@ $D$ \dotfill & D matrix \\
 \end{table}
 
 \subsection*{Abbreviations}
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{p{8cm} p{8cm}}
 MPC \dotfill & Model Predictive Control \\
@@ -189,7 +189,6 @@ Build on \cite{Suzuki2014}
 
 \newpage
 \section{Setup}
-\textcolor{red}{WHOLE SETUP PRESENTATION}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.7\textwidth]{Images/setup}
@@ -197,6 +196,7 @@ Build on \cite{Suzuki2014}
 \label{fig:setup}
 \end{figure}
 The setup for this project is the same as the one used in \cite{Suzuki2014}. 
+\textcolor{red}{Frequencies}
 
 \subsection{Crazyflie 2.0 Quadrotor}
 The Crazyflie 2.0 (or, from now on, simply CrazyFly) is the second model of small quadrotors (or quadcopter or, simply, quad) developed by Swedish company, BitCraze \cite{bitcraze}. Its length of 92 millimeters from rotor to rotor and its weight of 27 grams make it a safe indoor flying machine. Its on-board battery allows flights up to 7 minutes. Flights that can be controlled thanks to an on-board long-range radio receiver and the appropriate emitter, the CrazyRadio PA or thanks to a Bluetooth LE (low-energy) connexion and a smartphone with the dedicated application. The quadrotor is also equipped with different sensors, including a IMU with a 3-axis high-performance MEMs gyros and accelerometers as well as a 3-axis magnetometer and a barometer.
@@ -213,16 +213,16 @@ The Crazyflie 2.0 runs on an open source firmware, available on BitCraze website
 \end{figure}
 
 \subsubsection{Firmware}
-A description of the core control C modules is given in section~\ref{sec:innerControl}. Note that the current firmware allows to log state and/or sensor data at a maximal rate of 100 Hz.
+A description of the core control C modules is given in section~\ref{sec:innerControl}. Note that the current firmware allows to log state and/or sensor data at a maximal rate of 100 Hz. \textcolor{red}{subsection needed?}
 
 \subsection{Robot Operating System}
-\textcolor{red}{A ECRIRE}
+
+
 \subsection{OptiTrack Motion Capture System}
 The motion capture system consists, on one side, of eight Prime 13 cameras from OptiTrack and, on the other side, Motive:Tracker, a motion analysis software also from OptiTrack, capable of performing all steps from calibration to the motion capture itself.
 This system allow a frame rate of 240 FPS and capture the drone position and attitude, or orientation. \textcolor{red}{Specs Camera: buffer size and length}.
 
 \newpage
-
 \section{Quadrotor dynamics}
 A quadrotor can fly in two different configurations, they are commonly called $+$ (plus) and $\times$ (cross). In a $+$ configuration. The X- and the Y-axes are aligned with two perpendicular arms, the control is easier because only two propellers require to have their speed changed to move along a principal axis. On the other side, a $\times$ configuration require all the propellers to change their speed. However the variation of speed per motor is important. In the following section, all dynamics equations are derived for a $+$ configuration. To fly in $\times$, minor changes have to be performed.
 
@@ -231,7 +231,7 @@ To derive the equation of dynamics of a quadrotor, two reference frames are requ
  The body frame has its origin $O_B$ fixed on the center of mass of the quadcopter, the X-axis pointing towards the motor M1 and the Y-axis pointing towards the motor M2, in case of $+$ configuration. Or, in $\times$ configuration, with the X-axis pointing between the motors M1 and M4 and the Y-axis pointing between the motors M1 and M2. Therefore, in both cases, the Z-axis is pointing downwards when the quadcopter lies on the floor (c.f.: figure~\ref{fig:frames}). \\
 And the world frame origin is fixed in the center of the experiment room and its X- and Y- axis are parallel to floor. Moreover, they are oriented such that the Z-axis is pointing downwards as well. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \subfloat[Body frame in $+$ configuration]{\includegraphics[width=.4\textwidth]{Images/frameBody}\label{fig:frameBody}}
 \hspace{0.5cm}
@@ -355,6 +355,11 @@ To fully define the quadrotor, the attitude rates to body rate matrix $W(\phi,\t
 \begin{bmatrix} \dot x_{10}\\\dot x_{11} \\ \dot x_{12} \end{bmatrix} = I^{-1}(\begin{bmatrix}  M_{x}(\boldsymbol{u})\\ M_{y}(\boldsymbol{u})\\ M_{z}(\boldsymbol{u}) \end{bmatrix}_B - \begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix} \times (I\begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix}))\\
 \end{matrix} \right.\]
 
+
+\textcolor{red}{Thrust to RPM function}
+
+\textcolor{red}{Identification I, m, rpm/pwm to thrust/torque}
+
 \newpage
 \section{High-Level Control - Formation Control}
 Collective movement is widely observed phenomenon in the wild and civilized worlds. In animal societies, the phenomenon, called flocking, herding, schooling or swarming, depending on the species, happens for all size of groups, for all size of individuals, homo- or heterogeneous groups and sometimes can be circumstance-driven, like migrations. A flock, generally used to describe any of the denomination introduced before, is characterized by directed movement and quick reactions to obstacle at the global scale, even though there is no leader. Among the benefits of group motion, dilution of risk, improved exploration, foraging and sensing capabilities, energy saving are the most interesting. Of course costs arise also from group formation like the diminution of resource per capita but these concern mostly living entities \cite{Krause2002, Parrish1997}.
@@ -369,6 +374,17 @@ When studying formations, the taxonomy defined in \cite{Arkin1999} about positio
 \item \emph{Leader-referenced formation}. The reference is one of the member of the group, the leader. This configuration achieves also good results and is ideal when the leader is human-controlled. However, it is constantly necessary to know, or being able to measure, the (relative) position of the leader, which can require either a long range-communication, or sensing module, depending on the application and the localization method.
 \item \emph{Neighbor-referenced formation}. In this case, there is no common reference. Each member of the formation determines its position from the position of a unique other member. Although it is more demanding in terms of emitters than a leader referenced formation, the range of communication can be considerably reduced. In case of relative localization without communication, this configuration has the lowest requirements in term of range. Note also that mixed leader-neighbor referenced formations can exist \cite{Mataric2002}. This is suitable when one leader is human-controlled and the individuals have low-range communication capabilities.
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\subfloat[The unit-centered formation]{\includegraphics[width=.3\textwidth]{Images/graphUnitCenter}\label{fig:unitCenter}}
+\hspace{0.2cm}
+\subfloat[The leader-referenced formation]{\includegraphics[width=.3\textwidth]{Images/graphLeader}\label{fig:graphLeader}}
+\hspace{0.2cm}
+\subfloat[A neighbor referenced formation]{\includegraphics[width=.3\textwidth]{Images/graphNeighbor}\label{fig:graphNeighbor}}
+\caption{The taxonomy illustrated for a diamond-shaped formation}
+\label{fig:graphs}
+\end{figure}
 
 \subsection{Implementation}
 Formation control can be implemented in various ways but we will focus on two, already widely implemented, from behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009} to graph-based control  \cite{Gowal2013, Falconi2010}. Both of these methods can easily be implemented in a distributed system for any of the configuration presented previously using relative localization sensors and IDs. But before selecting one of these methods, constraints of the actual control architecture have to be considered required. Indeed the MPC position controller can takes specific input vectors. Therefore, if a formation control block is devised, it can take as many input as wanted but the output must necessarily be a 6-state vector of three positions and three velocities for each drone.
@@ -404,68 +420,209 @@ The Laplacian and the weighted Laplacian matrices benefits from interesting prop
 The feedback law, for state $i$ of all nodes in a N-state system is:
 \[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, \cdots, N \]
 \[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
-Below, in figure~\ref{fig:graphs}, we show the directed graph for the leader-referenced formation and one possible graph for a neighbor-referenced formation. we will quickly compute the matrices $A$, $D$, $B$ and $L$. We assume $W = I_{n}$, however in the neighbor-referenced case, it could be a good interesting to increase the weight of the edges $(R_1, R_3)$ and $(R_3, R_1)$, as they are central to the formation directed graph.
+%In figure~\ref{fig:graphs}, we show the directed graph for the leader-referenced formation and one possible graph for a neighbor-referenced formation. we will quickly compute the matrices $A$, $D$, $B$ and $L$. We assume $W = I_{n}$, however in the neighbor-referenced case, it could be a good interesting to increase the weight of the edges $(R_1, R_3)$ and $(R_3, R_1)$, as they are central to the formation directed graph.
 
-\begin{figure}[h]
-\centering
-\subfloat[The leader-referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphLeader}\label{fig:graphLeader}}
-\hspace{0.5cm}
-\subfloat[A neighbor referenced graph]{\includegraphics[width=.4\textwidth]{Images/graphNeighbor}\label{fig:graphNeighbor}}
-\caption{The directed graphs for a leader-referenced formation and a neighbor-referenced}
-\label{fig:graphs}
-\end{figure}
-
-\begin{displaymath}
-\begin{aligned}
-A_{leader} &= \begin{bmatrix} 0 & 1 & 1 & 1 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0\end{bmatrix} 		& A_{neighbor} &= \begin{bmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{bmatrix} \\
-D_{leader} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix}		& D_{neighbor} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 3 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-B_{leader} &= \begin{bmatrix} -1 & -1 & -1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix} 				& B_{neighbor} &= \begin{bmatrix} 1 & -1 & -1 & 0 \\ 0 & 1 & 0 & 0 \\ -1 & 0 & 1 & -1 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-L_{leader} &= \begin{bmatrix} 3 & -1 & -1 & -1 \\ -1 & 1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1\end{bmatrix} 	& L_{neighbor} &= \begin{bmatrix} 3 & -1 & -2 & 0 \\ -1 & 1 & 0 & 0 \\ -2 & 0 & 3 & -1 \\ 0 & 0 & -1 & 1\end{bmatrix}
-\end{aligned}
-\end{displaymath}
-
+%
+%\begin{displaymath}
+%\begin{aligned}
+%A_{leader} &= \begin{bmatrix} 0 & 1 & 1 & 1 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0\end{bmatrix} 		& A_{neighbor} &= \begin{bmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{bmatrix} \\
+%D_{leader} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix}		& D_{neighbor} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 3 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
+%B_{leader} &= \begin{bmatrix} -1 & -1 & -1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix} 				& B_{neighbor} &= \begin{bmatrix} 1 & -1 & -1 & 0 \\ 0 & 1 & 0 & 0 \\ -1 & 0 & 1 & -1 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
+%L_{leader} &= \begin{bmatrix} 3 & -1 & -1 & -1 \\ -1 & 1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1\end{bmatrix} 	& L_{neighbor} &= \begin{bmatrix} 3 & -1 & -2 & 0 \\ -1 & 1 & 0 & 0 \\ -2 & 0 & 3 & -1 \\ 0 & 0 & -1 & 1\end{bmatrix}
+%\end{aligned}
+%\end{displaymath}
+%
 The discrete equivalent of the Laplacian feedback control requires another matrix \cite{Moreau2005}, $L_k \in \mathbb{R}^{n \times n}$, the stochastic weight of links matrix. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
 \[l_{ij} =  \left\{ \begin{matrix*}[l] \omega_{ij} > 0 & if\  = (R_i, R_j) \in \mathbb{E}\ or\ i=j\\ 0 & else \end{matrix*} \right.\]
+%
+%The feedback law become, for state $i$ of all nodes in a N-state system:
+%\[ \boldsymbol{x_i}(k+1) = L_k\boldsymbol{x_i}(k)\ for\ i=1, \cdots, N \]
+%\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
+%
+%Again for the graphs in figure~\ref{fig:graphs}, assuming a equal weight for all edges, we provide the discrete equivalent of the Laplacian matrix:
+%\begin{displaymath}
+%\begin{aligned}
+%L_{k,leader} &= \begin{bmatrix} 1 & 0 & 0 & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & 0 & 0 & \frac{1}{2}\end{bmatrix} 		& L_{k,neighbor} &= \begin{bmatrix} \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ 0 & 0 & \frac{1}{2} & \frac{1}{2}\end{bmatrix} \\
+%\end{aligned}
+%\end{displaymath}
 
-The feedback law become, for state $i$ of all nodes in a N-state system:
-\[ \boldsymbol{x_i}(k+1) = L_k\boldsymbol{x_i}(k)\ for\ i=1, \cdots, N \]
-\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
+Another possibility, and the one explored in this project, consists of using an MPC controller. By acting on the constraints, an formation can be induced and controlled. A more detailed explanations of the controller, its implementation and the constraints and objective function are presented in the following sections.
 
-Again for the graphs in figure~\ref{fig:graphs}, assuming a equal weight for all edges, we provide the discrete equivalent of the Laplacian matrix:
-\begin{displaymath}
-\begin{aligned}
-L_{k,leader} &= \begin{bmatrix} 1 & 0 & 0 & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & 0 & 0 & \frac{1}{2}\end{bmatrix} 		& L_{k,neighbor} &= \begin{bmatrix} \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ 0 & 0 & \frac{1}{2} & \frac{1}{2}\end{bmatrix} \\
-\end{aligned}
-\end{displaymath}
+\textcolor{red}{strengths and weaknesses of each method}
+\subsection{Control Architecture}
 
-Another control method can be devised, taking the control architecture into account. It consists of directly acting on the MPC controller constraints or objective function\textcolor{red}{[CITATIONS]}.  By implementing formation control in such a way, no additional block needs to be integrated in the current architecture. However, a more in-depth work in the controller is required as, an ideal formulation of cost and a weight need to be found. Moreover this approach reduce the modularity of the control system in its global aspect.
+\subsection{Outer Controller}
 
-\subsection{Measuring stability}
-\cite{Mataric2002}
-\begin{itemize}
-\item distance on formation line.
-\item distance perpendicular to formation line.
-\item angle deviation.
-\end{itemize}
+The outter posiiton controller is part of the receiding horizon controllers, or model prective controller, family. This type of controllers are well suited for constrained situations, strongly nonlinear systems or, as the name implies, for some future knowledge \cite{Borelli2015}. In a standard closed-loop implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps. $N$ is called the horizon length. Because the model is often inacurate, or because the environment is evolving, after executing the first action command, the controller measures the state and/or its surrounding and re-plans a serie of $N$ actions acoordingly, which act as feedback. The longer the horizon length, the closer the prediction (the $N$ planned actions) from the closed-loop response. Despite it's power, MPC suffers from chalenges to attain: \textcolor{red}{feasibility, stability, robustness and implementation. A DEVELOPPER}.
 
-\subsection{Measuring robustness}
+A MPC controller is composed of three main components: an objective, or cost, function $J$, a set of state dynamics equations and a set of constraints. It can be presented either in continuous or discrete form.
 
-\subsection{Evaluation}
-\begin{itemize}
-\item time to formation (static ref) tToForm\_refStatic.
-\item time to formation (dynamic ref) tToForm\_refDynamic.
-\item \% time in formation (normalized by (tTot-tToForm).
-\item average deviation from formation position (after tToForm).
-\item max deviation from formation position (after tToForm).
+\begin{tabular}{l l l}
+\begin{tabular}{r l r l} $J(\boldsymbol{x}, \boldsymbol{u}, t) =$ 	& $V(\boldsymbol{x}(t+T))$  \\ 	& $+\int\limits_t^{t+T} \mathcal{L}(\boldsymbol{x}(t), \boldsymbol{u}(t)dt$  \end{tabular}   & \hspace{.7cm} \vspace{.5cm} & \begin{tabular}{r l r l} $J_k(\boldsymbol{x}, \boldsymbol{u}, t) =$ & $V_k(\boldsymbol{x}(t+NT_s))$  \\  & $+\sum\limits_{k=0}^{N-1} \mathcal{L}_k(\boldsymbol{x}(t+kT_s), \boldsymbol{u}(t+kT_s))$  \end{tabular} \\
+$\boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u})$ & & $\boldsymbol{x}(k+1) = f_k(\boldsymbol{x}(k), \boldsymbol{u}(k))$ \\
+$x \in \mathcal{X}$ and $u \in \mathcal{U}$ & & $x \in \mathcal{X}$ and $u \in \mathcal{U}$ 
+\end{tabular}
 
-\end{itemize}
+\subsubsection{Implementation}
+In optimization-based control, such as MPC, a necessary condition for optimal trajectory in a control system $\Sigma$ is the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set
+\[ \Sigma = (\mathcal{X}, f, \mathcal{U}) \]
+\[ \Sigma: \dot x = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
 
-\cite{Arkin1999}
-\cite{Mataric2002}
+Two important objects need to be presented, the Lagrangian $\mathcal{L}$ and the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$. The Lagrangian is a continuous function defined as follow, and typically referred to as the stage cost of objective function $J_{\Sigma,\mathcal{L}}$:
+\[ \mathcal{L}: \mathcal{X} \times \bar{\mathcal{U}} \rightarrow \mathbb{R} \]
+\[ \mathcal{L} := \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
+\[ J_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R_+} \rightarrow \mathbb{R} \]
+\[ J_{\Sigma,\mathcal{L}}(\boldsymbol{\xi}, \boldsymbol{\mu}, t) = \int_{t}^{t+T} \mathcal{L}(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))dt, \ (\boldsymbol{\xi}(t), \boldsymbol{\mu}(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
+
+The couple $(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))$ is called a trajectory.
+
+In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. However another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R}^n \rightarrow \mathbb{R} \]
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}) = \boldsymbol{p}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
+To simplify equation and improve comprehensibility, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and written $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be simplified as $J$
+
+The maximum principle states that, for an optimal trajectory $(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*)$ for cost function:
+\[ J(\boldsymbol{x}, \boldsymbol{u}, t) = V(\boldsymbol{x}(t+T))  + \int_t^{t+T} \mathcal{L}(\boldsymbol{x}, \boldsymbol{u})dt\]
+\[ V: \mathcal{X} \rightarrow \mathbb{R} \]
+With $ V(\boldsymbol{x}(t+T))$, the terminal cost. Subject to:
+\[ \boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u}) \]
+\[ \psi_i(\boldsymbol{x}) = 0,\ i = 1, \cdots, q \]
+With $\psi(x)$, equality state constraints (often only for the terminal state). These constraints can be adjoined to the Hamiltonian with the help of another multiplier $\boldsymbol{v}$:
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = p^T f(\boldsymbol{x}, \boldsymbol{u}) + v^T\psi(\boldsymbol{x}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{v} \in \mathbb{R}^q \]
+
+Then, there exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\nu}^*$ such that:
+\[ \boldsymbol{\dot \xi}^* = \mathcal{H}_p^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)  \qquad \boldsymbol{\dot \lambda}^*  = -\mathcal{H}_x^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)\]
+\[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{\xi}^*(t+T)) \]
+And:
+\[ H(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \leq H(\boldsymbol{\xi}^*, u, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \forall \boldsymbol{u} \in \mathcal{U} \]
+Moreover, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
+\[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = \boldsymbol{0}_m \]
+
+Where $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
+\[ A_b = \nabla A = \left [ \frac{\partial \mathcal{A}}{\partial b_1} \cdots \frac{\partial \mathcal{A}}{\partial b_n} \right ] \]
+\[ A_b =  \begin{bmatrix} \frac{\partial A_1}{\partial b_1} & \frac{\partial A_1}{\partial b_2} & \cdots & \frac{\partial A_1}{\partial b_s}  \\ 
+ \frac{\partial A_2}{\partial b_1} &  \frac{\partial A_2}{\partial b_2} & \cdots & \frac{\partial A_2}{\partial b_s}  \\ 
+ \vdots &  \vdots & \ddots & \vdots  \\ 
+ \frac{\partial A_r}{\partial b_1} &  \frac{\partial A_r}{\partial b_2} & \cdots & \frac{\partial A_r}{\partial b_s} \end{bmatrix}  \]
+ 
+ \textcolor{red}{Hamilton–Jacobi–Bellman equation?}
+
+This last characteristic is part of the core of the Continuation-Generalized Minimum Residual Method (C/GMRES)\cite{Ohtsuka2004} used to solve the optimization process. Therefore, instead of constraining the input set, a penalty cost will be included in the Lagrangian such that the previous condition is satisfied.
+
+Note that Pontryagin maximum principle is only a necessary condition of optimal trajectory. A sufficient and necessary condition is the Hamilton-Jacobi-Bellman equation, but it must be satisfied on the whole state space. Note also that all the result are presented on a continuous time scale but they can be discretized.
+
+The C/GMRES method is a fast algorithm for nonlinear MPC exploiting the fact that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence using standard iterative methods.
+
+Starting from a approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
+\[ J_k = V(\boldsymbol{x}(N)) + \sum_{k = 0}^{N-1} \mathcal{L}(\boldsymbol{x}(k), \boldsymbol{u}(k))T_s \]
+Subject to:
+\[ \boldsymbol{x}(k+1) = \boldsymbol{x}(k) + f(\boldsymbol{x}(k),\boldsymbol{u}(k))T_s \]
+\[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \cdots, q_k \]
+
+Then we can rewrite a discretized version of the Pontryagin principle for unconstrained input:
+\[ \mathcal{H}_u(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) = \boldsymbol{0}_m \]
+\[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) T_s\]
+\[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{\xi}^*(N)) \]
+The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. We introduce also the vector U:
+\[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{v}(0), \boldsymbol{u}(1), \boldsymbol{v}(1), \cdots, \boldsymbol{u}(N-1), \boldsymbol{v}(N-1)]^T \]
+\[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{p}(1), \boldsymbol{v}(0)) \\ \psi(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{p}(N), \boldsymbol{v}(N-1)) \\ \psi(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
+
+To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which we have few knowledge concerning solutions, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to our controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
+\[ F(\boldsymbol{U} + \boldsymbol{\dot U}T_s,\boldsymbol{x} + \boldsymbol{\dot x} T_s) = \boldsymbol{0}_{N(m+q)} \]
+\begin{equation}
+\label{eq:dotUFromF}
+\boldsymbol{\dot U} = F_U^{-1}(A_s F - F_x \boldsymbol{\dot x}) 
+\end{equation}
+$A_s$ is a matrix whose role is to stabilize $F = \boldsymbol{0}_{N(m+q)}$ and $F_u$ is required to be nonsingular. \textcolor{red}{conditions on $A_s$}. A noticeable constraint of this method is the requirement to solve the system $F=0$ at least once at $t=0$.
+
+In order to reduce the cost of solving the linear equations, two additional tools are used, forward difference approximation for Jacobian and vector products, and the GMRES method for solving linear equations.
+The product approximation is computed as follow:
+\[ F_U(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{W} + F_x(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{w} \approx D_h F(\boldsymbol{U}, \boldsymbol{x} : \boldsymbol{W}, \boldsymbol{w}) := \frac{F(\boldsymbol{U} + h\boldsymbol{W}, \boldsymbol{x} + h\boldsymbol{w}) - F(\boldsymbol{U}, \boldsymbol{x})}{h} \]
+
+Then the linear equation~\ref{eq:dotUFromF} to solve becomes:
+\[ D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\dot U}, 0) = A_s F(\boldsymbol{U}, \boldsymbol{x}) - D_h F(\boldsymbol{U}, \boldsymbol{x} : 0, \boldsymbol{\dot x}) := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) \]
+
+The GMRES tool (or Forward Difference GMRES, FDGMRES, in \cite{Kelley1995}) is an iterative Krylov subspace method to solve linear systems of equations. It can be decomposed in three steps.
+
+First, the initialization of the residual $\hat r$ and the Krylov basis $\mathcal{V}_\mathcal{K}$ with an initial guess $\boldsymbol{\hat{ \dot U}}$ on the control input derivative:
+\[ \boldsymbol{\hat r} := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) - D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\hat{\dot U}}, 0) \]
+\[\boldsymbol{v_1} := \frac{\boldsymbol{\hat r}}{\norm{\boldsymbol{\hat r}}},\ \rho = \norm{\boldsymbol{\hat r}},\ \beta: = \rho \].
+
+Then, the loop iteration while $k_{loop} < k_{loop,max}$:
+\begin{enumerate}
+\item $k = k+1$
+\item Compute a new basis vector for $\mathcal{V}_\mathcal{K}$: $\boldsymbol{v}_{k+1} =  D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{v_k}, 0)$.
+\item Normalization, orthogonalization using Gramm-Schmidt process and construction of matrix $H_k$:
+\[ Loop: h_{j,k} = \boldsymbol{v}_{k+1}^T \boldsymbol{v}_j,\ \boldsymbol{v}_{k+1} = \boldsymbol{v}_{k+1} - h_{j,k}\boldsymbol{v}_j, \quad for\ j = 1, \cdots, k \]
+\[ h_{k+1,k} = \norm{\boldsymbol{v}_{k+1}} \]
+\[ h_{k+1, j} =  0\quad for\ j = 1, \cdots, k-1 \]
+\[ \boldsymbol{v}_{k+1} = \frac{\boldsymbol{v}_{k+1}}{\norm{\boldsymbol{v}_{k+1}}} \]
+\item Solve $\min\limits_{y_k}\norm{\beta \boldsymbol{e}_1 - H_k\boldsymbol{y}_k}$, with $\boldsymbol{y}_k in \mathbb{R}^k$.
+\item Residual length $\rho = \norm{\beta \boldsymbol{e_1} - H_k\boldsymbol{y}_k}$.
+\end{enumerate}
+
+The minimization step can be solved efficiently using Givens rotations \cite{Bjorck1996}. Which consists of applying consecutive rotations $G_i(\theta_i)$ to the system untill $\prod_i G_i(\theta_i) H_k$ is upper triangular.
+We define a Givens rotation matrix $G(p, q, \theta)$ as follow:
+\[ g_{ij} = \left\{ \begin{matrix*}[l] \cos{\theta} &  if\ i = j = p, q \\ 1 & if\ i = j \neq p, q  \\  -\sin{\theta} &  if\ i = p,\ j = q \\ \sin{\theta} &  if\ i = q,\ j = p \\ 0 & else \end{matrix*} \right.\]
+For our algorithm, at iteration $k$, we compute the matrix $G_k$:
+\[ G_k := G_k(k, k+1, \theta_k) \quad with\ \theta_k = atan2(h_{k+1, k}, h_{k,k})\]
+And we solve easily:
+\[ \min\limits_{y_k}(\norm{\prod\limits_{i=1}^k G_i(i, i+1, \theta_i) (\beta \boldsymbol{e}_1 - H_k \boldsymbol{y}_k)} \]
+
+Moreover, despite being iterative, this step is limited in number of iterations ($k_{max}$) to keep its influence small on the whole algorithm duration. \textcolor{red}{convergence speed, max iteration}
+
+The final step is the computation of solution:
+\[ \boldsymbol{\dot U} = \boldsymbol{\hat{ \dot U}} + V_k \boldsymbol{y}_k \]
+With $V_k = [v_1, \cdots, v_k]$ the Krylov subspace basis $\mathcal{V}_\mathcal{K}$.
+
+Now, continuation and GMRES method can be combined to produce C/GMRES:
+\begin{enumerate}
+\item Initialization: compute $\boldsymbol{U}(0)$ numerically or anatically.
+\item Loop over k:
+\begin{enumerate}
+\item Apply first input of sequence: $\boldsymbol{u}(k) = \boldsymbol{U}_{1:m}(k)$.
+\item Measure $\boldsymbol{x}(k)$, Compute $\Delta x = \boldsymbol{x}(k) - \boldsymbol{x}(k-1)$.
+\item Compute $\boldsymbol{\dot U}(k)$ using GMRES with $\dot x = \frac{\Delta x}{Ts}$ and $\boldsymbol{\hat{\dot U}}(k) = [\boldsymbol{\dot U}^T_{m+q+1:N(m+q)}(k-1)\ \boldsymbol{0}_{m+q}]^T $ (i.e.: the input of last time step, without the first elements corresponding to the input applied and padded with zeros).
+\end{enumerate}
+\item k = k+1.
+\end{enumerate}
+
+\textcolor{red}{EFFICIENCY, CONVERGENCE SPEED, ROBUSTNESS, APPROXIMATION ERROR}
+
+
+\subsubsection{Model}
+The outer MPC controller controls the position and its derivative and the yaw angle, therefore a 7-states model is considered. 
+
+Moreover, to remove the dependency of the position on the attitude and on the flying platform, the thrust force is represented as:
+\[ R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B = \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \boldsymbol{u_{1:3}}\]
+
+The inner controller, taking as references $\boldsymbol{r_{ic}} = [F_{zB} \ \phi \  \theta \ \dot \psi]^T$, an intermediary block, proper to quadrotors will be implemented to translate the output of the reduced model into adequate commands for the quadrotor.
+
+The drag force, in a turbulent air flow, is usually defined as:
+\[ \boldsymbol{D} = -(\frac{1}{2} \norm{\boldsymbol{\dot r}}^2 C_D A) \frac{\boldsymbol{\dot r}}{\\norm{\boldsymbol{\dot r}}}\]
+Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid, $\rho$ is the air density, $C_D$  the drag coefficient and $A$t the cross-sectional area (i.e.: the maximal area of the quadrotor in the plane perpendicular to the speed vector $\boldsymbol{\dot r}$). For modeling purpose, it can be simplified as follow:
+\[ \boldsymbol{D} \approx -K_d(\psi) \norm{\boldsymbol{\dot r}} \boldsymbol{\dot r}\]
+
+\textcolor{red}{A DEVELOPPER}
+
+Then, to linearize the model, a working is required. Assuming we stay around the hovering equilibrium, then only gravity is compensated.
+\[ \boldsymbol{u_s} = \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ mg \\ 0\end{bmatrix} \]
+
+The reduced linearized model is:
+ \[\boldsymbol{x_r} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \psi]^T \]
+\[\boldsymbol{\dot x_r} =  A_r \boldsymbol{x_r} + B_r \boldsymbol{u} \]
+\[\begin{bmatrix}\dot x \\ \dot y \\ \dot z \\ \ddot x \\ \ddot y \\ \ddot z \\ \dot \psi\end{bmatrix}  = 
+\begin{bmatrix}  0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix} 
+\begin{bmatrix} x \\ y \\ z \\ \dot x \\ \dot y \\ \dot z \\ \psi \end{bmatrix}  + \begin{bmatrix}  0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ \frac{1}{m} & 0 & 0 & 0 \\ 0 & \frac{1}{m} & 0 & 0 \\ 0 & 0 & \frac{1}{m} & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} \]
+
+Finally, the model is discretized, with sampling time $T_s$:
+\[\begin{bmatrix} x_{k+1} \\ y_{k+1} \\ z_{k+1} \\ \dot x_{k+1} \\ \dot y_{k+1} \\ \dot z_{k+1} \\ \psi_{k+1} \end{bmatrix}  = 
+\begin{bmatrix}  1 & 0 & 0 & T_s & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & T_s & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & T_s & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} 
+\begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
+\subsubsection{Constraints}
 
 \newpage
 \section{Low-Level Control}
-\subsection{Control Architecture}
 \subsection{Inner Controller}
 \label{sec:innerControl}
 The inner controller, responsible for attitude control can be found in the stabilizer.c module. Its main loop can be divided in four steps, the corresponding file are indicated in brackets:
@@ -480,7 +637,7 @@ The inner controller, responsible for attitude control can be found in the stabi
 Independently of the chosen estimation method, 13-states Kalman filter or attitude update through Mahony or Magdwick quaternion method, the first step will provide data for attitude angles and rates. However, Kalman estimator allows the stabilizer loop to run only at 500 Hz, while the other method allows 1000 Hz. Sensor acquisition runs at 500 Hz for IMU and 100 Hz for barometer. In the second estimaiton method, attitude is updated at 250 Hz and position (if wanted) at 100 Hz. For Kalman, update are performed at 100 Hz for all state, barometer is processed at 25 Hz.
 
 During the acquisition of the references, the inner control architecture is also defined or updated. Depending on the control mode, the reference are translated differently and the chain of controller is activated accordingly. There are six configuration variables, each can be set in absolute, velocity or disabled mode.  These variables are X, Y, Z, the 3D positions and roll, pitch, yaw, the three attitude angles. For this project, the configuration implies that the reference are always going to be roll angle, pitch angle, yaw rate and thrust (c.f.: table~\ref{tab:setpointConfig}). Despite the presence of a magnetometer in the IMU, it is not yet integrated in the firmware, therefore an absolute yaw positioning is not possible.
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Reference and inner control architecture configuration}
 \begin{tabular}{|l|c|}
@@ -506,14 +663,14 @@ Attitude Yaw & Velocity\\
 \subsubsection{Controllers}
 The first module, \emph{controller\_pid.c}, defines the control architecture and the rate of the two sub-control loops: PID at 100 Hz for position control or cascade controllers at 500 Hz for attitude control. In the latter (\emph{attitude\_pid\_controller.c}), the yaw rate reference is first integrated to obtain a yaw reference angle, then, the first layer of control is given the attitude angles references and estimations. In the second layer, rates are controlled. The output of the attitude controllers serve as rate reference and the gyros as attitude rate as measurement (c.f.: figure~\ref{fig:controllerCascade}). This assumption can be considered as true for small angles or first-order approximations. For exact attitude rate computation, refer to the section~ref:{sec:dynamicsEquations}.  In the cascade controller, both layers  are composed of standard PID controllers using an integral limit as shown in figure~\ref{fig:controllerPID}. Note also that the estimation method has an influence on the gains. In table~\ref{tab:controllerInnerGains}, gains are provided for a CrazyFlie 2.0 using the stock estimator.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[scale = 0.8]{Images/controllerCascade}
+\includegraphics[scale = 0.75]{Images/controllerCascade}
 \caption{Roll cascade controller architecture}
 \label{fig:controllerCascade}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[scale = 0.8]{Images/controllerPID}
 \caption{PID controller architecture}
@@ -567,167 +724,32 @@ The output of the 3 attitude cascade controllers and the thrust input are combin
 \end{table}
 
 \subsection{Force to Angle and Thrust Commands}
-\subsection{Outer Controller}
-
-The outter posiiton controller is part of the receiding horizon controllers, or model prective controller, family. This type of controllers are well suited for constrained situations, strongly nonlinear systems or, as the name implies, for some future knowledge \cite{Borelli2015}. In a standard closed-loop implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps. $N$ is called the horizon length. Because the model is often inacurate, or because the environment is evolving, after executing the first action command, the controller measures the state and/or its surrounding and re-plans a serie of $N$ actions acoordingly, which act as feedback. The longer the horizon length, the closer the prediction (the $N$ planned actions) from the closed-loop response. Despite it's power, MPC suffers from chalenges to attain: feasibility, stability, robustness and implementation. \textcolor{red}{A DEVELOPPER}.
-
-\subsubsection{Implementation}
-In optimization-based control, such as MPC, a necessary condition for optimal trajectory in a control system $\Sigma$ is the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set
-\[ \Sigma = (\mathcal{X}, f, \mathcal{U}) \]
-\[ \Sigma: \dot x = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
-
-Two important objects need to be presented, the Lagrangian $\mathcal{L}$ and the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$. The Lagrangian is a continuous function defined as follow, and subsequently used to define an objective function $J_{\Sigma,\mathcal{L}}$:
-\[ \mathcal{L}: \mathcal{X} \times \bar{\mathcal{U}} \rightarrow \mathbb{R} \]
-\[ \mathcal{L} := \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
-\[ J_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R_+} \rightarrow \mathbb{R} \]
-\[ J_{\Sigma,\mathcal{L}}(\boldsymbol{\xi}, \boldsymbol{\mu}, t) = \int_{t}^{t+T} \mathcal{L}(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))dt, \ (\boldsymbol{\xi}(t), \boldsymbol{\mu}(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
-
-The couple $(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))$ is called a trajectory.
-
-In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. However another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
-\[ \mathcal{H}_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R}^n \rightarrow \mathbb{R} \]
-\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}) = \boldsymbol{p}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
-To simplify equation and improve comprehensibility, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and written $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be simplified as $J$
-
-The maximum principle states that, for an optimal trajectory $(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*)$ for cost function:
-\[ J(\boldsymbol{x}, \boldsymbol{u}, t) = V(\boldsymbol{x}(t+T))  + \int_t^{t+T} \mathcal{L}(\boldsymbol{x}, \boldsymbol{u})dt\]
-\[ V: \mathcal{X} \rightarrow \mathbb{R} \]
-With $ V(\boldsymbol{x}(t+T))$, the terminal cost. Subject to:
-\[ \boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u}) \]
-\[ \psi_i(\boldsymbol{x}) = 0,\ i = 1, \cdots, q \]
-With $\psi(x)$, equality state constraints (often only for the terminal state). These constraints can be adjoined to the Hamiltonian with the help of another multiplier $\boldsymbol{v}$:
-\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = p^T f(\boldsymbol{x}, \boldsymbol{u}) + v^T\psi(\boldsymbol{x}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{v} \in \mathbb{R}^q \]
-
-Then, there exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\nu}^*$ such that:
-\[ \boldsymbol{\dot \xi}^* = \mathcal{H}_p^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)  \qquad \boldsymbol{\dot \lambda}^*  = -\mathcal{H}_x^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)\]
-\[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{\xi}^*(t+T)) \]
-And:
-\[ H(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \leq H(\boldsymbol{\xi}^*, u, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \forall \boldsymbol{u} \in \mathcal{U} \]
-Moreover, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
-\[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = \boldsymbol{0}_m \]
-
-Where $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
-\[ A_b = \nabla A = \left [ \frac{\partial \mathcal{A}}{\partial b_1} \cdots \frac{\partial \mathcal{A}}{\partial b_n} \right ] \]
-\[ A_b =  \begin{bmatrix} \frac{\partial A_1}{\partial b_1} & \frac{\partial A_1}{\partial b_2} & \cdots & \frac{\partial A_1}{\partial b_s}  \\ 
- \frac{\partial A_2}{\partial b_1} &  \frac{\partial A_2}{\partial b_2} & \cdots & \frac{\partial A_2}{\partial b_s}  \\ 
- \vdots &  \vdots & \ddots & \vdots  \\ 
- \frac{\partial A_r}{\partial b_1} &  \frac{\partial A_r}{\partial b_2} & \cdots & \frac{\partial A_r}{\partial b_s} \end{bmatrix}  \]
-
-This last characteristic is part of the core of the Continuation-Generalized Minimum Residual Method (C/GMRES)\cite{Ohtsuka2004} used to solve the optimization process. Therefore, instead of constraining the input set, a penalty cost will be included in the Lagrangian such that the previous condition is satisfied.
-
-Note that Pontryagin maximum principle is only a necessary condition of optimal trajectory. A sufficient and necessary condition is the Hamilton-Jacobi-Bellman equation, but it must be satisfied on the whole state space. Note also that all the result are presented on a continuous time scale but they can be discretized.
-
-The C/GMRES method is a fast algorithm for nonlinear MPC exploiting the fact that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence using standard iterative methods.
-
-Starting from a approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
-\[ J_k = V(\boldsymbol{x}(N)) + \sum_{k = 0}^{N-1} \mathcal{L}(\boldsymbol{x}(k), \boldsymbol{u}(k))T_s \]
-Subject to:
-\[ \boldsymbol{x}(k+1) = \boldsymbol{x}(k) + f(\boldsymbol{x}(k),\boldsymbol{u}(k))T_s \]
-\[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \cdots, q_k \]
-
-Then we can rewrite a discretized version of the Pontryagin principle for unconstrained input:
-\[ \mathcal{H}_u(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) = \boldsymbol{0}_m \]
-\[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) T_s\]
-\[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{\xi}^*(N)) \]
-The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. We introduce also the vector U:
-\[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{v}(0), \boldsymbol{u}(1), \boldsymbol{v}(1), \cdots, \boldsymbol{u}(N-1), \boldsymbol{v}(N-1)]^T \]
-\[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{p}(1), \boldsymbol{v}(0)) \\ \psi(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{p}(N), \boldsymbol{v}(N-1)) \\ \psi(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
-
-To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which we have few knowledge concerning solutions, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to our controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
-\[ F(\boldsymbol{U} + \boldsymbol{\dot U}T_s,\boldsymbol{x} + \boldsymbol{\dot x} T_s) = \boldsymbol{0}_{N(m+q)} \]
-\[ \boldsymbol{\dot U} = F_U^{-1}(A_s F - F_x \boldsymbol{\dot x}) \]
-$A_s$ is a matrix whose role is to stabilize $F = \boldsymbol{0}_{N(m+q)}$ and $F_u$ is required to be nonsingular. \textcolor{red}{conditions on $A_s$}. A noticeable constraint of this method is the requirement to solve the system $F=0$ at least once at $t=0$.
-
-In order to reduce the cost of solving the linear equations, two additional tools are used, forward difference approximation for Jacobian and vector products, and the GMRES method for solving linear equations.
-The product approximation is computed as follow:
-\[ F_U(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{W} + F_x(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{w} \approx D_h F(\boldsymbol{U}, \boldsymbol{x} : \boldsymbol{W}, \boldsymbol{w}) := \frac{F(\boldsymbol{U} + h\boldsymbol{W}, \boldsymbol{x} + h\boldsymbol{w}) - F(\boldsymbol{U}, \boldsymbol{x})}{h} \]
-
-Then the linear equation to solve to compute $\boldsymbol{\dot U}$ is:
-\[ D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\dot U}, 0) = A_s F(\boldsymbol{U}, \boldsymbol{x}) - D_h F(\boldsymbol{U}, \boldsymbol{x} : 0, \boldsymbol{\dot x}) := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) \]
-
-The GMRES tool (or Forward Difference GMRES, FDGMRES, in \cite{Kelley1995}) is an iterative Krylov subspace method to solve linear systems of equations. It can be decomposed in three steps.
-
-First, the initialization of the residual $\hat r$ and the Krylov basis $\mathcal{V}_\mathcal{K}$ with an initial guess $\boldsymbol{\hat{ \dot U}}$ on the control input derivative:
-\[ \boldsymbol{\hat r} := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) - D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\hat{\dot U}}, 0) \]
-\[\boldsymbol{v_1} := \frac{\boldsymbol{\hat r}}{\norm{\boldsymbol{\hat r}}},\ \rho = \norm{\boldsymbol{\hat r}},\ \beta: = \rho \].
-
-Then, the loop iteration while $k_{loop} < k_{loop,max}$:
-\begin{enumerate}
-\item $k = k+1$
-\item Compute a new basis vector for $\mathcal{V}_\mathcal{K}$: $\boldsymbol{v}_{k+1} =  D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{v_k}, 0)$.
-\item Normalization, orthogonalization using Gramm-Schmidt process and construction of matrix $H_k$:
-\[ Loop: h_{j,k} = \boldsymbol{v}_{k+1}^T \boldsymbol{v}_j,\ \boldsymbol{v}_{k+1} = \boldsymbol{v}_{k+1} - h_{j,k}\boldsymbol{v}_j, \quad for\ j = 1, \cdots, k \]
-\[ h_{k+1,k} = \norm{\boldsymbol{v}_{k+1}} \]
-\[ h_{k+1, j} =  0\quad for\ j = 1, \cdots, k-1 \]
-\[ \boldsymbol{v}_{k+1} = \frac{\boldsymbol{v}_{k+1}}{\norm{\boldsymbol{v}_{k+1}}} \]
-\item Solve $\min\limits_{y_k}\norm{\beta \boldsymbol{e}_1 - H_k\boldsymbol{y}_k}$, with $\boldsymbol{y}_k in \mathbb{R}^k$.
-\item Residual length $\rho = \norm{\beta \boldsymbol{e_1} - H_k\boldsymbol{y}_k}$.
-\end{enumerate}
-
-The minimization step can be solved efficiently using Givens rotations \cite{Bjorck1996}. Which consists of applying consecutive rotations $G_i(\theta_i)$ to the system untill $\prod_i G_i(\theta_i) H_k$ is upper triangular.
-We define a Givens rotation matrix $G(p, q, \theta)$ as follow:
-\[ g_{ij} = \left\{ \begin{matrix*}[l] \cos{\theta} &  if\ i = j = p, q \\ 1 & if\ i = j \neq p, q  \\  -\sin{\theta} &  if\ i = p,\ j = q \\ \sin{\theta} &  if\ i = q,\ j = p \\ 0 & else \end{matrix*} \right.\]
-For our algorithm, at iteration $k$, we compute the matrix $G_k$:
-\[ G_k := G_k(k, k+1, \theta_k) \quad with\ \theta_k = atan2(h_{k+1, k}, h_{k,k})\]
-And we solve easily:
-\[ \min\limits_{y_k}(\norm{\prod\limits_{i=1}^k G_i(i, i+1, \theta_i) (\beta \boldsymbol{e}_1 - H_k \boldsymbol{y}_k)} \]
-
-Moreover, despite being iterative, this step is limited in number of iterations ($k_{max}$) to keep its influence small on the whole algorithm duration
-
-The final step is the computation of solution:
-\[ \boldsymbol{\dot U} = \boldsymbol{\hat{ \dot U}} + V_k \boldsymbol{y}_k \]
-With $V_k = [v_1, \cdots, v_k]$ the Krylov subspace basis $\mathcal{V}_\mathcal{K}$.
-
-Now, continuation and GMRES method can be combined to produce C/GMRES:
-\begin{enumerate}
-\item Initialization: compute $\boldsymbol{U}(0)$ numerically or anatically.
-\item Loop over k:
-\begin{enumerate}
-\item Apply first input of sequence: $\boldsymbol{u}(k) = \boldsymbol{U}_{1:m}(k)$.
-\item Measure $\boldsymbol{x}(k)$, Compute $\Delta x = \boldsymbol{x}(k) - \boldsymbol{x}(k-1)$.
-\item Compute $\boldsymbol{\dot U}(k)$ using GMRES with $\dot x = \frac{\Delta x}{Ts}$ and $\boldsymbol{\hat{\dot U}}(k) = [\boldsymbol{\dot U}^T_{m+q+1:N(m+q)}(k-1)\ \boldsymbol{0}_{m+q}]^T $ (i.e.: the input of last time step, without the first elements corresponding to the input applied and padded with zeros).
-\end{enumerate}
-\item k = k+1.
-\end{enumerate}
-
-\textcolor{red}{EFFICIENCY, CONVERGENCE SPEED, ROBUSTNESS, APPROXIMATION ERROR}
-
-
-
-\subsubsection{Model}
-The outer MPC controller controls the position and its derivative and the yaw angle, therefore a 7-states model is considered. 
-
-Moreover, to remove the dependency of the position on the attitude and on the flying platform, the thrust force is represented as:
-\[ R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B = \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \boldsymbol{u_{1:3}}\]
-
-The inner controller, taking as references $\boldsymbol{r_{ic}} = [F_{zB} \ \phi \  \theta \ \dot \psi]^T$, an intermediary block, proper to quadrotors will be implemented to translate the output of the reduced model into adequate commands for the quadrotor.
-
-The drag force, in a turbulent air flow, is usually defined as:
-\[ \boldsymbol{D} = -(\frac{1}{2} \norm{\boldsymbol{\dot r}}^2 C_D A) \frac{\boldsymbol{\dot r}}{\\norm{\boldsymbol{\dot r}}}\]
-Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid, $\rho$ is the air density, $C_D$  the drag coefficient and $A$t the cross-sectional area (i.e.: the maximal area of the quadrotor in the plane perpendicular to the speed vector $\boldsymbol{\dot r}$). For modeling purpose, it can be simplified as follow:
-\[ \boldsymbol{D} \approx -K_d(\psi) \norm{\boldsymbol{\dot r}} \boldsymbol{\dot r}\]
-
-\textcolor{red}{A DEVELOPPER}
-
-Then, to linearize the model, a working is required. Assuming we stay around the hovering equilibrium, then only gravity is compensated.
-\[ \boldsymbol{u_s} = \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ mg \\ 0\end{bmatrix} \]
-
-The reduced linearized model is:
- \[\boldsymbol{x_r} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \psi]^T \]
-\[\boldsymbol{\dot x_r} =  A_r \boldsymbol{x_r} + B_r \boldsymbol{u} \]
-\[\begin{bmatrix}\dot x \\ \dot y \\ \dot z \\ \ddot x \\ \ddot y \\ \ddot z \\ \dot \psi\end{bmatrix}  = 
-\begin{bmatrix}  0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix} 
-\begin{bmatrix} x \\ y \\ z \\ \dot x \\ \dot y \\ \dot z \\ \psi \end{bmatrix}  + \begin{bmatrix}  0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ \frac{1}{m} & 0 & 0 & 0 \\ 0 & \frac{1}{m} & 0 & 0 \\ 0 & 0 & \frac{1}{m} & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} \]
-
-Finally, the model is discretized, with sampling time $T_s$:
-\[\begin{bmatrix} x_{k+1} \\ y_{k+1} \\ z_{k+1} \\ \dot x_{k+1} \\ \dot y_{k+1} \\ \dot z_{k+1} \\ \psi_{k+1} \end{bmatrix}  = 
-\begin{bmatrix}  1 & 0 & 0 & T_s & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & T_s & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & T_s & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} 
-\begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
-
-\subsubsection{Constraints}
 
 \newpage
 \section{Results - Experiment}
+Motor response is assumed immediate.
+\subsection{Measuring stability}
+\cite{Mataric2002}
+\begin{itemize}
+\item distance on formation line.
+\item distance perpendicular to formation line.
+\item angle deviation.
+\end{itemize}
+
+\subsection{Measuring robustness}
+
+\subsection{Evaluation}
+\begin{itemize}
+\item time to formation (static ref) tToForm\_refStatic.
+\item time to formation (dynamic ref) tToForm\_refDynamic.
+\item \% time in formation (normalized by (tTot-tToForm).
+\item average deviation from formation position (after tToForm).
+\item max deviation from formation position (after tToForm).
+
+\end{itemize}
+
+\cite{Arkin1999}
+\cite{Mataric2002}
 %Given the results obtained when experiencing with the real setup, it appears that the simulation is not representative enough. Numerous things aren't taken into account with this model:
 %\begin{itemize}
 %\item The limits of motors in acceleration
@@ -844,29 +866,29 @@ Finally, the model is discretized, with sampling time $T_s$:
 %
 %\color{black} 
 
-\subsection{Install ROS package from Git}
-\label{app:rosGit}
-crazyflie ROS doc \cite{Hoenig2015}\\
-hector\_quadrotor doc \cite{Meyer2012}
-
-
-\# make sure you have sourced the correct setup.bash file for your ROS distribution already
-
-\# go to workspace src space\\
-cd /path/to/your/catkin/src
-
-\# checkout the desired version of the descartes repository.\\
-git clone -b [branch] https://github.com/[..].git
-
-\# we need to make sure you have all dependencies installed.\\
-cd /path/to/your/catkin\\
-rosdep install --from-paths src --ignore-src --rosdistro kinetic
-
-\# now build\\
-catkin\_make
-
-\# source\\
-source devel/setup.bash
+%\subsection{Install ROS package from Git}
+%\label{app:rosGit}
+%crazyflie ROS doc \cite{Hoenig2015}\\
+%hector\_quadrotor doc \cite{Meyer2012}
+%
+%
+%\# make sure you have sourced the correct setup.bash file for your ROS distribution already
+%
+%\# go to workspace src space\\
+%cd /path/to/your/catkin/src
+%
+%\# checkout the desired version of the descartes repository.\\
+%git clone -b [branch] https://github.com/[..].git
+%
+%\# we need to make sure you have all dependencies installed.\\
+%cd /path/to/your/catkin\\
+%rosdep install --from-paths src --ignore-src --rosdistro kinetic
+%
+%\# now build\\
+%catkin\_make
+%
+%\# source\\
+%source devel/setup.bash
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
