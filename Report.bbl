@@ -9,6 +9,11 @@ S.~Suzuki, T.~Ishii, Y.~Aida, Y.~Fujisawa, K.~Iizuka, and T.~Kawamura,
 \bibitem{bitcraze}
 BitCraze, ``bitcraze.io,'' Oct. 2016.
 
+\bibitem{Hoenig2015}
+W.~Hoenig, C.~Milanes, L.~Scaria, T.~Phan, M.~Bolas, and N.~Ayanian, ``Mixed
+  reality for robotics,'' in {\em IEEE/RSJ Intl Conf. Intelligent Robots and
+  Systems}, pp.~5382--5387, Sept 2015.
+
 \bibitem{Diebel2006}
 J.~Diebel, ``Representing attitude: Euler angles, unit quaternions and rotation
   vectors,'' tech. rep., Stanford University.
@@ -35,6 +40,11 @@ C.~W. Reynolds, ``Flocks, herds, and schools: A distributed behavioral model,''
 G.~Beni, ``From swarm intelligence to swarm robotics,'' in {\em 2004 Workshop
   on Swarm Robotics, Proceedings of SAB}, pp.~1--9, 2004.
 
+\bibitem{Chen2005}
+Y.~Q. Chen and Z.~Wang, ``Formation control: a review and a new
+  consideration,'' in {\em 2005 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}, pp.~3181--3186, IEEE, 2005.
+
 \bibitem{Arkin1999}
 T.~Balch and R.~C. Arkin, ``Behavior-based formation control for multi-robot
   teams,'' {\em IEEE Transactions on Robotics and Automation}, vol.~14 (6),
@@ -45,10 +55,63 @@ J.~Fredslund and M.~J. Matari\'c, ``A general algorithm for robot formations
   using local sensing and minimal communication,'' {\em IEEE Transactions on
   Robotics and Automation}, vol.~18 (5), pp.~837--846, October 2002.
 
+\bibitem{Manikonda1999}
+V.~Manikonda, P.~Arambel, M.~Gopinathan, R.~Mehra, and F.~Hadaegh, ``A model
+  predictive control-based approach for spacecraft formation keeping and
+  attitude control,'' in {\em American Control Conference, 1999. Proceedings of
+  the 1999}, pp.~4258--4262, IEEE, 1999.
+
+\bibitem{Lim2009}
+
+
+\bibitem{Fukushima2013}
+H.~Fukushima, K.~Kon, and F.~Matsuno, ``Model predictive formation control
+  using branch-and-bound compatible with collision avoidance problems,'' {\em
+  IEEE Transactions on Robotics}, vol.~29 (5), pp.~1308--1317, 2013.
+
+\bibitem{Shin2009}
+J.~Shin and H.~J. Kim, ``Nonlinear model predictive formation flight,'' {\em
+  IEEE Transactions on Systems, Man, and Cybernetics-Part A: Systems and
+  Humans}, vol.~39 (5), pp.~1116--1125, 2009.
+
+\bibitem{Zhao2014}
+W.~Zhao and T.~H. Go, ``Quadcopter formation flight control combining mpc and
+  robust feedback linearization,'' {\em Journal of the Franklin Institute},
+  vol.~351 (3), pp.~1335--1355, 2014.
+
+\bibitem{Dunbar2002}
+W.~B. Dunbar and R.~M. Murray, ``Model predictive control of coordinated
+  multi-vehicle formations,'' in {\em Decision and Control, 2002, Proceedings
+  of the 41st IEEE Conference on}, vol.~4, pp.~4631--4636, IEEE, 2002.
+
+\bibitem{Chao2011}
+Z.~Chao, L.~Ming, Z.~Shao-Lei, and Z.~Wenguang, ``Collision-free uav formation
+  flight control based on nonlinear mpc,'' in {\em Electronics, Communications
+  and Control (ICECC), 2011 International Conference on}, pp.~1951--1956, IEEE,
+  2011.
+
+\bibitem{Kuriki2015}
+
+
+\bibitem{Chao2012}
+Z.~Chao, S.-L. Zhou, L.~Ming, and W.-G. Zhang, ``Uav formation flight based on
+  nonlinear model predictive control,'' {\em Mathematical Problems in
+  Engineering}, 2012.
+
+\bibitem{Wang2007}
+X.~Wang, V.~Yadav, and S.~Balakrishnan, ``Cooperative uav formation flying with
+  obstacle/collision avoidance,'' {\em IEEE Transactions on control systems
+  technology}, vol.~15 (4), pp.~672--679, 2007.
+
 \bibitem{Pugh2009}
 J.~Pugh, X.~Raemy, C.~Favre, R.~Falconi, and A.~Martinoli, ``A fast onboard
   relative positioning module for multirobot systems,'' {\em IEEE/ASME
   Transaction on Mechatronics}, vol.~14 (2), pp.~151--162, April 2009.
+
+\bibitem{Scattolini2009}
+R.~Scattolini, ``Architectures for distributed and hierarchical model
+  predictive control-a review,'' {\em Journal of Process Control}, vol.~19 (5),
+  pp.~723--731, 2009.
 
 \bibitem{Gowal2013}
 S.~Gowal, {\em A Framework for Graph-Based Distributed Rendezvous of
@@ -60,6 +123,11 @@ R.~Falconi, S.~Gowal, and A.~Martinoli, ``Graph based distributed control of
   non-holonomic vehicles endowed with local positioning information engaged in
   escorting missions,'' in {\em Robotics and Automation, 2010 IEEE
   International Conference on}, pp.~3207--3214, IEEE, 2010.
+
+\bibitem{Ren2004}
+W.~Ren and R.~Beard, ``Decentralized scheme for spacecraft formation flying via
+  the virtual structure approach,'' {\em Journal of Guidance, Control, and
+  Dynamics}, vol.~27 (1), pp.~73--82, 2004.
 
 \bibitem{Ren2005}
 W.~Ren, R.~W. Beard, and E.~M. Atkins, ``A survey of consensus problems in
@@ -76,6 +144,44 @@ F.~Borrelli, A.~Bemporad, and M.~Morari, {\em Predictive Control for linear and
   hybrid systems}.
 \newblock Cambridge University Press, 2015.
 
+\bibitem{Haverbeke2011}
+N.~Haverbeke, {\em Efficient Numerical Methods for Moving Horizon Estimation}.
+\newblock PhD thesis, Katholieke Universiteit Leuven, 2011.
+
+\bibitem{Pannocchia2007}
+G.~Pannocchia, J.~B. Rawlings, and S.~J. Wright, ``Fast, large-scale model
+  predictive control by partial enumeration,'' {\em Automatica}, vol.~43 (5),
+  pp.~852 -- 860, 2007.
+
+\bibitem{Wang2008}
+Y.~Wang and S.~Boyd, ``Fast model predictive control using online
+  optimization,'' {\em \{IFAC\} Proceedings Volumes}, vol.~41 (2),
+  pp.~6974--6979, 2008.
+
+\bibitem{Nocedal1999}
+J.~Nocedal and S.~J. Wright, {\em Numerical Optimization}.
+\newblock Springer, 1999.
+
+\bibitem{Zheng2015}
+T.~Zheng, {\em Advanced Model Predictive Control}.
+\newblock InTech, 2015.
+
+\bibitem{Richter2012}
+S.~Richter, C.~N. Jones, and M.~Morari, ``Computational complexity
+  certification for real-time mpc with input constraints based on the fast
+  gradient method,'' {\em IEEE Transactions on Automatic Control}, vol.~57 (6),
+  pp.~1391--1403, 2012.
+
+\bibitem{Ohtsuka2004}
+T.~Ohtsuka, ``A continuation/gmres method for fast computation of nonlinear
+  receding horizon control,'' {\em Automatica}, vol.~40 (4), pp.~563--574,
+  2004.
+
+\bibitem{Tenny2002}
+M.~J. Tenny, J.~B. Rawlings, and R.~Bindlish, ``Feasible real-time nonlinear
+  model predictive control,'' in {\em AICHE Symposium Series}, pp.~433--437,
+  Citeseer, 2002.
+
 \bibitem{Pontryagin1987}
 L.~Pontryagin, {\em Mathematical Theory of Optimal Processes}.
 \newblock CRC Press, 1987.
@@ -88,22 +194,21 @@ A.~D. Lewis, ``The maximum principle of pontryagin in control and optimal
 R.~M. Murray, ``Optimization-based control,'' tech. rep., California Institute
   of Technology.
 
-\bibitem{Ohtsuka2004}
-T.~Ohtsuka, ``A continuation/gmres method for fast computation of nonlinear
-  receding horizon control,'' {\em Automatica}, vol.~40 (4), pp.~563--574,
-  2004.
-
 \bibitem{Allgower1987}
 E.~L. Allgower and K.~Georg, {\em Introduction to numerical continuation
   methods}.
 \newblock Society for Industrial Mathematics, 1987.
 
 \bibitem{Kelley1995}
-C.~T. kelley, {\em Iterative methods for Linear and Nonlinear Equations}.
+C.~T. Kelley, {\em Iterative methods for Linear and Nonlinear Equations}.
 \newblock Society for Industrial and Applied Mathematics, 1995.
 
 \bibitem{Bjorck1996}
 A.~Bjõrck, {\em Numerical methods for least squares problems}.
 \newblock Society for Industrial and Applied Mathematics, 1996.
+
+\bibitem{bitcrazeWiki}
+BitCrazeWiki, ``https://wiki.bitcraze.io/misc:investigations:thrust,'' Oct.
+  2016.
 
 \end{thebibliography}

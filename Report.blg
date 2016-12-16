@@ -1,66 +1,96 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: Report.aux
 The style file: ieeetr.bst
 Database file #1: biblio.bib
-I was expecting a `,' or a `}'---line 73 of file biblio.bib
+I was expecting a `,' or a `}'---line 87 of file biblio.bib
  :    
  :    year= 2014,
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-I was expecting a `,' or a `}'---line 87 of file biblio.bib
+I was expecting a `,' or a `}'---line 101 of file biblio.bib
  : 
  : @article{Arkin1999,
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-I was expecting a `,' or a `}'---line 182 of file biblio.bib
+You're missing a field name---line 264 of file biblio.bib
+ : 
+ : %  author = {Johannes Meyer and Alexander Sendobry and Stefan Kohlbrecher and Uwe Klingauf and Oskar von Stryk},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 308 of file biblio.bib
+ :   
+ :   title={Formation control of leader following unmanned ground vehicles using nonlinear model predictive control},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 317 of file biblio.bib
+ :   
+ :   title={Formation control with collision avoidance for a multi-uav system using decentralized mpc and consensus-based control},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 347 of file biblio.bib
  : 
  : year = "2006"
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-I was expecting a `,' or a `}'---line 189 of file biblio.bib
+I was expecting a `,' or a `}'---line 354 of file biblio.bib
  : 
  : year = "2006"
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-I was expecting a `,' or a `}'---line 196 of file biblio.bib
+I was expecting a `,' or a `}'---line 361 of file biblio.bib
  : 
  : year = "2010"
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
 Warning--entry type for "bitcraze" isn't style-file defined
---line 206 of file biblio.bib
-You're missing a field name---line 232 of file biblio.bib
+--line 378 of file biblio.bib
+Warning--entry type for "bitcrazeWiki" isn't style-file defined
+--line 386 of file biblio.bib
+I was expecting a `,' or a `}'---line 391 of file biblio.bib
+ : url = {https://wiki.bitcraze.io/misc:investigations:thrust} 
+ :                                                             %https://wiki.bitcraze.io/misc:investigations:thrust
+I'm skipping whatever remains of this entry
+You're missing a field name---line 404 of file biblio.bib
  : 
  : %   author* = {Charalambos D. Aliprantis and Kim C. Border},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 240 of file biblio.bib
+You're missing a field name---line 412 of file biblio.bib
  : 
  : %   author={Maskin, Eric S.},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 251 of file biblio.bib
+You're missing a field name---line 423 of file biblio.bib
  : 
  : %   author={Aggarwal, Gagan and Hartline, Jason D.},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 261 of file biblio.bib
+You're missing a field name---line 433 of file biblio.bib
  : 
  : %  author       = {Peter Joslin},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 271 of file biblio.bib
+You're missing a field name---line 443 of file biblio.bib
  : 
  : %  title = {A theory of learning, experimentation, and equilibrium in games},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 278 of file biblio.bib
+You're missing a field name---line 450 of file biblio.bib
  : 
  : %author = {Professor Z. S. Spackovsky},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "Zhao201"
 Warning--there's a month but no year in Suzuki2014
 Warning--empty year in Diebel2006
 Warning--empty year in Reynolds1987
+Warning--empty author in Lim2009
+Warning--empty title in Lim2009
+Warning--empty booktitle in Lim2009
+Warning--empty year in Lim2009
+Warning--empty author in Kuriki2015
+Warning--empty title in Kuriki2015
+Warning--empty booktitle in Kuriki2015
+Warning--empty year in Kuriki2015
 Warning--empty year in Lewis2006
 Warning--empty year in Murray2010
-(There were 11 error messages)
+(There were 15 error messages)

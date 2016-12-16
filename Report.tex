@@ -25,6 +25,8 @@
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
+\usepackage[noadjust]{cite}
+\usepackage{filecontents}
 \usepackage[toc,page]{appendix} %appendices
 \usepackage{pdfpages} %include pdf
 
@@ -33,6 +35,9 @@
 
 % norm of a vector
 \newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+% cite with dash
+\renewcommand{\citedash}{--}
 
 \makeatletter
 \renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
@@ -127,18 +132,18 @@ $\ $
 \section*{Symbols and Abbreviations}
 \addcontentsline{toc}{section}{Symbols and Abbreviations}
 \subsection*{Symbols}
-\begin{table}[htbp]
+\begin{table}[h]
 \centering
 \begin{tabular}{p{8cm} p{8cm}}
 $v$ \dotfill & A scalar \\
 $\dot v$ \dotfill & First-order time derivative of scalar $v$ \\
 $ \ddot v$ \dotfill & Second-order time derivative scalar $v$\\
-$c_{\alpha}$ \dotfill & Cosinus of angle $\alpha$ \\
-$s_{\alpha}$ \dotfill & Sinus of angle $\alpha$ \\
+$c_{\alpha}$ \dotfill & Cosine of angle $\alpha$ \\
+$s_{\alpha}$ \dotfill & Sine of angle $\alpha$ \\
 $\boldsymbol{v}$ \dotfill & A vector in world frame \\
 $\boldsymbol{v}_B$ \dotfill & A vector in body frame \\
 $\norm{\boldsymbol{v}}$ \dotfill & $L^2$ norm of vector $\boldsymbol{v}$ \\
-$\boldsymbol{v}_{i:j}$ \dotfill & Sub vector from composant \emph{i} to \emph{j} of vector $\boldsymbol{v}$\\
+$\boldsymbol{v}_{i:j}$ \dotfill & Sub-vector of components  \emph{i} to \emph{j} of vector $\boldsymbol{v}$\\
 $V$ \dotfill & A matrix \\
 $V^T,\boldsymbol{v}^T$ \dotfill & Transpose of a matrix $V$ or a vector $\boldsymbol{v}$ \\
 $\phi$ \dotfill & Roll angle \\
@@ -156,15 +161,23 @@ $D$ \dotfill & D matrix \\
 \end{table}
 
 \subsection*{Abbreviations}
-\begin{table}[htbp]
+\begin{table}[h]
 \centering
 \begin{tabular}{p{8cm} p{8cm}}
 MPC \dotfill & Model Predictive Control \\
-ROS \dotfill & Robot Operating System \\
+NMPC \dotfill & Nonlinear Model Predictive Control \\
+IP \dotfill & Interior Point \\
+LP \dotfill & Linear Programming \\
+QP \dotfill & Quadratic Programming \\
+LQP \dotfill & Linearly Constrained Quadratic Programming \\
+SQP \dotfill & Sequential Quadratic Programming \\
 GMRES \dotfill & Generalized Minimum Residual method \\
 C/GMRES \dotfill & Continuation-GMRES method \\
+ROS \dotfill & Robot Operating System \\
 FPS \dotfill	 & Frame Per Second \\
-PWM \dotfill	 & Pulse Width Modulation \\
+PWM \dotfill & Pulse Width Modulation \\
+IMU \dotfill & Inertial Measurement Unit \\
+IR \dotfill & Infrared \\
 \end{tabular} 
 \end{table}
 
@@ -185,7 +198,7 @@ PWM \dotfill	 & Pulse Width Modulation \\
 \setcounter{page}{1}
 
 \section{Introduction}
-Build on \cite{Suzuki2014}
+Build as a continuation of \cite{Suzuki2014}
 
 \newpage
 \section{Setup}
@@ -195,13 +208,12 @@ Build on \cite{Suzuki2014}
 \caption{Overview of the complete setup}
 \label{fig:setup}
 \end{figure}
-The setup for this project is the same as the one used in \cite{Suzuki2014}. 
-\textcolor{red}{Frequencies}
+The drones are flying in a motion capture environment, composed of several IR cameras and an independent PC This is system is able to provide information on the position and the attitude of the robot at a rate of \textcolor{red}{245} \emph{Hz}. On another PC, one, or several, controllers run at a frequency of 100 \emph{Hz}. The output of the controller is a vector of command sent to four quadrotors also at 100 \emph{Hz} through two radio dongles. On each quadrotor a second loop of controllers run at  500 \emph{Hz}. The quadrotors can also send information to the controller PC at rates up to 100 \emph{Hz}.
 
 \subsection{Crazyflie 2.0 Quadrotor}
-The Crazyflie 2.0 (or, from now on, simply CrazyFly) is the second model of small quadrotors (or quadcopter or, simply, quad) developed by Swedish company, BitCraze \cite{bitcraze}. Its length of 92 millimeters from rotor to rotor and its weight of 27 grams make it a safe indoor flying machine. Its on-board battery allows flights up to 7 minutes. Flights that can be controlled thanks to an on-board long-range radio receiver and the appropriate emitter, the CrazyRadio PA or thanks to a Bluetooth LE (low-energy) connexion and a smartphone with the dedicated application. The quadrotor is also equipped with different sensors, including a IMU with a 3-axis high-performance MEMs gyros and accelerometers as well as a 3-axis magnetometer and a barometer.
+The Crazyflie 2.0 (or, to lighten notation, simply Crazyflie) is the second model of small quadrotor (or quadcopter or, simply, quad) developed by Swedish company, BitCraze \cite{bitcraze}. Its length of 92 millimeters from rotor to rotor and its weight of 27 grams make it a safe indoor flying machine. Moreover its on-board battery, allowing flights up to 7 minutes, can easily be replaced. Flights can be controlled either by an on-board long-range radio receiver and the appropriate emitter, the CrazyRadio PA, or thanks to a Bluetooth LE (low-energy) connexion and a smartphone with the dedicated application. The quadrotor is also equipped with multiple sensors, including a IMU with a 3-axis high-performance gyros and accelerometers , as well as a 3-axis magnetometer and a barometer.
 
-The Crazyflie 2.0 runs on an open source firmware, available on BitCraze website\cite{bitcraze}, which makes an ideal tool for experimentation on control, estimation, navigation or algorithm validation. The code can be adapted, modified or improved without restrictions. Moreover we can log firmware variables up to 100 Hz and export them to a CSV file, which can be decrypted by Matlab.
+The Crazyflie runs on an open source firmware, available on BitCraze website\cite{bitcraze}, making an ideal platform for academics researching and/or testing control, estimation, navigation or others algorithm. The code can easily be adapted, modified or improved without restrictions. A description of the core of the C control modules is given in section~\ref{sec:innerControl}. Note that the current firmware allows to log state and/or sensor data at a maximal rate of 100 \emph{Hz} and the Python client allows to export them to a CSV file, which can be read by Matlab, for example.
 
 \begin{figure}[htbp]
 \centering
@@ -212,24 +224,27 @@ The Crazyflie 2.0 runs on an open source firmware, available on BitCraze website
 \label{fig:cf}
 \end{figure}
 
-\subsubsection{Firmware}
-A description of the core control C modules is given in section~\ref{sec:innerControl}. Note that the current firmware allows to log state and/or sensor data at a maximal rate of 100 Hz. \textcolor{red}{subsection needed?}
+\subsection{OptiTrack Motion Capture System}
+The motion capture system consists, on one side, of eight Prime 13 cameras from OptiTrack and, on the other side, Motive:Tracker, a motion analysis software also from OptiTrack, capable of performing all steps from calibration to the motion capture itself, including also the exportation of the recorderd data.
+This system allow a frame rate of 240 FPS and capture the drone position and attitude, or orientation using infrared markers. The camera latency is said to be 4.2 \textit{ms} (i.e.: approximately 1 frame in terms of FPS). The resolution of the motion capture system was measured in different points of the experiment room and are given below.
 
 \subsection{Robot Operating System}
+Robot Operating System, or ROS, is an open source suite of tools, libraries and software to develop robotic applications. From drivers to the most complex algorithm, it can handle any task, and on a very wide variety of platforms, including the Crazyflie \cite{Hoenig2015}. A vast worldwide community of developers has provided numerous modules, accessible free-of-charge, thus the development of educational, professional or research application is eased and fastened.
 
+With ROS, each executable is called a node and communicate with other nodes through topics using a publisher/subscriber model. Communications is also implemented through a service/client model in which a request is send before receiving data. Code can either be written in C/C++ or Python and nodes does not need to run on the same platform to communicate with each others.
 
-\subsection{OptiTrack Motion Capture System}
-The motion capture system consists, on one side, of eight Prime 13 cameras from OptiTrack and, on the other side, Motive:Tracker, a motion analysis software also from OptiTrack, capable of performing all steps from calibration to the motion capture itself.
-This system allow a frame rate of 240 FPS and capture the drone position and attitude, or orientation. \textcolor{red}{Specs Camera: buffer size and length}.
+In the presented setup, the motion capture in his entirety is a node \textcolor{red}{with or without the state estimator?}, each of the four communication link is a node and depending on the implementation, there is one or four nodes for the controllers.
+
 
 \newpage
-\section{Quadrotor dynamics}
-A quadrotor can fly in two different configurations, they are commonly called $+$ (plus) and $\times$ (cross). In a $+$ configuration. The X- and the Y-axes are aligned with two perpendicular arms, the control is easier because only two propellers require to have their speed changed to move along a principal axis. On the other side, a $\times$ configuration require all the propellers to change their speed. However the variation of speed per motor is important. In the following section, all dynamics equations are derived for a $+$ configuration. To fly in $\times$, minor changes have to be performed.
+\section{Quadrotor Dynamics}
+A quadrotor can fly in two different configurations, they are commonly called $+$ (plus) and $\times$ (cross). In a $+$ configuration. The X- and the Y-axes are aligned with two perpendicular arms, the control is easier because only two propellers require to have their speed changed to move along one of the main axis. On the other side, a $\times$ configuration require all the propellers to change their speed. However the variation of speed per motor is smaller. In the following section, all dynamics equations are derived for a $+$ configuration. To fly in $\times$, minor changes have to be performed.
 
-\subsection{State representation}
-To derive the equation of dynamics of a quadrotor, two reference frames are required, a world one (with index W or without index in the following equations) and the body one (always with index B).\\
- The body frame has its origin $O_B$ fixed on the center of mass of the quadcopter, the X-axis pointing towards the motor M1 and the Y-axis pointing towards the motor M2, in case of $+$ configuration. Or, in $\times$ configuration, with the X-axis pointing between the motors M1 and M4 and the Y-axis pointing between the motors M1 and M2. Therefore, in both cases, the Z-axis is pointing downwards when the quadcopter lies on the floor (c.f.: figure~\ref{fig:frames}). \\
-And the world frame origin is fixed in the center of the experiment room and its X- and Y- axis are parallel to floor. Moreover, they are oriented such that the Z-axis is pointing downwards as well. 
+\subsection{State Representation}
+To derive the equation of dynamics of a quadrotor, two reference frames are required, a world one (with index W or without index in the following equations) and the body one (always with index B).
+
+ The body frame has its origin $O_B$ at the center of mass of the quadcopter, the X-axis is pointing towards the motor M1 and the Y-axis is pointing towards the motor M2, in case of $+$ configuration. In $\times$ configuration, the X-axis is pointing between the motors M1 and M4 and the Y-axis is pointing between the motors M1 and M2. Therefore, in both cases, the Z-axis is pointing downwards when the quadcopter lies on the floor (c.f.: figure~\ref{fig:frames}). 
+The world frame origin is orientated such that its origin $O$ is in the center of the experiment room and its XY-plan corresponds to the floor. Furthermore, the X- and Y-axes are oriented in order to have the Z-axis is pointing downwards as well. 
 
 \begin{figure}[htbp]
 \centering
@@ -240,29 +255,23 @@ And the world frame origin is fixed in the center of the experiment room and its
 \label{fig:frames}
 \end{figure}
   
-Dynamics can be explained using a 12-variables state description of the Crazyflie with the following state vector: the position of $O_B$ with respect to the world-frame, the speed of $O_B$ with respect to the world-frame and  the attitude angles (Euler angles) and the angular speed in the body frame:
+Dynamics are derived using a 12-variables state description of the Crazyflie with the following state vector: the position of $O_B$ with respect to the world-frame, the speed of $O_B$ with respect to the world-frame and  the attitude angles (Euler angles) and the angular speed along the body axes:
  \[\boldsymbol{x} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \phi \ \theta \ \psi \ \omega_{xB} \ \omega_{yB} \ \omega_{zB}]^T \]
 
 When the Crazyflie is at the origin of the world frame, without flying and the axes of both frames are aligned, the state is:
  \[\boldsymbol{x} =  [0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 ]^T\]
  
-This is a simple model considering translations and rotations along three axes. Some more advanced models can also include also the accelerometers biases, the gyroscopes drift, or noise on the estimates, making easily a 20-or-more-states description of a drone. But this is behind the scope of this project.
+This is a simple model considering translations and rotations along three axes. Some more advanced models can also include also the accelerometers biases, the gyroscopes drift, disturbances, making easily a 20-or-more-states description of a drone. But this is behind the scope of this project.
 
 \subsubsection{Attitude Representation}
-The attitude can be defined as the relative orientation of the body-frame with reference to the world frame and, nowadays, several representations of the attitude  an object in space \cite{Diebel2006}. Among these representations, Euler angles, rotation matrices and unit quaternions are the most used. To derive the dynamics equations, we require the first two and the last one is implemented in the firmware for attitude estimation.
+The attitude can be defined as the relative orientation of the body-frame with reference to the world frame and, nowadays, it can be expressed in various ways \cite{Diebel2006}. Among these representations, Euler angles, rotation matrices and unit quaternions are the most used. In order to derive the dynamics equations, the first two are required. Note, that the last one, unit quaternions, is implemented in the firmware for attitude estimation.
 
-As stated above, the state of the drone includes its attitude in terms of Euler angles. The angles are the values of three ordered rotations around three axes in space and the sequence of the three axes around which, each rotation is accomplished, defines the sub-representation.  Officially, there is 12 valid sub-representations but two are considered as the main ones: the $(3,1,3)$ sequence and the $(1,2,3)$ sequence.
+As stated in the previous subsection, the state of the drone is partially composed by its attitude expressed in Euler angles. These angles are the values of three ordered rotations around three main axes in space and the sequence of the three axes around which, each rotation is performed, defines the sub-representation.  Officially, there is 12 valid sub-representations but two are considered as the main ones: the $(3,1,3)$ sequence and the $(1,2,3)$ sequence. The first one, also known as the \emph{x-convention}, is often used in the study of spinning objects. The angles are called, in order, \emph{spin}, \emph{nutation} and \emph{precession}. The second one, commonly found in aerospace engineering, computer graphics and this project, is often also called \emph{Cardan angles}, \emph{Tait-Bryan angles} or \emph{nautical angles}. In this sub-representation, angles are called as follow \emph{bank}, \emph{attitude}, \emph{heading} or \emph{roll}, \emph{pitch}, \emph{yaw}. The latter is preferred. 
 
-The first one, also known as the \emph{x-convention}, is often used in the study of spinning objects. The angles are called, in order, \emph{spin}, \emph{nutation} and \emph{precession}.
-
-The second one, commonly found in aerospace engineering and computer graphics, is also often called \emph{Cardan angles}, \emph{Tait-Bryan angles} or \emph{nautical angles}. In this sub-representation, angles are called often as follow \emph{bank}, \emph{attitude}, \emph{heading} or \emph{roll}, \emph{pitch}, \emph{yaw}. 
-
-From now on, referring to Euler angles refers to the latter sub-representation. Moreover, the roll-pitch-yaw convention for angles name is preferred.
-
-Euler angles are defined as a sequence of three rotation to map the body-frame on the world-frame or inversely. For this purpose, first a rotation around the X-axis gives the roll angle $\phi$ , then a rotation around the Y-axis gives the pitch angle $\theta$ and finally a rotation around the the Z-axis gives the yaw angle $\psi$. The order $(X,Y,Z)$ is what gives this sub-representation its name $(1,2,3)$. On the figure~\ref{fig:attitude}, the roll angle corresponds to the rotation between the x''y''z'' and x'y'z' frames, the pitch x'''y'''z''' and x''y''z'' and the yaw xyz and x'''y'''z'''.
+First the angle of rotation around the X-axis in the body frame defines the roll angle $\phi$ , then the rotation around the Y-axis defines the pitch angle $\theta$ and finally the rotation around the the Z-axis defines the yaw angle $\psi$. When applied in this order, rotations map a vector in the body-frame to the world-frame. The order of the axes $(X,Y,Z)$ is what gives this sub-representation its name $(1,2,3)$. On the figure~\ref{fig:attitude}, the roll angle corresponds to the rotation between the x''y''z'' and x'y'z' frames, the pitch x'''y'''z''' and x''y''z'' and the yaw xyz and x'''y'''z'''.
 \[\boldsymbol{q} =  \begin{bmatrix} \phi \\ \theta \\ \psi \end{bmatrix}\]
 
-Although, Euler angles are easy to visualize, they suffer from singularities. In the case of a pitch angle $\theta=90\degree$, variation in yaw angle are indistinguishable from variation in roll angle. However, these are extreme cases that are never met in the scope of this project.
+Although, Euler angles are easy to visualize, they are not suitable for fast computation of 3D-rotations. Likewise, they suffer from singularities. For example, In the case of a pitch angle $\theta=90\degree$, variation in yaw angle are indistinguishable from variation in roll angle. Nonetheless, these are extreme cases that are never met in the scope of this project.
 
 \begin{figure}[htbp]
 \centering
@@ -273,36 +282,32 @@ Although, Euler angles are easy to visualize, they suffer from singularities. In
 \label{fig:attitude}
 \end{figure}
 
-The second convention for representing attitude is a rotation matrix. A rotation matrix maps a vector from the body frame to the world frame (or reversely) in a length-preserving manner. The reverse operation can be easily computed, as the all the matrix rotations are part of the special orthogonal group, their inverse is also their transpose.
+Another possibility to represent attitude is with a rotation matrix. This matrix maps is very useful to compute the mapping between the body frame and to the world frame. The reverse operation can be easily computed, as the all the matrix rotations are part of the special orthogonal group $SO(3)$, their inverse is also their transpose.
 \[ \boldsymbol{v_B} = R_{BW} \boldsymbol{v_W}\]
 \[ \boldsymbol{v_W} = R_{WB} \boldsymbol{v_B}\]
 \[ R_{BW} = R_{WB}^{-1} = R_{BW}^T \]
 
-Each rotation in a 3-dimensional space can be decomposed in three rotations around the three main axes:
-\[R_{Ox}(\alpha)  = \begin{bmatrix} 1 & 0 & 0 \\ 0 & \cos{\alpha} & -\sin{\alpha} \\ 0 & \sin{\alpha} & \cos{\alpha}  \end{bmatrix} R_{Oy}(\beta)  = \begin{bmatrix} \cos{\beta} & 0 & \sin{\beta} \\ 0 & 1 & 0 \\ -\sin{\beta} & 0 & \cos{\beta}  \end{bmatrix} R_{Oz}(\gamma)  = \begin{bmatrix} \cos{\gamma} & -\sin{\gamma} & 0 \\ \sin{\gamma} & \cos{\gamma} & 0 \\ 0 & 0 & 1  \end{bmatrix} \]
+Each rotation in the 3-dimensional space can be decomposed in three rotations around the three main axes:
+\[R_{Ox}(\alpha)  = \begin{bmatrix} 1 & 0 & 0 \\ 0 & \cos{\alpha} & \sin{\alpha} \\ 0 & -\sin{\alpha} & \cos{\alpha}  \end{bmatrix} R_{Oy}(\beta)  = \begin{bmatrix} \cos{\beta} & 0 & -\sin{\beta} \\ 0 & 1 & 0 \\ \sin{\beta} & 0 & \cos{\beta}  \end{bmatrix} R_{Oz}(\gamma)  = \begin{bmatrix} \cos{\gamma} & \sin{\gamma} & 0 \\ -\sin{\gamma} & \cos{\gamma} & 0 \\ 0 & 0 & 1  \end{bmatrix} \]
 
-Consecutive rotations can be easily combined by left-multiplying the matrices. Although its simplicity, the representation uses requires 9-states variable. Therefore, Euler angles are kept for representation and a transition to rotation matrix is performed for computation purposes.
-
-The mapping between Euler angles and rotation matrix, consisting of the multiplication of the three individual rotation matrices in the right order, and is computed as follow ($c_\alpha$ corresponds to $\cos{\alpha}$ and $s_\alpha$ to $\sin{\alpha}$):
+Moreover, consecutive rotations can be easily combined by left-multiplying the matrices. Despite its simplicity, this representation requires nine variable. Therefore, Euler angles are preferred for representation and an easy conversion to rotation matrix is performed for computation purposes. The mapping between Euler angles and rotation matrix, consisting of the multiplication of the three individual rotation matrices in the right order, and is computed as follow ($c_\alpha$ corresponds to $\cos{\alpha}$ and $s_\alpha$ to $\sin{\alpha}$):
 \[R_{BW}(\phi, \theta, \psi)= R_{Ox}(\phi) R_{Oy}(\theta) R_{Oz}(\psi)  = 
 \begin{bmatrix}  c_\theta c_\psi  & c_\theta s_\psi  & -s_\theta  \\ s_\phi s_\theta c_\psi -c_\phi s_\psi  & s_\phi s_\theta s_\psi  + c_\phi c_\psi  & c_\theta s_\phi  \\ c_\phi s_\theta c_\psi +s_\phi s_\psi  & c_\phi s_\theta s_\psi -s_\phi c_\psi  & c_\theta c_\phi  \end{bmatrix} \]
 
 Finally the last convention is the unit quaternion. The unit quaternion is a 4-dimensional generalization of complex numbers whose norm $\norm{\boldsymbol{q}} = 1$.
 \[ \boldsymbol{q} =  q_0 + q_1 \cdot i + q_2 \cdot j + q_3 \cdot k = \begin{bmatrix} q_0 \\ q_1 \\ q_2 \\ q_3 \end{bmatrix} = \begin{bmatrix} q_0 \\ q_{1:3} \end{bmatrix} \]
 
-They profit from most of the tools of complex algebra such:
+Although they benefit from most of the tools of complex algebra such as:
 \[ \boldsymbol{\bar q} = \begin{bmatrix} q_0 \\ -\boldsymbol{q}_{1:3} \end{bmatrix},  \quad \norm{\boldsymbol{q}} = \sqrt{q_0^2 + q_2^2 + q_3^2 + q_4^2}, \quad \boldsymbol{q}^{-1} = \frac{\boldsymbol{\bar q}}{ \norm{\boldsymbol{q}}} \]
-
-However, multiplication is non-commutative:
+The multiplication is now non-commutative:
 \[\boldsymbol{q} \cdot \boldsymbol{p} = \begin{bmatrix} q_0p_0 - \boldsymbol{q}^T_{1:3}\boldsymbol{p}_{1:3} \\ q_0\boldsymbol{p}_{1:3} + p_0\boldsymbol{q}_{1:3} - \boldsymbol{q}_{1:3} \times \boldsymbol{p}_{1:3} \end{bmatrix} \]
-
-Equivalently, a vector in the world frame can be mapped in the body frame:
+Equivalently, as with rotation matrices, a vector in the world frame can be mapped in the body frame:
 \[ \begin{bmatrix} 0 \\ \boldsymbol{v_B} \end{bmatrix}  = \boldsymbol{q} \cdot \begin{bmatrix} 0 \\ \boldsymbol{v_W} \end{bmatrix} \cdot \boldsymbol{q}^{-1} \]
 
-The attitude estimation on the CrazyFlie is computed using quaternions and then mapped into Euler angles for control. A detailed explanation can be found in appendix ~\ref{app:att_estim}.
+The attitude estimation algorithm on the Crazyflie uses quaternions, that are then mapped to Euler angles for control. A detailed explanation of the algorithm can be found in appendix ~\ref{app:att_estim}.
 
-The weakness of unit quaternions is, especially in optimization problem like MPC, enforcing the quadratic constraints on the norm. Although several methods exist to solve this problem, none of them is satisfying enough.
-\subsection{Newton-Euler equations}
+The weakness of unit quaternions is, especially in optimization problem like MPC, enforcing the quadratic constraints on the norm. Although several methods exist to ease this problem, unit quaternions still requires an additional variable than Euler angles and lack of meaning for the human mind.
+\subsection{Newton-Euler Rquations}
 \label{sec:dynamicsEquations}
 
 \begin{figure}[htbp]
@@ -312,11 +317,11 @@ The weakness of unit quaternions is, especially in optimization problem like MPC
 \label{fig:forceMoment}
 \end{figure}
 
-In a quadcopter, each propeller generates a force $F_i$ and a torque $M_i$ proportional to the square of its spinning speed  (c.f.: figure~\ref{fig:forceMoment}). The vector $\boldsymbol{u}$ is the vector of the squared spinning rates.
-\[ \boldsymbol{u} = [\omega^2_1 \  \omega^2_2 \  \omega^2_3 \  \omega^2_4]^T \]
-\[F_i =  K_f  u_i \ \ \ M_i = K_f  u_i  ,\  i = 1,2,3,4\]
+In a quadcopter, each propeller generates a force $F_i$ and a torque $M_i$ proportional to the square of its spinning speed  (c.f.: figure~\ref{fig:forceMoment}). The vector $\boldsymbol{w}$ is the vector of the squared spinning rates, (sometime confusingly called thrust.
+\[ \boldsymbol{w} = [\omega^2_1 \  \omega^2_2 \  \omega^2_3 \  \omega^2_4]^T \]
+\[F_i =  K_f  w_i \ \ \ M_i = K_t  w_i  ,\  i = 1,2,3,4\]
 
-In a ''\emph{plus}'' configuration, the thrust force (or simply thrust) $F_{z}$ and the torques $M_{x}, M_{y}, M_{z}$  applied to the center of mass of the quadrotor, depends on $\boldsymbol{u}$:
+In a ''\emph{plus}'' configuration, the thrust force (or simply thrust) $F_{z}$ and the torques $M_{x}, M_{y}, M_{z}$  applied to the center of mass of the quadrotor, depends on $\boldsymbol{w}$ and is computed as follow:
 \[  
 \begin{bmatrix}
 F_{z}\\ 
@@ -326,86 +331,133 @@ M_{z}
  \end{bmatrix}_B
 =
 \begin{bmatrix}
-K_f & K_f & K_f & K_f\\
+-K_f & -K_f & -K_f & -K_f\\
 0 & -K_f \cdot L & 0 & K_f \cdot L\\
 K_f \cdot L & 0 & -K_f \cdot L & 0\\
 -K_t & K_t & -K_t & K_t
 \end{bmatrix}
-\textbf{u} = K\textbf{u}
+\textbf{w} = K\textbf{w}
 \]
 Where $L$ is the distance from the axis of rotation of a motor and $O_b$.
 
-The dynamics of a quadrotor can now be derived using Newton-Euler equations:
+The dynamics equations can now be derived using Newton-Euler equations:
 \[ m\boldsymbol{\ddot r} =  \sum_i \boldsymbol{F_i} = \boldsymbol{G} + \boldsymbol{T} + \boldsymbol{D} = \begin{bmatrix}  0\\ 0\\ mg \end{bmatrix} + R_{BW}^T(\phi, \theta, \psi) \begin{bmatrix}  0\\ 0\\ -F_z \end{bmatrix}_B + \begin{bmatrix}  D_x\\ Dy\\ D_z \end{bmatrix}\]
 \[ I\boldsymbol{\dot \omega_B} =  \sum \boldsymbol{M_B} - \boldsymbol{\omega_B}  \times (I \boldsymbol{\omega_B} )=  
 \begin{bmatrix}  M_{x}\\ M_{y}\\ M_{z} \end{bmatrix}_B - \boldsymbol{\omega_B}  \times (I \boldsymbol{\omega_B}) \]
 Where $\boldsymbol{r}$ is the position of $O_B$, expressed in the world frame,  $\boldsymbol{G}$ is the gravity force, $\boldsymbol{T}$ is the thrust force generated by the propellers, $\boldsymbol{D}$ is the drag force, $I$  is the inertia matrix of the quadcopter and $\boldsymbol{\omega_B}$ is the angular speed in the body frame.
 
-To fully define the quadrotor, the attitude rates to body rate matrix $W(\phi,\theta,\psi)$ is still required: %Note for me: In reference document, the matrix is [E']^{-1}
+In order to link the attitude angle rates to body rate, the matrix $W(\phi,\theta,\psi)$ is still required: %Note for me: In reference document, the matrix is [E']^{-1}
 \[ W(\phi,\theta,\psi) = \begin{bmatrix}  1 & \sin\phi \tan\theta  & \cos\phi \tan\theta \\ 0 & \cos\phi  &-\sin\phi  \\ 0 & \frac{\sin\phi }{\cos\theta } & \frac{\cos\phi }{\cos\theta } \end{bmatrix}\]
 \[ \boldsymbol{ \dot q} = \begin{bmatrix} \dot \phi \\ \dot \theta\\ \dot \psi \end{bmatrix} = W(\phi,\theta,\psi) \boldsymbol{\omega_B}\]
 
-\subsection{Full model}
- \[\boldsymbol{x} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \phi \ \theta \ \psi \ \omega_{xB} \ \omega_{yB} \ \omega_{zB}]^T \]
- \[ \boldsymbol{u} = [\omega^2_1 \  \omega^2_2 \  \omega^2_3 \  \omega^2_4]^T \]
+\subsection{Model}
+ \[ \boldsymbol{x} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \phi \ \theta \ \psi \ \omega_{xB} \ \omega_{yB} \ \omega_{zB}]^T \]
+ \[ \boldsymbol{w} = [\omega^2_1 \  \omega^2_2 \  \omega^2_3 \  \omega^2_4]^T \]
 \[\left\{ \begin{matrix}[l]
 \begin{bmatrix} \dot x_{1}\\\dot x_{2} \\ \dot x_{3} \end{bmatrix} = \begin{bmatrix}  x_{4}\\ x_{5} \\ x_{6} \end{bmatrix}\\
-\begin{bmatrix} \dot x_{4}\\\dot x_{5} \\ \dot x_{5} \end{bmatrix} = \frac{1}{m}(\begin{bmatrix}  0\\ 0\\ -mg \end{bmatrix} + R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_{z}(\boldsymbol{u}) \end{bmatrix}_B + (\begin{bmatrix}  D_x\\ D_y\\ D_z \end{bmatrix})\\
+\begin{bmatrix} \dot x_{4}\\\dot x_{5} \\ \dot x_{5} \end{bmatrix} = \frac{1}{m}(\begin{bmatrix}  0\\ 0\\ mg \end{bmatrix} + R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_{z}(\boldsymbol{w}) \end{bmatrix}_B + \begin{bmatrix}  D_x\\ D_y\\ D_z \end{bmatrix})\\
 \begin{bmatrix} \dot x_{7}\\\dot x_{8} \\ \dot x_{9} \end{bmatrix} = W(x_7, x_8, x_9)\begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix} \\
-\begin{bmatrix} \dot x_{10}\\\dot x_{11} \\ \dot x_{12} \end{bmatrix} = I^{-1}(\begin{bmatrix}  M_{x}(\boldsymbol{u})\\ M_{y}(\boldsymbol{u})\\ M_{z}(\boldsymbol{u}) \end{bmatrix}_B - \begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix} \times (I\begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix}))\\
+\begin{bmatrix} \dot x_{10}\\\dot x_{11} \\ \dot x_{12} \end{bmatrix} = I^{-1}(\begin{bmatrix}  M_{x}(\boldsymbol{w})\\ M_{y}(\boldsymbol{w})\\ M_{z}(\boldsymbol{w}) \end{bmatrix}_B - \begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix} \times (I\begin{bmatrix}  x_{10}\\ x_{11} \\ x_{12} \end{bmatrix}))\\
 \end{matrix} \right.\]
-
-
-\textcolor{red}{Thrust to RPM function}
-
-\textcolor{red}{Identification I, m, rpm/pwm to thrust/torque}
 
 \newpage
 \section{High-Level Control - Formation Control}
-Collective movement is widely observed phenomenon in the wild and civilized worlds. In animal societies, the phenomenon, called flocking, herding, schooling or swarming, depending on the species, happens for all size of groups, for all size of individuals, homo- or heterogeneous groups and sometimes can be circumstance-driven, like migrations. A flock, generally used to describe any of the denomination introduced before, is characterized by directed movement and quick reactions to obstacle at the global scale, even though there is no leader. Among the benefits of group motion, dilution of risk, improved exploration, foraging and sensing capabilities, energy saving are the most interesting. Of course costs arise also from group formation like the diminution of resource per capita but these concern mostly living entities \cite{Krause2002, Parrish1997}.
+Collective movement is a widely observed phenomenon in both natural and civilized worlds. In animal societies, the phenomenon, called flocking, herding, schooling or swarming, depending on the species, happens for all size of groups, from tiny insects to huge mammals, in homo- or heterogeneous groups and sometimes can be circumstance-driven, like migrations. A flock, generally used to describe any of the denomination introduced before, is characterized by directed movement and quick reactions to obstacle at the global scale, even though there is apparent leading mechanism. Among the benefits of group motion, dilution of risk, improved exploration, foraging and sensing capabilities, energy saving are the most interesting. Of course costs arise also from group formation like the diminution of resource per capita but these concern mostly living entities \cite{Krause2002, Parrish1997}. Flocks principle have been successfully implemented in robotics and are a excellent example of swarm intelligence, in which global structure appears solely through numerous local interactions \cite{Bonabeau1999, Reynolds1987}. Indeed, computing trajectories for every robots, taking into account other robots, obstacles and some other constraints can easily on become intractable, even for the best computers, when the number of robots increase. 
 
-Flocks of robots are a perfect example of swarm or distributed intelligence, in which global structure appears solely through numerous local interactions \cite{Bonabeau1999, Reynolds1987}. Indeed, computing trajectories for every robots, taking into account other robots, obstacles and some other constraints can soon become intractable when the number of robots increase. For collective motion in robotics, however, another kind of collective movement exists, motion in formation. Compared to flocking, where the relative location and the neighborhood of an individual is in permanent evolution, motion in formation assigns a specific position to each member and its neighborhood becomes static. Despite these constraints, this collective motion can also be implemented using a distributed control architecture, knowing that each individual needs to be assign a specific position in the formation. While flocking benefits more from robustness, flexibility and scalability, formations are more efficient, require less individuals for an equivalent coverage and are more intuitively commanded. Of course, the ideal group configuration depends on the application, the environment and the type of robot. Concerning this work, it will focus on motion in formation.\\
-In a more global point of view, swarm robotics, compared to a single robot achieving the identical task, require simpler units and increase reliability \cite{Beni2004}. The former implies simpler hardware, software, as well as sensing, acting and communicating capabilities. But, often in distributed intelligence, the cost of robustness is efficiency, in terms of time, total energy required or eventually another metrics. Or, restated, swarm robotics needs to carefully balance exploration et exploitation behaviors.
+However, another kind of collective movement exists, motion in formation. Compared to flocking, where the relative location and the neighborhood of an individual is in permanent evolution, motion in formation assigns a specific position to each member and its neighborhood becomes static (except upon failure of a member of the group or reconfiguration). In natural societies, V-shape flights of birds is a good example. Despite the precise positioning of every members, formation control can also be implemented following swarm intelligence principles. While flocking benefits more from robustness, flexibility and scalability, formations are more efficient, require less individuals for an equivalent coverage and are more intuitively commanded. Of course, the ideal group configuration depends on the application, the environment and the type and the number of robot. In this work, solely due to the number of available robots, the study of motion in formation will exclusively be studied.
 
-\subsection{Taxonomy}
-When studying formations, the taxonomy defined in \cite{Arkin1999} about position determination serves as reference. In each possibility, each robot compute its place in the formation with respect to a given physical or mathematical landmark.
+In a more global perspective, a swarm of robots, compared to a single robot achieving a similar task, usually require simpler units, increase reliability \cite{Beni2004} and allows for reconfigurability and more flexibility. Therefore swarm members result in simpler hardware, software, as well as sensing, acting and communicating capabilities. But, on the other side, the cost of robustness is efficiency, in terms of time, total energy required or eventually another metrics. In summary, swarm robotics is a careful balance between exploration et exploitation behaviors, whose application will emphasize one or the other.
+
+\subsection{Formation Taxonomy}
+When studying formations, they can be classified in two categories: \emph{virtual structure} and {leader-follower} \cite{Chen2005, Arkin1999}. Each of them can subsequently be divided in several sub-categories.
 \begin{itemize}
-\item \emph{Unit-centered formation}. The unit center of a formation corresponds to its center of mass. While, this position determination configuration seems to achieve the best results, it can often be inadequate given the application. Moreover in case of fully distributed control, it requires a global knowledge of the position of every member of the formation, which can be implemented through communication channels or sufficiently performing sensing capabilities.
-\item \emph{Leader-referenced formation}. The reference is one of the member of the group, the leader. This configuration achieves also good results and is ideal when the leader is human-controlled. However, it is constantly necessary to know, or being able to measure, the (relative) position of the leader, which can require either a long range-communication, or sensing module, depending on the application and the localization method.
-\item \emph{Neighbor-referenced formation}. In this case, there is no common reference. Each member of the formation determines its position from the position of a unique other member. Although it is more demanding in terms of emitters than a leader referenced formation, the range of communication can be considerably reduced. In case of relative localization without communication, this configuration has the lowest requirements in term of range. Note also that mixed leader-neighbor referenced formations can exist \cite{Mataric2002}. This is suitable when one leader is human-controlled and the individuals have low-range communication capabilities.
+\item \emph{Leader-follower:} In leader-follower, each follower robot is assigned one or several leaders and use them as reference to define its position in the formation. The main sub-category is \emph{leader-referenced} formations (c.f.: figure~\ref{fig:leader}). In this case, the reference is a unique member for the whole the group, called the leader. When there is several leaders, the formation is also often referred to as \emph{neighbor-referenced formation}  (c.f.: figure~\ref{fig:neighbor}). Additionally, it is also possible to define a formation leader, which has no leader in the formation \cite{Mataric2002} (c.f.: figure~\ref{fig:neighborLeader}).
+\item \emph{Virtual structure:} In a virtual structure formation, the reference point(s) is(are) not linked to any physical member of the group. \emph{Unit-centered formation} \cite{Arkin1999} (c.f.: figure~\ref{fig:unitCenter}), is a special sub-category in which the reference corresponds to the center of mass of the formation. In \emph{purely virtual structure} (c.f.: figure~\ref{fig:virtual}) formations are based on \emph{a-priori} knowledge of the trajectory to follow and are characterized by no inter-robot interactions. 
+\end{itemize}
+
+Every configuration has its strengths and weaknesses. In \cite{Arkin1999}, it is stated that unit-centered and leader-referenced formations perform better than neighbor-referenced ones. Furthermore, a lot of experimentation relies on leader-referenced \cite{Manikonda1999,Lim2009,Fukushima2013,Shin2009, Zhao2014} or virtual structure \cite{Dunbar2002,Chao2011,Kuriki2015,Chao2012} (not necessarily unit-centered) formations. Nevertheless, neighbor-referenced is still sometimes considered \cite{Wang2007}.
+
+From a more objective point of view, leader-referenced formations can easily include a human-controlled member in the group to drive the formation. But, on the other hand, the failure of the leader is  almost always fatal in case of leader-referenced and, in neighbor-referenced, the member at the end of consecutive leader-follower pairs is subject to the cumulative uncertainty of its predecessors. However, it is the configuration possibly requiring the smallest sensing/communication range if the leaders are chosen efficiently.
+On the other side, virtual structure formations tends to act more tightly as a whole than a sum of individuals, which make it less performing for obstacle-avoidance applications but also achieving stronger formation. It is easy to drive purely virtual structure formations with a pre-computed trajectory that is simply shifted in space for every member but driving a formation without feedback can lead to huge errors and, depending on the measure metrics, not achieving formation at all \cite{Pugh2009}. In unit-centered, the feedback comes from the center of mass of the formation computation at every time step but driving the formation to a desired reference can also be tricky. Moreover, communications or sensing capabilities required can be high as every member requires knowledge of the state of every other member in the formation, which make this formation the worst in terms of amount of data required per member. Nevertheless, it can be seen as a positive trait if reconfiguration is required.
+
+Considering carefully all these points, it has been decided to focus on \emph{leader-referenced} formations for both centralized and decentralized control and also \emph{neighbor-referenced} formations for decentralized control.
+
+Note that the the shape of the formation could also be discussed in depths. Nonetheless, it felt like a highly application-dependent feature. Therefore the choice of a diamond shape is made without any particular reason. Below, list of few typical applications for each shape defined in \cite{Arkin1999} is provided:
+\begin{itemize}
+\item \emph{Line} : Coverage is maximized. Then ideal for search and rescue, cleaning or lawn-mowing, surveillance and patrolling and exploration.
+\item \emph{Column} : Minimal width, high redundance. Military formation
+\item \emph{Diamond} or \emph{square} : Tradeoff coverage-redundance. Well-suited for aerial-mapping, distributed sensing or monitoring
+\item \emph{Wedge} : Military formation.
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
-\subfloat[The unit-centered formation]{\includegraphics[width=.3\textwidth]{Images/graphUnitCenter}\label{fig:unitCenter}}
+\subfloat[A leader-referenced formation]{\includegraphics[width=.4\textwidth]{Images/graphLeader}\label{fig:leader}}
+\hspace{10cm}
+\subfloat[A neighbor-referenced formation]{\includegraphics[width=.4\textwidth]{Images/graphNeighbor}\label{fig:neighbor}}
 \hspace{0.2cm}
-\subfloat[The leader-referenced formation]{\includegraphics[width=.3\textwidth]{Images/graphLeader}\label{fig:graphLeader}}
+\subfloat[A neighbor-referenced formation with formation leader]{\includegraphics[width=.4\textwidth]{Images/graphNeighbor2}\label{fig:neighborLeader}}
 \hspace{0.2cm}
-\subfloat[A neighbor referenced formation]{\includegraphics[width=.3\textwidth]{Images/graphNeighbor}\label{fig:graphNeighbor}}
+\subfloat[A unit-centered formation]{\includegraphics[width=.4\textwidth]{Images/graphUnitCenter}\label{fig:unitCenter}}
+\hspace{0.2cm}
+\subfloat[A purely virtual formation]{\includegraphics[width=.4\textwidth]{Images/graphVirtual}\label{fig:virtual}}
+\hspace{0.2cm}
 \caption{The taxonomy illustrated for a diamond-shaped formation}
 \label{fig:graphs}
 \end{figure}
 
-\subsection{Implementation}
-Formation control can be implemented in various ways but we will focus on two, already widely implemented, from behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009} to graph-based control  \cite{Gowal2013, Falconi2010}. Both of these methods can easily be implemented in a distributed system for any of the configuration presented previously using relative localization sensors and IDs. But before selecting one of these methods, constraints of the actual control architecture have to be considered required. Indeed the MPC position controller can takes specific input vectors. Therefore, if a formation control block is devised, it can take as many input as wanted but the output must necessarily be a 6-state vector of three positions and three velocities for each drone.
+\subsection{Control Architecture}
+\subsubsection{Centralized, Decentralized and Distributed Control}
 
-Behavioral controllers, used in the form of motor-schema or, also called, potential field methods \cite{Arkin1999, Pugh2009} is an elegant way for designing adaptive controllers. Several zone can be defined, in which the potential can be chosen freely in order to induce the desired reaction. Typically the potential provides a speed vector from which position can be integrated. This approach can be implemented for any type of formation. An example of three-zones potential could be the following:
-\[ \dot r_i =  \left\{ \begin{matrix*}[l] 0 & if\ r_{f,i}-r_i\ \in [0; d_1] \\ \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_1; d_2] \\  \beta(r_{f,i}-r_i-d_2)^2 + \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_2; \inf] \end{matrix*} \right. \ for\ i = 1,2,3\]
-Where $r_{f,i}$ is the reference position in formation, $r_i$ the current position in one dimension, $d_1$, $d_2$, $\alpha$ and $\beta$ are parameters
+When several robots are evolving in the same environment or when they are performing collective tasks, such as flight in formation, controllers can be implemented in three different manners \cite{Scattolini2009}:
+\begin{itemize}
+\item \emph{Centralized}: In centralized control architectures, all the information is concentrated in one node, in our case, the formation controller. Depending on the system to control, such an implementation can be huge and computationally costly and requires good communication networks. Moreover, in a way similarly to leader-referenced formations, the failure of the central controller is fatal to the whole group. Nevertheless, the controller can make decision with complete informations about the system.
+\item \emph{Distributed}: In this case, a central node is still present but the problem to solve is divided into smaller subproblems given to several controllers. This approach is often beneficial in terms of computation cost but still suffers from having a central node and if the sub-problems are coupled, approximations have to be made. The central node is often called coordinator or regulator.
+\item \emph{Decentralized}: A decentralized architecture is characterized by the absence of a central node. While it is typically more robust, fault tolerant and scalable, the information on the whole system is limited and often more uncertain.
+\end{itemize}
+
+Given our setup, a purely decentralized implementation is impossible for several reasons. First, the Crazyflie is lacking sensing capabilities in order to relatively localize itself or other members of the group. Therefore a motion capture system is required, which is a sort of centralization. Then, all the controllers run off-board, on the same PC. \textcolor{red}{Processor powerful enough?}. 
+However, decentralized control is simulated by several mechanisms
+\begin{itemize}
+\item \emph{Uncertain relative positioning}: Every position is expressed in the local frame whether for reference position or other drones positions. Furthermore, as sensors are theoretically always a bit different, a same distance can be seen differently for two distinct drones.
+\item \emph{Local perception}: The sensing capability is limited in range, which mean that the position of other robots can be unavailable
+\item \emph{Individual independent controllers}: There is as many controller as there are robots. Each one of them is running the same algorithm but communications between them is impossible.
+\end{itemize}
+
+Independently of the implementation, the control can be divided in two loops, the inner one and the outer one. The inner loop, or inner controller, implemented in the Crazyflie firmware, controls the roll and pitch angles, as well as the yaw rate. The outer loop is responsible for formation control and the collision avoidance. In figure~\ref{fig:controlArchi}, the architecture for both centralized and decentralized control is presented. Note that for decentralized, only one of the four controllers is shown.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.8\textwidth]{Images/potentialEx}
-\caption{An example of attractive potential field}
-\label{fig:potentialEx}
+\subfloat[Centralized Control Architecture]{\includegraphics[width=1\textwidth]{Images/controlArchiCent}\label{fig:controlArchiCent}}
+\hspace{0.2cm}
+\subfloat[Decentralized Control Architecture]{\includegraphics[width=1\textwidth]{Images/controlArchiDistrib}\label{fig:controlArchiDistrib}}
+\caption{Graph-based controllers. The gray rectangle represent the part of the architecture running on the Crazyflie.}
+\label{fig:controlArchi}
 \end{figure}
 
-Graph-based control seems well adapted to provide a reference vector for leader- or neighbor-referenced formations. This kind of controllers are derived from so-called consensus problems, which try to make a set of agent with different initial states converge to a single final state, identical for all agents. \cite{Ren2005}. The Rendez-vous problem \cite{Gowal2013} is one of these problems perfectly adapted to formation control. Required notions of graph theory are: 
+\subsection{Outer Controller}
+\subsubsection{Fomation Controllers}
+
+Formation control has been implemented in various ways among which, behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009}, graph-based control  \cite{Gowal2013, Falconi2010} are the most common. Both of these methods can easily be implemented either in a centralized or in a decentralized manner for any of the configuration presented previously using relative localization sensors and IDs or communication. Another possibility, and the one explored in this project, consists of using an Model Predictive controller. It has already been successfully implemented for various type of formations, with and without collision avoidance \cite{Manikonda1999, Chao2011, Wang2007, Lim2009, Kuriki2015,Dunbar2002,Fukushima2013,Shin2009,Zhao2014,Chao2012}. At the price of heavier computational complexity, additional capabilities can be introduced in the controller formulation, such as obstacle and collision avoidance. In addition to that, it is the only method, among the three presented able to constrain the states or the input commands sent to the robot and to provide a prediction of the state trajectory.
+
+Behavioral controllers, usually implemented using potential or force field (cooperative behaviors) \cite{Arkin1999, Pugh2009} or subsumption architecture (competitive behaviors) are an elegant way for designing reactive controllers for extremely simple units. Typically a behavior provides a force from which adequate input command can be derived. As stated before, although this approach can be implemented for any type of formation it is especially well adapted for leader-follower formations in which fewer communications or sensing is required. However, despite its ease of use, several drawbacks exist: existence of local minima (c.f.: figure~\ref{fig:potentialTraj}) and oscillatory motion mainly. Moreover, mathematical analysis is often difficult and the wanted result is not guaranteed. Indeed, adding an obstacle avoidance behavior often leads to poorer performances of the formation behavior \cite{Ren2004}. An example of potential could be the following (c.f.: figure~\ref{fig:potentialEx}).
+\[ \dot r_i =  \left\{ \begin{matrix*}[l] 0 & if\ r_{f,i}-r_i\ \in [0; d_1] \\ \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_1; d_2] \\  \beta(r_{f,i}-r_i-d_2)^2 + \alpha(r_{f,i}-r_i-d_1) & if\ r_{f,i}-r_i\ \in [d_2; \inf] \end{matrix*} \right. \ for\ i = 1,2,3\]
+Where $F_{f,i}$ is the reference position in formation, $r_i$ the current position in one dimension, $d_1$, $d_2$, $\alpha$ and $\beta$ are parameters
+
+\begin{figure}[htbp]
+\centering
+\subfloat[A trajectory in a potential field with local minima]{\includegraphics[width=.5\textwidth]{Images/potentialTraj}\label{fig:potentialTraj}}
+\subfloat[An example of 1-D potential field with dead zone]{\includegraphics[width=.5\textwidth]{Images/potentialEx}\label{fig:potentialEx}}
+\caption{Potential field controllers}
+\label{fig:potentialCont}
+\end{figure}
+
+Considering, graph-based controllers, only virtual structure formations can be implemented. The controllers are derived from the so-called consensus problems, in which a set of agent with different initial states converge iteratively to a single final state, identical for all agents \cite{Ren2005}. Using notions of graph-theory, a formation can easily be induced (c.f.: figure~\ref{fig:laplacianTraj}). Moreover, while obstacle avoidance can easily be implemented, collision avoidance with others robot cannot (c.f.: figure~\ref{fig:laplacianDist}). Nevertheless, as stated before for virtual structures, remotely controlling the formation can be tough, especially in case of decentralized controller.  In order to derive a controller, the following notions are required:
 \begin{itemize}
 \item $\mathcal{G} = <\mathcal{N}, \mathcal{E}>$, an (un)directed graph.
 \item $\mathcal{N} = \{R_1, \cdots, R_n\}$, the finite nodes set,  with $n$, the number of robots.
 \item $\mathcal{E} \in \mathcal{N}^2, \mathcal{E} = \{(Ri,Rj)| R_i, R_j \in \mathcal{N} and\ i \neq j\} = \{e_1, \cdots, e_m\} $, the (un)directed finite edges set.
-\item $A \in  \mathbb{R}^{n \times n} $, the adjacency matrix is a symmetric matrix, the image of the connections between the nodes:
+\item $A \in  \mathbb{R}^{n \times n} $, the adjacency matrix is a symmetric matrix representing the connections between the nodes:
 \[a_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ (R_i, R_j)\ or\ (R_j, R_i) \in \mathcal{E} \\ 0 & else \end{matrix*} \right.\]
 \item $D \in  \mathbb{R}^{n \times n} $, the degree matrix is a symmetric matrix, whose diagonal elements represent the cardinality of each node (i.e.: the sum of edges originating or arriving in this node):
 \[d_{ii} =  \sum_{j=1}^{N} a_{ij}\]
@@ -415,47 +467,28 @@ Graph-based control seems well adapted to provide a reference vector for leader-
 \item $L$ and $L_w\in \mathbb{R}^{n\times n} $, the Laplacian and the weighted Laplacian matrices:
 \[ L = D-A = BB^T \qquad L_w = BWB^T\]
 \end{itemize}  
-The Laplacian and the weighted Laplacian matrices benefits from interesting properties: They positive-semidefinite. This implies that all eigenvalues are nonnegative. Moreover, at least one eigenvalue isequal to zero. Proofs can be found in \cite{Gowal2013}. 
+The Laplacian and the weighted Laplacian matrices benefits from one interesting property: they positive-semidefinite. This implies that all eigenvalues are nonnegative and, furthermore, at least one eigenvalue is equal to zero. Proofs can be found in \cite{Gowal2013}. 
 
 The feedback law, for state $i$ of all nodes in a N-state system is:
 \[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, \cdots, N \]
 \[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
-%In figure~\ref{fig:graphs}, we show the directed graph for the leader-referenced formation and one possible graph for a neighbor-referenced formation. we will quickly compute the matrices $A$, $D$, $B$ and $L$. We assume $W = I_{n}$, however in the neighbor-referenced case, it could be a good interesting to increase the weight of the edges $(R_1, R_3)$ and $(R_3, R_1)$, as they are central to the formation directed graph.
 
-%
-%\begin{displaymath}
-%\begin{aligned}
-%A_{leader} &= \begin{bmatrix} 0 & 1 & 1 & 1 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0\end{bmatrix} 		& A_{neighbor} &= \begin{bmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{bmatrix} \\
-%D_{leader} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix}		& D_{neighbor} &= \begin{bmatrix} 3 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 3 & 0 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-%B_{leader} &= \begin{bmatrix} -1 & -1 & -1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix} 				& B_{neighbor} &= \begin{bmatrix} 1 & -1 & -1 & 0 \\ 0 & 1 & 0 & 0 \\ -1 & 0 & 1 & -1 \\ 0 & 0 & 0 & 1\end{bmatrix} \\
-%L_{leader} &= \begin{bmatrix} 3 & -1 & -1 & -1 \\ -1 & 1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1\end{bmatrix} 	& L_{neighbor} &= \begin{bmatrix} 3 & -1 & -2 & 0 \\ -1 & 1 & 0 & 0 \\ -2 & 0 & 3 & -1 \\ 0 & 0 & -1 & 1\end{bmatrix}
-%\end{aligned}
-%\end{displaymath}
-%
-The discrete equivalent of the Laplacian feedback control requires another matrix \cite{Moreau2005}, $L_k \in \mathbb{R}^{n \times n}$, the stochastic weight of links matrix. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
+The discrete equivalent of the Laplacian feedback control matrix, $L_k \in \mathbb{R}^{n \times n}$, is the stochastic weight of links matrix \cite{Moreau2005}. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
 \[l_{ij} =  \left\{ \begin{matrix*}[l] \omega_{ij} > 0 & if\  = (R_i, R_j) \in \mathbb{E}\ or\ i=j\\ 0 & else \end{matrix*} \right.\]
-%
-%The feedback law become, for state $i$ of all nodes in a N-state system:
-%\[ \boldsymbol{x_i}(k+1) = L_k\boldsymbol{x_i}(k)\ for\ i=1, \cdots, N \]
-%\[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
-%
-%Again for the graphs in figure~\ref{fig:graphs}, assuming a equal weight for all edges, we provide the discrete equivalent of the Laplacian matrix:
-%\begin{displaymath}
-%\begin{aligned}
-%L_{k,leader} &= \begin{bmatrix} 1 & 0 & 0 & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & 0 & 0 & \frac{1}{2}\end{bmatrix} 		& L_{k,neighbor} &= \begin{bmatrix} \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ \frac{1}{2} & \frac{1}{2} & 0 & 0 \\ \frac{1}{2} & 0 & \frac{1}{2} & 0 \\ 0 & 0 & \frac{1}{2} & \frac{1}{2}\end{bmatrix} \\
-%\end{aligned}
-%\end{displaymath}
 
-Another possibility, and the one explored in this project, consists of using an MPC controller. By acting on the constraints, an formation can be induced and controlled. A more detailed explanations of the controller, its implementation and the constraints and objective function are presented in the following sections.
+\begin{figure}[htbp]
+\centering
+\subfloat[Formation control with Laplacian feedback]{\includegraphics[width=.5\textwidth]{Images/laplacianTraj}\label{fig:laplacianTraj}}
+\subfloat[Minimal inter-robot distance. Collision cannot be avoided]{\includegraphics[width=.5\textwidth]{Images/laplacianDist}\label{fig:laplacianDist}}
+\caption{Graph-based controllers}
+\label{fig:laplacianCont}
+\end{figure}
 
-\textcolor{red}{strengths and weaknesses of each method}
-\subsection{Control Architecture}
+\subsection{Model Predictive Controllers}
 
-\subsection{Outer Controller}
+The outer position controller is part of the model predictive controller, or receding horizon controller, family. This type of nonlinear controllers are especially well suited for constrained application, strongly nonlinear systems or, as the name implies, when future knowledge is desirable \cite{Borelli2015}. In a standard implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps by solving a constrained optimization problem. $N$ is referred to as the horizon length. And the longer the horizon length, the closer the open-loop prediction (the $N$ planned actions) from the actual closed-loop trajectory. Because the model of the plant is often inaccurate, or because the environment is evolving, the optimization process is repeated every time-step, after executing only the first of the $N$ planned input actions. This series of planning, acting once, measuring, re-planning actions closes the control loop. Despite it's power and its numerous abilities, MPC suffers from a very high computational cost compared to traditional control methods. Moreover, guaranteeing stability, robustness and feasibility and optimality is a constant trade-off problem.
 
-The outter posiiton controller is part of the receiding horizon controllers, or model prective controller, family. This type of controllers are well suited for constrained situations, strongly nonlinear systems or, as the name implies, for some future knowledge \cite{Borelli2015}. In a standard closed-loop implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps. $N$ is called the horizon length. Because the model is often inacurate, or because the environment is evolving, after executing the first action command, the controller measures the state and/or its surrounding and re-plans a serie of $N$ actions acoordingly, which act as feedback. The longer the horizon length, the closer the prediction (the $N$ planned actions) from the closed-loop response. Despite it's power, MPC suffers from chalenges to attain: \textcolor{red}{feasibility, stability, robustness and implementation. A DEVELOPPER}.
-
-A MPC controller is composed of three main components: an objective, or cost, function $J$, a set of state dynamics equations and a set of constraints. It can be presented either in continuous or discrete form.
+A MPC controller is the sum of three components: an objective, or cost, function $J$, a set of state dynamics equations and a set of constraints. It can be either derived in continuous or discrete form.
 
 \begin{tabular}{l l l}
 \begin{tabular}{r l r l} $J(\boldsymbol{x}, \boldsymbol{u}, t) =$ 	& $V(\boldsymbol{x}(t+T))$  \\ 	& $+\int\limits_t^{t+T} \mathcal{L}(\boldsymbol{x}(t), \boldsymbol{u}(t)dt$  \end{tabular}   & \hspace{.7cm} \vspace{.5cm} & \begin{tabular}{r l r l} $J_k(\boldsymbol{x}, \boldsymbol{u}, t) =$ & $V_k(\boldsymbol{x}(t+NT_s))$  \\  & $+\sum\limits_{k=0}^{N-1} \mathcal{L}_k(\boldsymbol{x}(t+kT_s), \boldsymbol{u}(t+kT_s))$  \end{tabular} \\
@@ -463,7 +496,38 @@ $\boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u})$ & & $\boldsymbol{x}(k+
 $\boldsymbol{x} \in \mathcal{X}$ and $\boldsymbol{u} \in \mathcal{U}$ & & $\boldsymbol{x} \in \mathcal{X}$ and $\boldsymbol{u} \in \mathcal{U}$ 
 \end{tabular}
 
-\subsubsection{Implementation}
+\subsubsection{Optimization}
+Most of the complexity and the cost of using MPC is in solving, at each step, an optimization problem. Therefore, in its first days, MPC was applied to slow systems, with sampling time in minutes or more, especially in the chemical industry. But, its ability to manage constraints made it attractive for other, and faster, applications. Nowadays, thanks to the advance in computers and to efficient numerical algorithms, MPC has been successfully applied to $\mu$s-systems. Nonetheless, to perform control at this rate, trade-offs are made in terms of model complexity, constraint handling and optimality of the control. 
+
+Providing an exhaustive list of solvers for nonlinear constrained optimization is not possible. Nevertheless a rough tentative of classification tempted and a few examples are provided. The first main axis of classification of solvers, and the one that seems recurrent across all literature, is offline (explicit MPC) versus online computing. 
+
+Offline computing consists in explicitly computing the control law for each state (or region of active constraints) and to store it in a table. Most of the computational burden is therefore moved to efficiently search the look-up table for a solution. But, as soon as the number of states, constraints or horizon length increase, the storage requirements increase as well, and exponentially. Therefore, despite being among the fastest algorithms, these methods are limited to small-scale problems \cite{Haverbeke2011}. However Partial Enumeration has been able to tackle large problems for which typical offline and online algorithms are not performing well enough. Although, the solution is not completely computed offline, a subset composed of the most frequent states are. The algorithm stores solutions for the most frequently encountered active sets of constraints and perform online table search. When the solution is not available in the table, several methods exist to compute a sub-optimal but acceptable solution online. The table is constantly kept updated to store only the most recurring sets of active constraints. The main disadvantage of this method is its limitation to QP problems \cite{Pannocchia2007}. 
+
+On the other side, online methods have to solve the optimization problem in every cycle. Surprisingly no commonly accepted categorization has been found. Maybe because of the enormous quantity of problems (QP, LP, least-squares,...) and the huge, already available number of efficient solvers. Especially concerning nonlinear optimization, each author seems to use its own defined terminology. Nonetheless, despite different names, some categories seems to be recurrent across the literature. The main axes of classification are mainly the problem structure (LP, QP, nonlinear) and local versus global search \cite{Haverbeke2011, Nocedal1999, Zheng2015}. Although these categories are not  In what followa, a non-exhaustive presentation of different solving methods are presented.
+
+\begin{itemize}
+\item \emph{Newton-type Methods}: It is certainly the most common type of algorithms to sole nonlinear problems. The main principle is, first, to search for a step direction and then move along this direction until the appropriate step size. Iteratively, a travel through improving solution is made until a local minimum is reached. While iterative process can be time consuming, for special kind of problems, a (good) solution can be obtained efficiently or even analytically. It is the case for convex problem formulations such as LP or QP for which many real-time algorithm are available. \cite{Nocedal1999, Wang2008}. Nevertheless, for nonlinear problems, the problem structure cannot be exploited anymore. 
+\item \emph{Genetic Algorithm}: GA are bio-inspired method based on the evolution process. In summary, a population of possible solution is evaluated given a fitness function. The fittest representatives are selected and allowed to generate offsprings through linear and nonlinear combinaitons on one or several of their genotype. The process is repeated until a stop criterion is reached. GA are well-suited for nonconvex and or nonlinear objective functions as many solutions are evaluated and the probalbility of being stuck in a local minimum is low. Nevertheless, evaluating several individual solutions over several generations is time-consuming. \cite{Zheng2015}
+\item \emph{Fuzzy-MPC}: Fuzzy-MPC is a rule-based controller in which, depending on the initial state, a different model representation and/or a different constraints set is used. Depending on the granularity of the state space rules, offline precomputation can require a non-negligeable storage. Therefore, LQP representation are usually used to benefit from efficient algorithms. Despite the linear models and constraints, these controllers seems to achieve good performance for nonlinear problems. But they currently lack of proven applications and performances.\cite{Zheng2015}.
+\end{itemize}
+
+
+For fast NNMPC, two choices are then possible, offline method or Newton-type method. Due to the number of states and constraints to consider, the final choice is to consider a Newton-type method. Once again we can part this group in categories. Sequential Quadratic Programming or Interior-Point methods. 
+In both case, the problem requires the derivation of the KKT conditions have to be derived. Note that satisfying the KKT conditions will only ensure local optimum. The most common way to solve nonlinear MPC problems are interior-point methods (unconstrained optimization) and SQP. With interior-point methods, the constraints are usually softened or add to the objective as penalty functions and then an unconstrained nonlinear problem is solved. SQP, on the other hand, linearize the problem at each time step and apply QP methods. Another possibility is to linearize the system once around an equilbrium point and use standard convex solvers. \cite{Haverbeke2011, Nocedal1999, Zheng2015}. A general recipe is a way to handle inequality constraints, computing a descent direction and computing the step length.
+
+As seen above, time required to solve the optimization, even if the problem is convex, is always relatively high to provide a solution. In NMPC, this solution is not even ensured to be the global optimum. Given this and the available documentation, a Newton-type method has been chose. Most of the cost, in terms of computational time, is linked to the numerous iterations required to provide a good solution. Nevertheless, several artifacts can be used to fasten the computation process, for linear and nonlinear problems. First a warm-starting strategies, consisting of providing a good starting point, allows to reduce significantly the number of iterations. More simply, limiting the number of iteration in a loop can be a great gain of time. Although, it is achieved at the cost of suboptimality, it can still provide good enough solutions. Several methods exist also to determine the step direction: steepest descent, fast Nesterov fat gradient \cite{Richter2012}, Krylov-subspace \cite{Ohtsuka2004}. Every choice is a tradeoff between speed of convergence, storage, robustness, computational cost and more. For QP problems, a strategic variable reordering can make arise a specific matrix structure, which results in a reduced computational cost. \cite{Wang2008}.
+
+SQP \cite{Tenny2002}
+
+Given the formation control with collision avoidance problem, a nonlinear method is required. Given the problem, nothing seems to restrict the use of the algorithm to SQP or IP, therefore Ohtsuka's C/GMRES is chosen.\cite{Ohtsuka2004}.
+
+Formally, the C/GMRES method is not an interior point method, it can be assimiled to an augmented Lagrangian method with penalty function for inequalities.
+
+\textcolor{red}{direct, indirect (Euler-Lagrange), DP methods (Hamilton-Jacobi-Bellman)}
+
+Nonlinear Optimization: local optimum.
+
+
 In optimization-based control, such as MPC, a necessary condition for optimal trajectory in a control system $\Sigma$ is the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set
 \[ \Sigma = (\mathcal{X}, f, \mathcal{U}) \]
 \[ \Sigma: \dot x = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
@@ -476,7 +540,7 @@ Two important objects need to be presented, the Lagrangian $\mathcal{L}$ and the
 
 The couple $(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))$ is called a trajectory.
 
-In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. However another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
+In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. Nevertheless another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
 \[ \mathcal{H}_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R}^n \rightarrow \mathbb{R} \]
 \[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}) = \boldsymbol{p}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
 To simplify equation and improve comprehensibility, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and written $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be simplified as $J$
@@ -495,7 +559,7 @@ Then, there exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\nu}^*$ such that:
 \[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{\xi}^*(t+T)) \]
 And:
 \[ H(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \leq H(\boldsymbol{\xi}^*, \boldsymbol{u}, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \forall \boldsymbol{u} \in \mathcal{U} \]
-Moreover, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
+Additionally, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
 \[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = \boldsymbol{0}_m \]
 
 Where $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
@@ -513,21 +577,21 @@ Note that Pontryagin maximum principle is only a necessary condition of optimal 
 
 The C/GMRES method is a fast algorithm for nonlinear MPC exploiting the fact that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence using standard iterative methods.
 
-Starting from a approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
+Starting from an approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
 \[ J_k = V(\boldsymbol{x}(N)) + \sum_{k = 0}^{N-1} \mathcal{L}(\boldsymbol{x}(k), \boldsymbol{u}(k))T_s \]
 Subject to:
 \[ \boldsymbol{x}(k+1) = \boldsymbol{x}(k) + f(\boldsymbol{x}(k),\boldsymbol{u}(k))T_s \]
 \[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \cdots, q_k \]
 
-Then we can rewrite a discretized version of the Pontryagin principle for unconstrained input:
+Then a discretized version of the Pontryagin principle for unconstrained input can be written:
 \[ \mathcal{H}_u(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) = \boldsymbol{0}_m \]
 \[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) T_s\]
 \[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{\xi}^*(N)) \]
-The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. We introduce also the vector U:
+The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. The vector U is defined as follow:
 \[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{v}(0), \boldsymbol{u}(1), \boldsymbol{v}(1), \cdots, \boldsymbol{u}(N-1), \boldsymbol{v}(N-1)]^T \]
 \[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u^T(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{p}(1), \boldsymbol{v}(0)) \\ \boldsymbol{\psi}(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}^T_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{p}(N), \boldsymbol{v}(N-1)) \\ \boldsymbol{\psi}(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
 
-To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which we have few knowledge concerning solutions, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to our controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
+To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which few knowledge concerning solutions is known, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to the controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
 \[ F(\boldsymbol{U} + \boldsymbol{\dot U}T_s,\boldsymbol{x} + \boldsymbol{\dot x} T_s) = \boldsymbol{0}_{N(m+q)} \]
 \begin{equation}
 \label{eq:dotUFromF}
@@ -562,11 +626,11 @@ Then, the loop iteration while $k_{loop} < k_{loop,max}$:
 \end{enumerate}
 
 The minimization step can be solved efficiently using Givens rotations \cite{Bjorck1996}. Which consists of applying consecutive rotations $G_i(\theta_i)$ to the system untill $\prod_i G_i(\theta_i) H_k$ is upper triangular.
-We define a Givens rotation matrix $G(p, q, \theta)$ as follow:
+A Givens rotation matrix $G(p, q, \theta)$ is defined  as follow:
 \[ g_{ij} = \left\{ \begin{matrix*}[l] \cos{\theta} &  if\ i = j = p, q \\ 1 & if\ i = j \neq p, q  \\  -\sin{\theta} &  if\ i = p,\ j = q \\ \sin{\theta} &  if\ i = q,\ j = p \\ 0 & else \end{matrix*} \right.\]
-For our algorithm, at iteration $k$, we compute the matrix $G_k$:
+In the code, at iteration $k$, the matrix $G_k$ is computed:
 \[ G_k := G_k(k, k+1, \theta_k) \quad with\ \theta_k = atan2(h_{k+1, k}, h_{k,k})\]
-And we solve easily:
+Which result in:
 \[ \min\limits_{y_k}(\norm{\prod\limits_{i=1}^k G_i(i, i+1, \theta_i) (\beta \boldsymbol{e}_1 - H_k \boldsymbol{y}_k)} \]
 
 Moreover, despite being iterative, this step is limited in number of iterations ($k_{max}$) to keep its influence small on the whole algorithm duration. \textcolor{red}{convergence speed, max iteration}
@@ -593,7 +657,7 @@ Now, continuation and GMRES method can be combined to produce C/GMRES:
 \subsubsection{Model}
 The outer MPC controller controls the position and its derivative and the yaw angle, therefore a 7-states model is considered. 
 
-Moreover, to remove the dependency of the position on the attitude and on the flying platform, the thrust force is represented as:
+Furthermore, to remove the dependency of the position on the attitude and on the flying platform, the thrust force is represented as:
 \[ R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B = \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \boldsymbol{u_{1:3}}\]
 
 The inner controller, taking as references $\boldsymbol{r_{ic}} = [F_{zB} \ \phi \  \theta \ \dot \psi]^T$, an intermediary block, proper to quadrotors will be implemented to translate the output of the reduced model into adequate commands for the quadrotor.
@@ -605,7 +669,7 @@ Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid
 
 \textcolor{red}{A DEVELOPPER}
 
-Then, to linearize the model, a working is required. Assuming we stay around the hovering equilibrium, then only gravity is compensated.
+Then, to linearize the model, a working is required. Assuming the state stays around the hovering equilibrium, then only gravity is compensated.
 \[ \boldsymbol{u_s} = \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ mg \\ 0\end{bmatrix} \]
 
 The reduced linearized model is:
@@ -620,9 +684,13 @@ Finally, the model is discretized, with sampling time $T_s$:
 \begin{bmatrix}  1 & 0 & 0 & T_s & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & T_s & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & T_s & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} 
 \begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
 \subsubsection{Constraints}
+Coll avoidance
+Angle limit
+Formation
+\subsubsection{Cost Function}
 
 \newpage
-\section{Low-Level Control}
+\section{Low-Level Control - Attitude Control}
 \subsection{Inner Controller}
 \label{sec:innerControl}
 The inner controller, responsible for attitude control can be found in the stabilizer.c module. Its main loop can be divided in four steps, the corresponding file are indicated in brackets:
@@ -633,7 +701,7 @@ The inner controller, responsible for attitude control can be found in the stabi
 \item Motor distribution (\emph{power\_distribution\_stock.c}).
 \end{itemize}
 
-\subsubsection{State and reference acquisition}
+\subsubsection{State and Reference Acquisition}
 Independently of the chosen estimation method, 13-states Kalman filter or attitude update through Mahony or Magdwick quaternion method, the first step will provide data for attitude angles and rates. However, Kalman estimator allows the stabilizer loop to run only at 500 Hz, while the other method allows 1000 Hz. Sensor acquisition runs at 500 Hz for IMU and 100 Hz for barometer. In the second estimaiton method, attitude is updated at 250 Hz and position (if wanted) at 100 Hz. For Kalman, update are performed at 100 Hz for all state, barometer is processed at 25 Hz.
 
 During the acquisition of the references, the inner control architecture is also defined or updated. Depending on the control mode, the reference are translated differently and the chain of controller is activated accordingly. There are six configuration variables, each can be set in absolute, velocity or disabled mode.  These variables are X, Y, Z, the 3D positions and roll, pitch, yaw, the three attitude angles. For this project, the configuration implies that the reference are always going to be roll angle, pitch angle, yaw rate and thrust (c.f.: table~\ref{tab:setpointConfig}). Despite the presence of a magnetometer in the IMU, it is not yet integrated in the firmware, therefore an absolute yaw positioning is not possible.
@@ -700,7 +768,7 @@ Yaw rate rate & 70 & 16.7 & 0 & 166.7  \\
 \label{tab:controllerInnerGains}
 \end{table}
 
-\subsubsection{Motor distribution}
+\subsubsection{Motor Distribution}
 The output of the 3 attitude cascade controllers and the thrust input are combined, with respect to the flying configuration, as shown in table~\ref{tab:motorDistribution}, saturated and converted to a 8-bit value before being sent as PWM commands to the motors. 
 
 \begin{table}[htdp]
@@ -727,8 +795,17 @@ The output of the 3 attitude cascade controllers and the thrust input are combin
 
 \newpage
 \section{Results - Experiment}
+\subsection{Assumptions and Simplifications}
+The simple model relies on a few assumptions and simplifications.
+\begin{itemize}
+\item Motor dynamics are considered instantaneous.
+\item In the firmware, motors are controlled thanks to a PWM signal. Hopefully, to ease simulation, bitCraze identified a transfer function from PWM $p\in[0;256]$ to thrust force $F$ in Newton \cite{bitcrazeWiki}.
+\[ F_i = m \cdot (0.409e^{-3}p_i ^2 + 140.5 e^{-6}p_ i - 0.099 )\]
+\item The yaw control is not simulated.
+\end{itemize}
+\textcolor{red}{Identification I, m, rpm/pwm to torque}
 Motor response is assumed immediate.
-\subsection{Measuring stability}
+\subsection{Measuring Stability}
 \cite{Mataric2002}
 \begin{itemize}
 \item distance on formation line.
@@ -736,7 +813,7 @@ Motor response is assumed immediate.
 \item angle deviation.
 \end{itemize}
 
-\subsection{Measuring robustness}
+\subsection{Measuring Robustness}
 
 \subsection{Evaluation}
 \begin{itemize}
@@ -760,9 +837,9 @@ Motor response is assumed immediate.
 %\end{itemize}
 
 \subsection{Radio Delay Estimation}
-\subsection{Motion Capture Caracterization}
+\subsection{Motion Capture System Characterization}
 \subsection{Yaw Control}
-\subsection{Posiiton Control}
+\subsection{Position Control}
 \subsection{Controlled Trajectory}
 \subsection{Without Speed Reference}
 \subsection{With Speed Reference}
@@ -771,11 +848,11 @@ Motor response is assumed immediate.
 %\begin{center}
 %Loop period: 4.08-4.11 ms
 %\end{center}
-%This means the limiting parameters is not our code but the camera rate, which is not limiting for this type of control.
+%This means the limiting parameters is not the developed code but the camera rate, which is not limiting for this type of control.
 
 \subsection{Other Results}
 %\color{red}
-%Here we can show other results that were computed during this project.
+%Here other results that were computed during this project are presented
 %
 %
 %Then, one of the main problem at the beginning of this project was the delay. In fact it came from the Cortex buffer that was not empty and we were using old readings to control the quad. But this problem brought us to still think of a delay, mainly coming from the radio transmission.
@@ -833,7 +910,7 @@ Motor response is assumed immediate.
 \addcontentsline{toc}{section}{Appendices}
 \renewcommand{\thesubsection}{\Alph{subsection}}
 
-\subsection{Attitude estimation}
+\subsection{Attitude Estimation}
 \label{app:att_estim}
 %\color{red} Attitude estimation on the CrazyFlie is done through the Mahony's method, an iterative method with a PI feedback working with quaternions (see sensfusion6.c module of the firmware).
 %The quaternions are an alternate representation of attitude using a 3-dimensional complex number $q = q_0 + i q_1 + j q_2 + k q_3$.
@@ -855,7 +932,7 @@ Motor response is assumed immediate.
 %\[q_{2,k+1} = q_{2,k} + q_{3,k}\cdot\theta_{x,k} + q_{0,k}\cdot\theta_{y,k} - q_{1,k}\cdot\theta_{z,k}\]
 %\[q_{3,k+1} = q_{3,k} - q_{2,k}\cdot\theta_{x,k} + q_{1,k}\cdot\theta_{y,k} - q_{0,k}\cdot\theta_{z,k} \]
 %
-%From this representation, we can go to an Euler angles one:
+%From this representation, Euler angles are obtained as follow:
 %\\Estimation of gravity direction:
 %\[ \boldsymbol{g_{est}} = \begin{bmatrix} g_x\\ g_y\\ g_z \end{bmatrix} = \begin{bmatrix} 2 (q_1  q_3  - q_0 q_2) 
 %\\2  (q_0 q_1 + q_2 q_3) \\ q_0^2 - q_1^2 - q_2^2 + q_3^2 \end{bmatrix}\]

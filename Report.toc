@@ -5,42 +5,45 @@
 \contentsline {section}{\numberline {1}Introduction}{1}
 \contentsline {section}{\numberline {2}Setup}{2}
 \contentsline {subsection}{\numberline {2.1}Crazyflie 2.0 Quadrotor}{2}
-\contentsline {subsubsection}{Firmware}{3}
-\contentsline {subsection}{\numberline {2.2}Robot Operating System}{3}
-\contentsline {subsection}{\numberline {2.3}OptiTrack Motion Capture System}{3}
-\contentsline {section}{\numberline {3}Quadrotor dynamics}{4}
-\contentsline {subsection}{\numberline {3.1}State representation}{4}
+\contentsline {subsection}{\numberline {2.2}OptiTrack Motion Capture System}{3}
+\contentsline {subsection}{\numberline {2.3}Robot Operating System}{3}
+\contentsline {section}{\numberline {3}Quadrotor Dynamics}{4}
+\contentsline {subsection}{\numberline {3.1}State Representation}{4}
 \contentsline {subsubsection}{Attitude Representation}{5}
-\contentsline {subsection}{\numberline {3.2}Newton-Euler equations}{7}
-\contentsline {subsection}{\numberline {3.3}Full model}{8}
-\contentsline {section}{\numberline {4}High-Level Control - Formation Control}{10}
-\contentsline {subsection}{\numberline {4.1}Taxonomy}{10}
-\contentsline {subsection}{\numberline {4.2}Implementation}{11}
-\contentsline {subsection}{\numberline {4.3}Control Architecture}{13}
-\contentsline {subsection}{\numberline {4.4}Outer Controller}{13}
-\contentsline {subsubsection}{Implementation}{14}
-\contentsline {subsubsection}{Model}{18}
-\contentsline {subsubsection}{Constraints}{19}
-\contentsline {section}{\numberline {5}Low-Level Control}{20}
-\contentsline {subsection}{\numberline {5.1}Inner Controller}{20}
-\contentsline {subsubsection}{State and reference acquisition}{20}
-\contentsline {subsubsection}{Controllers}{21}
-\contentsline {subsubsection}{Motor distribution}{22}
-\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{22}
-\contentsline {section}{\numberline {6}Results - Experiment}{23}
-\contentsline {subsection}{\numberline {6.1}Measuring stability}{23}
-\contentsline {subsection}{\numberline {6.2}Measuring robustness}{23}
-\contentsline {subsection}{\numberline {6.3}Evaluation}{23}
-\contentsline {subsection}{\numberline {6.4}Radio Delay Estimation}{24}
-\contentsline {subsection}{\numberline {6.5}Motion Capture Caracterization}{24}
-\contentsline {subsection}{\numberline {6.6}Yaw Control}{24}
-\contentsline {subsection}{\numberline {6.7}Posiiton Control}{24}
-\contentsline {subsection}{\numberline {6.8}Controlled Trajectory}{24}
-\contentsline {subsection}{\numberline {6.9}Without Speed Reference}{24}
-\contentsline {subsection}{\numberline {6.10}With Speed Reference}{24}
-\contentsline {subsection}{\numberline {6.11}Control Loop Timing}{24}
-\contentsline {subsection}{\numberline {6.12}Other Results}{24}
-\contentsline {section}{\numberline {7}Improvement}{25}
-\contentsline {section}{\numberline {8}Conclusion}{26}
+\contentsline {subsection}{\numberline {3.2}Newton-Euler Rquations}{7}
+\contentsline {subsection}{\numberline {3.3}Model}{8}
+\contentsline {section}{\numberline {4}High-Level Control - Formation Control}{9}
+\contentsline {subsection}{\numberline {4.1}Formation Taxonomy}{9}
+\contentsline {subsection}{\numberline {4.2}Control Architecture}{12}
+\contentsline {subsubsection}{Centralized, Decentralized and Distributed Control}{12}
+\contentsline {subsection}{\numberline {4.3}Outer Controller}{14}
+\contentsline {subsubsection}{Fomation Controllers}{14}
+\contentsline {subsection}{\numberline {4.4}Model Predictive Controllers}{16}
+\contentsline {subsubsection}{Optimization}{17}
+\contentsline {subsubsection}{Model}{23}
+\contentsline {subsubsection}{Constraints}{24}
+\contentsline {subsubsection}{Cost Function}{24}
+\contentsline {section}{\numberline {5}Low-Level Control - Attitude Control}{25}
+\contentsline {subsection}{\numberline {5.1}Inner Controller}{25}
+\contentsline {subsubsection}{State and Reference Acquisition}{25}
+\contentsline {subsubsection}{Controllers}{26}
+\contentsline {subsubsection}{Motor Distribution}{27}
+\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{27}
+\contentsline {section}{\numberline {6}Results - Experiment}{28}
+\contentsline {subsection}{\numberline {6.1}Assumptions and Simplifications}{28}
+\contentsline {subsection}{\numberline {6.2}Measuring Stability}{28}
+\contentsline {subsection}{\numberline {6.3}Measuring Robustness}{28}
+\contentsline {subsection}{\numberline {6.4}Evaluation}{28}
+\contentsline {subsection}{\numberline {6.5}Radio Delay Estimation}{29}
+\contentsline {subsection}{\numberline {6.6}Motion Capture System Characterization}{29}
+\contentsline {subsection}{\numberline {6.7}Yaw Control}{29}
+\contentsline {subsection}{\numberline {6.8}Position Control}{29}
+\contentsline {subsection}{\numberline {6.9}Controlled Trajectory}{29}
+\contentsline {subsection}{\numberline {6.10}Without Speed Reference}{29}
+\contentsline {subsection}{\numberline {6.11}With Speed Reference}{29}
+\contentsline {subsection}{\numberline {6.12}Control Loop Timing}{29}
+\contentsline {subsection}{\numberline {6.13}Other Results}{29}
+\contentsline {section}{\numberline {7}Improvement}{30}
+\contentsline {section}{\numberline {8}Conclusion}{31}
 \contentsline {section}{Appendices}{I}
-\contentsline {subsection}{\numberline {A}Attitude estimation}{I}
+\contentsline {subsection}{\numberline {A}Attitude Estimation}{I}

@@ -7,11 +7,21 @@
 \contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Body frame in $\times $ configuration}}}{4}
 \contentsline {figure}{\numberline {4}{\ignorespaces Roll $\phi $, Pitch $\theta $ and Yaw $\psi $ Angles\relax }}{6}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Drawing from \cite {Diebel2006}}}}{6}
-\contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{8}
+\contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{7}
 \contentsline {figure}{\numberline {6}{\ignorespaces The taxonomy illustrated for a diamond-shaped formation\relax }}{11}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {The unit-centered formation}}}{11}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {The leader-referenced formation}}}{11}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {A neighbor referenced formation}}}{11}
-\contentsline {figure}{\numberline {7}{\ignorespaces An example of attractive potential field\relax }}{12}
-\contentsline {figure}{\numberline {8}{\ignorespaces Roll cascade controller architecture\relax }}{21}
-\contentsline {figure}{\numberline {9}{\ignorespaces PID controller architecture\relax }}{21}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {A leader-referenced formation}}}{11}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {A neighbor-referenced formation}}}{11}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {A neighbor-referenced formation with formation leader}}}{11}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {A unit-centered formation}}}{11}
+\contentsline {subfigure}{\numberline {(e)}{\ignorespaces {A purely virtual formation}}}{11}
+\contentsline {figure}{\numberline {7}{\ignorespaces Graph-based controllers. The gray rectangle represent the part of the architecture running on the Crazyflie.\relax }}{13}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Centralized Control Architecture}}}{13}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Decentralized Control Architecture}}}{13}
+\contentsline {figure}{\numberline {8}{\ignorespaces Potential field controllers\relax }}{15}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {A trajectory in a potential field with local minima}}}{15}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {An example of 1-D potential field with dead zone}}}{15}
+\contentsline {figure}{\numberline {9}{\ignorespaces Graph-based controllers\relax }}{16}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Formation control with Laplacian feedback}}}{16}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Minimal inter-robot distance. Collision cannot be avoided}}}{16}
+\contentsline {figure}{\numberline {10}{\ignorespaces Roll cascade controller architecture\relax }}{26}
+\contentsline {figure}{\numberline {11}{\ignorespaces PID controller architecture\relax }}{26}

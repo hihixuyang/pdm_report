@@ -8,9 +8,6 @@
 \@writefile{toc}{\contentsline {section}{List of Figures}{iii}}
 \citation{Suzuki2014}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
-\citation{Suzuki2014}
-\citation{bitcraze}
-\citation{bitcraze}
 \citation{bitcraze}
 \citation{bitcraze}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Setup}{2}}
@@ -18,14 +15,16 @@
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:setup}{{1}{2}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Crazyflie 2.0 Quadrotor}{2}}
+\citation{bitcraze}
+\citation{bitcraze}
+\citation{Hoenig2015}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The CrazyFlie quadrotor from BitCraze\relax }}{3}}
 \newlabel{fig:cf}{{2}{3}}
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Picture from \cite {bitcraze}}}}{3}}
-\@writefile{toc}{\contentsline {subsubsection}{Firmware}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Robot Operating System}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}OptiTrack Motion Capture System}{3}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Quadrotor dynamics}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}State representation}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}OptiTrack Motion Capture System}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Robot Operating System}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Quadrotor Dynamics}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}State Representation}{4}}
 \newlabel{fig:frameBody}{{3a}{4}}
 \newlabel{sub@fig:frameBody}{{(a)}{a}}
 \newlabel{fig:frameBodyX}{{3b}{4}}
@@ -41,119 +40,186 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Roll $\phi $, Pitch $\theta $ and Yaw $\psi $ Angles\relax }}{6}}
 \newlabel{fig:attitude}{{4}{6}}
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Drawing from \cite {Diebel2006}}}}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Newton-Euler equations}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Newton-Euler Rquations}{7}}
 \newlabel{sec:dynamicsEquations}{{3.2}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{8}}
-\newlabel{fig:forceMoment}{{5}{8}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Full model}{8}}
-\citation{Krause2002}
-\citation{Parrish1997}
-\citation{Bonabeau1999}
-\citation{Reynolds1987}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Force and torques applied on the CrazyFlie\relax }}{7}}
+\newlabel{fig:forceMoment}{{5}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Model}{8}}
+\citation{Krause2002,Parrish1997}
+\citation{Bonabeau1999,Reynolds1987}
 \citation{Beni2004}
-\citation{Arkin1999}
-\@writefile{toc}{\contentsline {section}{\numberline {4}High-Level Control - Formation Control}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Taxonomy}{10}}
+\citation{Chen2005,Arkin1999}
 \citation{Mataric2002}
+\@writefile{toc}{\contentsline {section}{\numberline {4}High-Level Control - Formation Control}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Formation Taxonomy}{9}}
 \citation{Arkin1999}
-\citation{Mataric2002}
-\citation{Pugh2009}
-\citation{Gowal2013}
-\citation{Falconi2010}
 \citation{Arkin1999}
+\citation{Manikonda1999,Lim2009,Fukushima2013,Shin2009,Zhao2014}
+\citation{Dunbar2002,Chao2011,Kuriki2015,Chao2012}
+\citation{Wang2007}
 \citation{Pugh2009}
-\citation{Ren2005}
-\citation{Gowal2013}
-\newlabel{fig:unitCenter}{{6a}{11}}
-\newlabel{sub@fig:unitCenter}{{(a)}{a}}
-\newlabel{fig:graphLeader}{{6b}{11}}
-\newlabel{sub@fig:graphLeader}{{(b)}{b}}
-\newlabel{fig:graphNeighbor}{{6c}{11}}
-\newlabel{sub@fig:graphNeighbor}{{(c)}{c}}
+\citation{Arkin1999}
+\citation{Scattolini2009}
+\newlabel{fig:leader}{{6a}{11}}
+\newlabel{sub@fig:leader}{{(a)}{a}}
+\newlabel{fig:neighbor}{{6b}{11}}
+\newlabel{sub@fig:neighbor}{{(b)}{b}}
+\newlabel{fig:neighborLeader}{{6c}{11}}
+\newlabel{sub@fig:neighborLeader}{{(c)}{c}}
+\newlabel{fig:unitCenter}{{6d}{11}}
+\newlabel{sub@fig:unitCenter}{{(d)}{d}}
+\newlabel{fig:virtual}{{6e}{11}}
+\newlabel{sub@fig:virtual}{{(e)}{e}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The taxonomy illustrated for a diamond-shaped formation\relax }}{11}}
 \newlabel{fig:graphs}{{6}{11}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {The unit-centered formation}}}{11}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {The leader-referenced formation}}}{11}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {A neighbor referenced formation}}}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Implementation}{11}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {A leader-referenced formation}}}{11}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {A neighbor-referenced formation}}}{11}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {A neighbor-referenced formation with formation leader}}}{11}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {A unit-centered formation}}}{11}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {A purely virtual formation}}}{11}}
+\citation{Arkin1999,Mataric2002,Pugh2009}
+\citation{Gowal2013,Falconi2010}
+\citation{Manikonda1999,Chao2011,Wang2007,Lim2009,Kuriki2015,Dunbar2002,Fukushima2013,Shin2009,Zhao2014,Chao2012}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Control Architecture}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{Centralized, Decentralized and Distributed Control}{12}}
+\newlabel{fig:controlArchiCent}{{7a}{13}}
+\newlabel{sub@fig:controlArchiCent}{{(a)}{a}}
+\newlabel{fig:controlArchiDistrib}{{7b}{13}}
+\newlabel{sub@fig:controlArchiDistrib}{{(b)}{b}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Graph-based controllers. The gray rectangle represent the part of the architecture running on the Crazyflie.\relax }}{13}}
+\newlabel{fig:controlArchi}{{7}{13}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Centralized Control Architecture}}}{13}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Decentralized Control Architecture}}}{13}}
+\citation{Arkin1999,Pugh2009}
+\citation{Ren2004}
+\citation{Ren2005}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Outer Controller}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{Fomation Controllers}{14}}
 \citation{Gowal2013}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces An example of attractive potential field\relax }}{12}}
-\newlabel{fig:potentialEx}{{7}{12}}
+\newlabel{fig:potentialTraj}{{8a}{15}}
+\newlabel{sub@fig:potentialTraj}{{(a)}{a}}
+\newlabel{fig:potentialEx}{{8b}{15}}
+\newlabel{sub@fig:potentialEx}{{(b)}{b}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Potential field controllers\relax }}{15}}
+\newlabel{fig:potentialCont}{{8}{15}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {A trajectory in a potential field with local minima}}}{15}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {An example of 1-D potential field with dead zone}}}{15}}
 \citation{Moreau2005}
 \citation{Borelli2015}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Control Architecture}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Outer Controller}{13}}
-\citation{Pontryagin1987}
-\citation{Lewis2006}
-\citation{Murray2010}
-\@writefile{toc}{\contentsline {subsubsection}{Implementation}{14}}
+\newlabel{fig:laplacianTraj}{{9a}{16}}
+\newlabel{sub@fig:laplacianTraj}{{(a)}{a}}
+\newlabel{fig:laplacianDist}{{9b}{16}}
+\newlabel{sub@fig:laplacianDist}{{(b)}{b}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Graph-based controllers\relax }}{16}}
+\newlabel{fig:laplacianCont}{{9}{16}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Formation control with Laplacian feedback}}}{16}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Minimal inter-robot distance. Collision cannot be avoided}}}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Model Predictive Controllers}{16}}
+\citation{Haverbeke2011}
+\citation{Pannocchia2007}
+\@writefile{toc}{\contentsline {subsubsection}{Optimization}{17}}
+\citation{Wang2008}
+\citation{Haverbeke2011,Nocedal1999,Zheng2015}
+\citation{Zheng2015}
+\citation{Zheng2015}
+\citation{Richter2012}
+\citation{Ohtsuka2004}
+\citation{Wang2008}
+\citation{Tenny2002}
+\citation{Ohtsuka2004}
+\citation{Pontryagin1987,Lewis2006,Murray2010}
 \citation{Ohtsuka2004}
 \citation{Allgower1987}
 \citation{Kelley1995}
-\newlabel{eq:dotUFromF}{{1}{16}}
+\newlabel{eq:dotUFromF}{{1}{21}}
 \citation{Bjorck1996}
-\@writefile{toc}{\contentsline {subsubsection}{Model}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{Constraints}{19}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Low-Level Control}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Inner Controller}{20}}
-\newlabel{sec:innerControl}{{5.1}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{State and reference acquisition}{20}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Reference and inner control architecture configuration\relax }}{20}}
-\newlabel{tab:setpointConfig}{{1}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{Controllers}{21}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Roll cascade controller architecture\relax }}{21}}
-\newlabel{fig:controllerCascade}{{8}{21}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces PID controller architecture\relax }}{21}}
-\newlabel{fig:controllerPID}{{9}{21}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Gains and integral limit of the inner PID controllers\relax }}{21}}
-\newlabel{tab:controllerInnerGains}{{2}{21}}
-\@writefile{toc}{\contentsline {subsubsection}{Motor distribution}{22}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Command summation for a $+$ flying configuration\relax }}{22}}
-\newlabel{tab:motorDistribution}{{3}{22}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{Model}{23}}
+\@writefile{toc}{\contentsline {subsubsection}{Constraints}{24}}
+\@writefile{toc}{\contentsline {subsubsection}{Cost Function}{24}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Low-Level Control - Attitude Control}{25}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Inner Controller}{25}}
+\newlabel{sec:innerControl}{{5.1}{25}}
+\@writefile{toc}{\contentsline {subsubsection}{State and Reference Acquisition}{25}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Reference and inner control architecture configuration\relax }}{25}}
+\newlabel{tab:setpointConfig}{{1}{25}}
+\@writefile{toc}{\contentsline {subsubsection}{Controllers}{26}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Roll cascade controller architecture\relax }}{26}}
+\newlabel{fig:controllerCascade}{{10}{26}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces PID controller architecture\relax }}{26}}
+\newlabel{fig:controllerPID}{{11}{26}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Gains and integral limit of the inner PID controllers\relax }}{26}}
+\newlabel{tab:controllerInnerGains}{{2}{26}}
+\@writefile{toc}{\contentsline {subsubsection}{Motor Distribution}{27}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Command summation for a $+$ flying configuration\relax }}{27}}
+\newlabel{tab:motorDistribution}{{3}{27}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{27}}
+\citation{bitcrazeWiki}
 \citation{Mataric2002}
 \citation{Arkin1999}
 \citation{Mataric2002}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Results - Experiment}{23}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Measuring stability}{23}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Measuring robustness}{23}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Evaluation}{23}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Radio Delay Estimation}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Motion Capture Caracterization}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Yaw Control}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Posiiton Control}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Controlled Trajectory}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.9}Without Speed Reference}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.10}With Speed Reference}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.11}Control Loop Timing}{24}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.12}Other Results}{24}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Improvement}{25}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{26}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results - Experiment}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Assumptions and Simplifications}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Measuring Stability}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Measuring Robustness}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Evaluation}{28}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Radio Delay Estimation}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Motion Capture System Characterization}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Yaw Control}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Position Control}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9}Controlled Trajectory}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10}Without Speed Reference}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.11}With Speed Reference}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.12}Control Loop Timing}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.13}Other Results}{29}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Improvement}{30}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{31}}
 \bibstyle{ieeetr}
 \bibdata{biblio}
 \bibcite{Suzuki2014}{1}
 \bibcite{bitcraze}{2}
-\bibcite{Diebel2006}{3}
-\bibcite{Krause2002}{4}
-\bibcite{Parrish1997}{5}
-\bibcite{Bonabeau1999}{6}
-\bibcite{Reynolds1987}{7}
-\bibcite{Beni2004}{8}
-\bibcite{Arkin1999}{9}
-\bibcite{Mataric2002}{10}
-\bibcite{Pugh2009}{11}
-\bibcite{Gowal2013}{12}
-\bibcite{Falconi2010}{13}
-\bibcite{Ren2005}{14}
-\bibcite{Moreau2005}{15}
-\bibcite{Borelli2015}{16}
-\bibcite{Pontryagin1987}{17}
-\bibcite{Lewis2006}{18}
-\bibcite{Murray2010}{19}
-\bibcite{Ohtsuka2004}{20}
-\bibcite{Allgower1987}{21}
-\bibcite{Kelley1995}{22}
-\bibcite{Bjorck1996}{23}
+\bibcite{Hoenig2015}{3}
+\bibcite{Diebel2006}{4}
+\bibcite{Krause2002}{5}
+\bibcite{Parrish1997}{6}
+\bibcite{Bonabeau1999}{7}
+\bibcite{Reynolds1987}{8}
+\bibcite{Beni2004}{9}
+\bibcite{Chen2005}{10}
+\bibcite{Arkin1999}{11}
+\bibcite{Mataric2002}{12}
+\bibcite{Manikonda1999}{13}
+\bibcite{Lim2009}{14}
+\bibcite{Fukushima2013}{15}
+\bibcite{Shin2009}{16}
+\bibcite{Zhao2014}{17}
+\bibcite{Dunbar2002}{18}
+\bibcite{Chao2011}{19}
+\bibcite{Kuriki2015}{20}
+\bibcite{Chao2012}{21}
+\bibcite{Wang2007}{22}
+\bibcite{Pugh2009}{23}
+\bibcite{Scattolini2009}{24}
+\bibcite{Gowal2013}{25}
+\bibcite{Falconi2010}{26}
+\bibcite{Ren2004}{27}
+\bibcite{Ren2005}{28}
+\bibcite{Moreau2005}{29}
+\bibcite{Borelli2015}{30}
+\bibcite{Haverbeke2011}{31}
+\bibcite{Pannocchia2007}{32}
+\bibcite{Wang2008}{33}
+\bibcite{Nocedal1999}{34}
+\bibcite{Zheng2015}{35}
+\bibcite{Richter2012}{36}
+\bibcite{Ohtsuka2004}{37}
+\bibcite{Tenny2002}{38}
+\bibcite{Pontryagin1987}{39}
+\bibcite{Lewis2006}{40}
+\bibcite{Murray2010}{41}
+\bibcite{Allgower1987}{42}
+\bibcite{Kelley1995}{43}
+\bibcite{Bjorck1996}{44}
+\bibcite{bitcrazeWiki}{45}
 \@writefile{toc}{\contentsline {section}{Appendices}{I}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A}Attitude estimation}{I}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}Attitude Estimation}{I}}
 \newlabel{app:att_estim}{{A}{I}}
