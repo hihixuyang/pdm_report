@@ -169,8 +169,9 @@ NMPC \dotfill & Nonlinear Model Predictive Control \\
 IP \dotfill & Interior Point \\
 LP \dotfill & Linear Programming \\
 QP \dotfill & Quadratic Programming \\
-LQP \dotfill & Linearly Constrained Quadratic Programming \\
+LQP \dotfill & Linearly Constrained QP \\
 SQP \dotfill & Sequential Quadratic Programming \\
+KKT \dotfill & Karush–Kuhn–Tucker conditions \\
 GMRES \dotfill & Generalized Minimum Residual method \\
 C/GMRES \dotfill & Continuation-GMRES method \\
 ROS \dotfill & Robot Operating System \\
@@ -300,7 +301,7 @@ Finally the last convention is the unit quaternion. The unit quaternion is a 4-d
 Although they benefit from most of the tools of complex algebra such as:
 \[ \boldsymbol{\bar q} = \begin{bmatrix} q_0 \\ -\boldsymbol{q}_{1:3} \end{bmatrix},  \quad \norm{\boldsymbol{q}} = \sqrt{q_0^2 + q_2^2 + q_3^2 + q_4^2}, \quad \boldsymbol{q}^{-1} = \frac{\boldsymbol{\bar q}}{ \norm{\boldsymbol{q}}} \]
 The multiplication is now non-commutative:
-\[\boldsymbol{q} \cdot \boldsymbol{p} = \begin{bmatrix} q_0p_0 - \boldsymbol{q}^T_{1:3}\boldsymbol{p}_{1:3} \\ q_0\boldsymbol{p}_{1:3} + p_0\boldsymbol{q}_{1:3} - \boldsymbol{q}_{1:3} \times \boldsymbol{p}_{1:3} \end{bmatrix} \]
+\[\boldsymbol{q} \cdot \boldsymbol{\lambda} = \begin{bmatrix} q_0p_0 - \boldsymbol{q}^T_{1:3}\boldsymbol{\lambda}_{1:3} \\ q_0\boldsymbol{\lambda}_{1:3} + p_0\boldsymbol{q}_{1:3} - \boldsymbol{q}_{1:3} \times \boldsymbol{\lambda}_{1:3} \end{bmatrix} \]
 Equivalently, as with rotation matrices, a vector in the world frame can be mapped in the body frame:
 \[ \begin{bmatrix} 0 \\ \boldsymbol{v_B} \end{bmatrix}  = \boldsymbol{q} \cdot \begin{bmatrix} 0 \\ \boldsymbol{v_W} \end{bmatrix} \cdot \boldsymbol{q}^{-1} \]
 
@@ -435,8 +436,7 @@ Independently of the implementation, the control can be divided in two loops, th
 \label{fig:controlArchi}
 \end{figure}
 
-\subsection{Outer Controller}
-\subsubsection{Fomation Controllers}
+\subsection{Fomation Controllers}
 
 Formation control has been implemented in various ways among which, behavior-based control \cite{Arkin1999, Mataric2002, Pugh2009}, graph-based control  \cite{Gowal2013, Falconi2010} are the most common. Both of these methods can easily be implemented either in a centralized or in a decentralized manner for any of the configuration presented previously using relative localization sensors and IDs or communication. Another possibility, and the one explored in this project, consists of using an Model Predictive controller. It has already been successfully implemented for various type of formations, with and without collision avoidance \cite{Manikonda1999, Chao2011, Wang2007, Lim2009, Kuriki2015,Dunbar2002,Fukushima2013,Shin2009,Zhao2014,Chao2012}. At the price of heavier computational complexity, additional capabilities can be introduced in the controller formulation, such as obstacle and collision avoidance. In addition to that, it is the only method, among the three presented able to constrain the states or the input commands sent to the robot and to provide a prediction of the state trajectory.
 
@@ -455,8 +455,8 @@ Where $F_{f,i}$ is the reference position in formation, $r_i$ the current positi
 Considering, graph-based controllers, only virtual structure formations can be implemented. The controllers are derived from the so-called consensus problems, in which a set of agent with different initial states converge iteratively to a single final state, identical for all agents \cite{Ren2005}. Using notions of graph-theory, a formation can easily be induced (c.f.: figure~\ref{fig:laplacianTraj}). Moreover, while obstacle avoidance can easily be implemented, collision avoidance with others robot cannot (c.f.: figure~\ref{fig:laplacianDist}). Nevertheless, as stated before for virtual structures, remotely controlling the formation can be tough, especially in case of decentralized controller.  In order to derive a controller, the following notions are required:
 \begin{itemize}
 \item $\mathcal{G} = <\mathcal{N}, \mathcal{E}>$, an (un)directed graph.
-\item $\mathcal{N} = \{R_1, \cdots, R_n\}$, the finite nodes set,  with $n$, the number of robots.
-\item $\mathcal{E} \in \mathcal{N}^2, \mathcal{E} = \{(Ri,Rj)| R_i, R_j \in \mathcal{N} and\ i \neq j\} = \{e_1, \cdots, e_m\} $, the (un)directed finite edges set.
+\item $\mathcal{N} = \{R_1, \ldots, R_n\}$, the finite nodes set,  with $n$, the number of robots.
+\item $\mathcal{E} \in \mathcal{N}^2, \mathcal{E} = \{(Ri,Rj)| R_i, R_j \in \mathcal{N} and\ i \neq j\} = \{e_1, \ldots, e_m\} $, the (un)directed finite edges set.
 \item $A \in  \mathbb{R}^{n \times n} $, the adjacency matrix is a symmetric matrix representing the connections between the nodes:
 \[a_{ij} =  \left\{ \begin{matrix*}[l] 1 & if\ (R_i, R_j)\ or\ (R_j, R_i) \in \mathcal{E} \\ 0 & else \end{matrix*} \right.\]
 \item $D \in  \mathbb{R}^{n \times n} $, the degree matrix is a symmetric matrix, whose diagonal elements represent the cardinality of each node (i.e.: the sum of edges originating or arriving in this node):
@@ -470,7 +470,7 @@ Considering, graph-based controllers, only virtual structure formations can be i
 The Laplacian and the weighted Laplacian matrices benefits from one interesting property: they positive-semidefinite. This implies that all eigenvalues are nonnegative and, furthermore, at least one eigenvalue is equal to zero. Proofs can be found in \cite{Gowal2013}. 
 
 The feedback law, for state $i$ of all nodes in a N-state system is:
-\[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, \cdots, N \]
+\[ \boldsymbol{\dot x_i}(t) = - L\boldsymbol{x_i}(t)\ for\ i=1, \ldots, N \]
 \[\boldsymbol{x_i}(t) \in \mathbb{R}^n\]
 
 The discrete equivalent of the Laplacian feedback control matrix, $L_k \in \mathbb{R}^{n \times n}$, is the stochastic weight of links matrix \cite{Moreau2005}. In a stochastic matrix, the sum of every row is equal to one. Therefore, 1 is an eigenvalue and $\boldsymbol{1}_n$ is the corresponding eigenvector.
@@ -484,7 +484,7 @@ The discrete equivalent of the Laplacian feedback control matrix, $L_k \in \math
 \label{fig:laplacianCont}
 \end{figure}
 
-\subsection{Model Predictive Controllers}
+\subsection{Model Predictive Controller}
 
 The outer position controller is part of the model predictive controller, or receding horizon controller, family. This type of nonlinear controllers are especially well suited for constrained application, strongly nonlinear systems or, as the name implies, when future knowledge is desirable \cite{Borelli2015}. In a standard implementation, the controller plans a series of $N$ discrete actions for the open-loop problem, corresponding to the following $N$ time steps by solving a constrained optimization problem. $N$ is referred to as the horizon length. And the longer the horizon length, the closer the open-loop prediction (the $N$ planned actions) from the actual closed-loop trajectory. Because the model of the plant is often inaccurate, or because the environment is evolving, the optimization process is repeated every time-step, after executing only the first of the $N$ planned input actions. This series of planning, acting once, measuring, re-planning actions closes the control loop. Despite it's power and its numerous abilities, MPC suffers from a very high computational cost compared to traditional control methods. Moreover, guaranteeing stability, robustness and feasibility and optimality is a constant trade-off problem.
 
@@ -503,107 +503,106 @@ Providing an exhaustive list of solvers for nonlinear constrained optimization i
 
 Offline computing consists in explicitly computing the control law for each state (or region of active constraints) and to store it in a table. Most of the computational burden is therefore moved to efficiently search the look-up table for a solution. But, as soon as the number of states, constraints or horizon length increase, the storage requirements increase as well, and exponentially. Therefore, despite being among the fastest algorithms, these methods are limited to small-scale problems \cite{Haverbeke2011}. However Partial Enumeration has been able to tackle large problems for which typical offline and online algorithms are not performing well enough. Although, the solution is not completely computed offline, a subset composed of the most frequent states are. The algorithm stores solutions for the most frequently encountered active sets of constraints and perform online table search. When the solution is not available in the table, several methods exist to compute a sub-optimal but acceptable solution online. The table is constantly kept updated to store only the most recurring sets of active constraints. The main disadvantage of this method is its limitation to QP problems \cite{Pannocchia2007}. 
 
-On the other side, online methods have to solve the optimization problem in every cycle. Surprisingly no commonly accepted categorization has been found. Maybe because of the enormous quantity of problems (QP, LP, least-squares,...) and the huge, already available number of efficient solvers. Especially concerning nonlinear optimization, each author seems to use its own defined terminology. Nonetheless, despite different names, some categories seems to be recurrent across the literature. The main axes of classification are mainly the problem structure (LP, QP, nonlinear) and local versus global search \cite{Haverbeke2011, Nocedal1999, Zheng2015}. Although these categories are not  In what followa, a non-exhaustive presentation of different solving methods are presented.
+On the other side, online methods have to solve the optimization problem in every cycle. Surprisingly no commonly accepted categorization has been found. Maybe because of the enormous quantity of problems (QP, LP, least-squares,...) and the huge, already available number of efficient solvers. Especially concerning nonlinear optimization, each author seems to use its own defined terminology. Nonetheless, despite different names, some categories seems to be recurrent across the literature. The main axes of classification are mainly the problem structure (LP, QP, nonlinear) and local versus global search \cite{Haverbeke2011, Nocedal1999, Zheng2015}. Although these categories are not  In what follows, a non-exhaustive presentation of different solving methods are presented.
 
 \begin{itemize}
-\item \emph{Newton-type Methods}: It is certainly the most common type of algorithms to sole nonlinear problems. The main principle is, first, to search for a step direction and then move along this direction until the appropriate step size. Iteratively, a travel through improving solution is made until a local minimum is reached. While iterative process can be time consuming, for special kind of problems, a (good) solution can be obtained efficiently or even analytically. It is the case for convex problem formulations such as LP or QP for which many real-time algorithm are available. \cite{Nocedal1999, Wang2008}. Nevertheless, for nonlinear problems, the problem structure cannot be exploited anymore. 
-\item \emph{Genetic Algorithm}: GA are bio-inspired method based on the evolution process. In summary, a population of possible solution is evaluated given a fitness function. The fittest representatives are selected and allowed to generate offsprings through linear and nonlinear combinaitons on one or several of their genotype. The process is repeated until a stop criterion is reached. GA are well-suited for nonconvex and or nonlinear objective functions as many solutions are evaluated and the probalbility of being stuck in a local minimum is low. Nevertheless, evaluating several individual solutions over several generations is time-consuming. \cite{Zheng2015}
-\item \emph{Fuzzy-MPC}: Fuzzy-MPC is a rule-based controller in which, depending on the initial state, a different model representation and/or a different constraints set is used. Depending on the granularity of the state space rules, offline precomputation can require a non-negligeable storage. Therefore, LQP representation are usually used to benefit from efficient algorithms. Despite the linear models and constraints, these controllers seems to achieve good performance for nonlinear problems. But they currently lack of proven applications and performances.\cite{Zheng2015}.
+\item \emph{Gradient methods}: It is certainly the most common type of algorithms to solve linear and nonlinear problems. The main principle is, first an unconstrained version of the problem, to search for a step direction and then move along this direction until the appropriate step size. Iteratively, a travel through improving solution is made until a local minimum is reached. While iterative process can be time consuming, for special kind of problems, a (good) solution can be obtained efficiently or even analytically. It is the case for convex problem formulations such as LP or QP for which many real-time algorithm are available. \cite{Nocedal1999, Wang2008}. Nevertheless, for nonlinear problems, the problem structure cannot be exploited anymore and further refinement have to be made.
+\item \emph{Genetic algorithm}: GA are bio-inspired method based on the evolution process. In summary, a population of possible solution is evaluated given a fitness function. The fittest representatives are selected and allowed to generate offspring through linear and nonlinear combinations on one or several of their genotype. The process is repeated until a stop criterion is reached. GA are well-suited for nonconvex and or nonlinear objective functions as many solutions are evaluated and the probability of being stuck in a local minimum is low. Nevertheless, evaluating several individual solutions over several generations is time-consuming. \cite{Zheng2015}
+\item \emph{Fuzzy Methods}: In Fuzzy MPC the state space is divided, following a rule-based procedure. Depending on the current state, different LQP representation of the model are used. However, depending on the granularity of the state space rules, offline pre-computation can require a non-negligible storage. Despite the linear models and constraints, these controllers seems to achieve good performance for nonlinear problems. But they currently lack of proven applications and performances.\cite{Zheng2015}.
 \end{itemize}
 
 
-For fast NNMPC, two choices are then possible, offline method or Newton-type method. Due to the number of states and constraints to consider, the final choice is to consider a Newton-type method. Once again we can part this group in categories. Sequential Quadratic Programming or Interior-Point methods. 
-In both case, the problem requires the derivation of the KKT conditions have to be derived. Note that satisfying the KKT conditions will only ensure local optimum. The most common way to solve nonlinear MPC problems are interior-point methods (unconstrained optimization) and SQP. With interior-point methods, the constraints are usually softened or add to the objective as penalty functions and then an unconstrained nonlinear problem is solved. SQP, on the other hand, linearize the problem at each time step and apply QP methods. Another possibility is to linearize the system once around an equilbrium point and use standard convex solvers. \cite{Haverbeke2011, Nocedal1999, Zheng2015}. A general recipe is a way to handle inequality constraints, computing a descent direction and computing the step length.
+For fast NMPC, two choices are then possible, offline or gradient method. Due to the number of states and constraints to consider, the final choice was made to use the latter. Once again we can part this group in two categories. Sequential Quadratic Programming and Interior Point Methods. The second denomination comprises penalty (including barrier) and more generally augmented Lagrangian methods (or methods of multipliers). With these methods, the goal is, usually to transform the current constrained problem into an unconstrained (or equality constrained one) on which nonlinear gradient method can be applied. In SQP, at each step, the cost function and the constraints are linearized to produce an LQP problem which can be efficiently solved using traditional methods.
 
-As seen above, time required to solve the optimization, even if the problem is convex, is always relatively high to provide a solution. In NMPC, this solution is not even ensured to be the global optimum. Given this and the available documentation, a Newton-type method has been chose. Most of the cost, in terms of computational time, is linked to the numerous iterations required to provide a good solution. Nevertheless, several artifacts can be used to fasten the computation process, for linear and nonlinear problems. First a warm-starting strategies, consisting of providing a good starting point, allows to reduce significantly the number of iterations. More simply, limiting the number of iteration in a loop can be a great gain of time. Although, it is achieved at the cost of suboptimality, it can still provide good enough solutions. Several methods exist also to determine the step direction: steepest descent, fast Nesterov fat gradient \cite{Richter2012}, Krylov-subspace \cite{Ohtsuka2004}. Every choice is a tradeoff between speed of convergence, storage, robustness, computational cost and more. For QP problems, a strategic variable reordering can make arise a specific matrix structure, which results in a reduced computational cost. \cite{Wang2008}.
+Barrier methods, using a logarithmic penalty function, has a neat advantage on the others when it come to LP or QP as it can exploit the typical structure of the problem. However in nonlinear case, it is often less performing than the two others. Both ot these methods has its strength and weaknesses. Augmented Lagrangian requires less mathematical assumptions on the cost and constraints functions, which makes it more general. Moreover they benefit from the simpler framework of unconstrained optimization. On the other hand, SQP usually requires fewer iterations but has to solve a more complex subproblem, which is linearization. \cite{Bertsekas1999, Ruszczynski2006, Nocedal1999, Haverbeke2011,Zheng2015, Tenny2002}
 
-SQP \cite{Tenny2002}
+Before the final choice, a quick recall on nonlinear constrained optimization.
+The Karush–Kuhn–Tucker conditions have to be derived and solved. Note that the KKT are first order necessary conditions for optimality, therefore they only ensure local optimum. Let us consider a general nonlinear problem:
+\[ \min\limits_{\boldsymbol{x}} f(\boldsymbol{x}) \]
+\[ s.t \quad h_i(\boldsymbol{x}) = 0 \quad i =1, ..., k \]
+\[\quad f_j(\boldsymbol{x}) \leq 0 \quad j =1, ..., l \]
 
-Given the formation control with collision avoidance problem, a nonlinear method is required. Given the problem, nothing seems to restrict the use of the algorithm to SQP or IP, therefore Ohtsuka's C/GMRES is chosen.\cite{Ohtsuka2004}.
+The KKT says that for a (local) optimum solution $\boldsymbol{x}^*$, there exist unique multipliers vectors $\boldsymbol{\lambda}^*$ and $\boldsymbol{\mu}^*$such that:
+\[ L(\boldsymbol{x},\boldsymbol{\lambda},\boldsymbol{\mu}) := f(\boldsymbol{x}) + \sum_{i=1}^k h_i\lambda_i  + \sum_{j=1}^l f_j\mu_i \]
+\[ \nabla_x L(\boldsymbol{x}^*,\boldsymbol{\lambda}^*,\boldsymbol{\mu}^*) =  \boldsymbol{0} \]
+\[h_i(\boldsymbol{x}^*) = 0 \quad i =1, ..., k \]
+\[f_j(\boldsymbol{x}^*) \leq 0 \quad j =1 ,..., l \] 
+\[ \boldsymbol{\mu}^* \geq  \boldsymbol{0}  \]
+\[f_j(\boldsymbol{x}^*) \mu_j^* = 0 \quad j =1, ..., l \]
 
-Formally, the C/GMRES method is not an interior point method, it can be assimiled to an augmented Lagrangian method with penalty function for inequalities.
+One of the main difference between IP methods and SQP is the interpretation of the last three constraints. In the latter, they are applied to the linearized system and, in the former,  because the inequality constraints are included in the cost functions, the KKT conditions become \cite{Haverbeke2011}:
+\[ \nabla_x L(\boldsymbol{x}^*,\boldsymbol{\lambda}^*,\boldsymbol{\mu}^*) =  \boldsymbol{0} \]
+\[h_i(\boldsymbol{x}^*) = 0 \quad i =1, ..., k \]
+\[f_j(\boldsymbol{x}^*) \mu_j^* = \tau \quad j =1, ..., l \]
+With $\tau$ a parameter depending of the penalty function used.
 
-\textcolor{red}{direct, indirect (Euler-Lagrange), DP methods (Hamilton-Jacobi-Bellman)}
+As seen above, time required to solve the optimization, even if the problem is convex, is always relatively high. In NMPC, this solution is not even ensured to be the global optimum even though globalization techniques exist.  Most of the cost, in terms of computational time, is caused by the iterative requirements of gradient methods. Nevertheless, several artifacts can be used to fasten the computation process, for linear and nonlinear problems. First, warm-starting strategies, consisting of providing a good starting point, allows to reduce the number of iteration. More simply, limiting the number of iteration, or premature termination can generate a great gain of time. Although,suboptimal solutions are provided, they are often good enough. Moreover, several methods exist also to determine the step direction: steepest descent, Nesterov fat gradient \cite{Richter2012}, Krylov-subspace \cite{Ohtsuka2004}. Every choice is a trade-off between speed of convergence, storage, robustness, computational cost and more. For QP problems, a strategic variable reordering can make arise a specific matrix structure, which results in a reduced computational cost. \cite{Wang2008}.
 
-Nonlinear Optimization: local optimum.
+Despite, SQP seems to be faster, the choice has been made to use an IP method, the Continuation-Generalized Minimum Residual method.\cite{Ohtsuka2004}. In this method, iterations are extremely limited which make it extremely fast and able to run the controller for the formation control problem. More objectively, both type of methods could have been applied and if the time was allowing it, a comparison would have been made.
 
+More specifically, the C/GMRES method can be assimilated to an augmented Lagrangian method with penalty function for inequalities. Its expression is derived form the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. The maximum principle is a necessary condition of optimal control. A necessary and sufficient one, the Hamilton-Jacobi-Bellman equation, which needs to be satisfied on the whole state space is often intractable.
 
-In optimization-based control, such as MPC, a necessary condition for optimal trajectory in a control system $\Sigma$ is the Pontryagin maximum principle \cite{Pontryagin1987, Lewis2006, Murray2010}. A control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set
+A general control system is defined as follow, with $\mathcal{X} \subset \mathbb{R}^n$, the state set and $\mathcal{U} \subset \mathbb{R}^m$, the input set.
 \[ \Sigma = (\mathcal{X}, f, \mathcal{U}) \]
-\[ \Sigma: \dot x = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
+\[ \Sigma: \boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
 
-Two important objects need to be presented, the Lagrangian $\mathcal{L}$ and the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$. The Lagrangian is a continuous function defined as follow, and typically referred to as the stage cost of objective function $J_{\Sigma,\mathcal{L}}$:
-\[ \mathcal{L}: \mathcal{X} \times \bar{\mathcal{U}} \rightarrow \mathbb{R} \]
-\[ \mathcal{L} := \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{x} \in \mathcal{X},\ \boldsymbol{u} \in \mathcal{U} \]
+In order to minimize an objective function  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. Nevertheless another mathematical object can be used, the extended Hamiltonian. Note that the the extended Hamiltonian is, in control theory, the equivalent of the augmented Lagrangian. Therefore, it requires also the introduction of the co-state variable (or Lagrange multipliers) $\boldsymbol{\lambda}$:
 \[ J_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R_+} \rightarrow \mathbb{R} \]
-\[ J_{\Sigma,\mathcal{L}}(\boldsymbol{\xi}, \boldsymbol{\mu}, t) = \int_{t}^{t+T} \mathcal{L}(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))dt, \ (\boldsymbol{\xi}(t), \boldsymbol{\mu}(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
-
-The couple $(\boldsymbol{\xi}(t), \boldsymbol{\mu}(t))$ is called a trajectory.
-
-In order to minimize  $J_{\Sigma,\mathcal{L}}$, three necessary conditions can be derived. Nevertheless another mathematical object can be used, the extended Hamiltonian. It requires also the introduction of the co-state variable, or Lagrange multipliers $\boldsymbol{p}$:
+\[ J_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, t) = \int_{t}^{t+T} \mathcal{L}(\boldsymbol{x}(t), \boldsymbol{u}(t))dt, \ (\boldsymbol{x}(t), \boldsymbol{u}(t)) \in  \mathcal{X} \times \bar{\mathcal{U}}\]
 \[ \mathcal{H}_{\Sigma,\mathcal{L}}: \mathcal{X} \times \mathcal{U} \times \mathbb{R}^n \rightarrow \mathbb{R} \]
-\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}) = \boldsymbol{p}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
-To simplify equation and improve comprehensibility, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and written $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be simplified as $J$
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{\lambda}) = \boldsymbol{\lambda}^Tf(\boldsymbol{x}, \boldsymbol{u}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) \]
+To simplify the equations and lighten notation, the extended Hamiltonian $\mathcal{H}_{\Sigma,\mathcal{L}}$ will simply be called Hamiltonian and noted $\mathcal{H}$. As well as $J_{\Sigma,\mathcal{L}}$ will be noted $J$.
 
-The maximum principle states that, for an optimal trajectory $(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*)$ for cost function:
+The maximum principle states that, for an optimal trajectory $(\boldsymbol{x}^*, \boldsymbol{u}^*)$ for cost function:
 \[ J(\boldsymbol{x}, \boldsymbol{u}, t) = V(\boldsymbol{x}(t+T))  + \int_t^{t+T} \mathcal{L}(\boldsymbol{x}, \boldsymbol{u})dt\]
 \[ V: \mathcal{X} \rightarrow \mathbb{R} \]
 With $ V(\boldsymbol{x}(t+T))$, the terminal cost. Subject to:
 \[ \boldsymbol{\dot x} = f(\boldsymbol{x}, \boldsymbol{u}) \]
-\[ \psi_i(\boldsymbol{x}) = 0,\ i = 1, \cdots, q \]
-With $\psi(x)$, equality state constraints (often only for the terminal state). These constraints can be adjoined to the Hamiltonian with the help of another multiplier $\boldsymbol{v}$:
-\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = p^T f(\boldsymbol{x}, \boldsymbol{u}) + v^T\psi(\boldsymbol{x}) + \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}),\ \boldsymbol{v} \in \mathbb{R}^q \]
+\[ h_i(\boldsymbol{x}) = 0,\ i = 1, \ldots, k \]
+With $h_i(\boldsymbol{x})$, equality state constraints. These constraints can also be adjoined to the Hamiltonian, using another vector of co-state variables $\boldsymbol{\lambda}_h$:
+\[ \mathcal{H}_{\Sigma,\mathcal{L}}(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{\lambda}, \boldsymbol{v}) = \mathcal{L}(\boldsymbol{x}, \boldsymbol{u}) + \boldsymbol{\lambda}^T f(\boldsymbol{x}, \boldsymbol{u}) + \boldsymbol{\lambda}_h^Th(\boldsymbol{x}),\ \boldsymbol{\lambda}_h \in \mathbb{R}^k \]
 
-Then, there exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\nu}^*$ such that:
-\[ \boldsymbol{\dot \xi}^* = \mathcal{H}_p^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)  \qquad \boldsymbol{\dot \lambda}^*  = -\mathcal{H}_x^T (\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*)\]
-\[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{\xi}^*(t+T)) \]
-And:
-\[ H(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \leq H(\boldsymbol{\xi}^*, \boldsymbol{u}, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) \forall \boldsymbol{u} \in \mathcal{U} \]
-Additionally, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
-\[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{p}, \boldsymbol{v}) = \boldsymbol{0}_m \]
-
-Where $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
-\[ A_b = \nabla A = \left [ \frac{\partial \mathcal{A}}{\partial b_1} \cdots \frac{\partial \mathcal{A}}{\partial b_n} \right ] \]
+In the following, $A_b$ denotes either the gradient of a scalar field or the Jacobian of a vector function $A$ with respect to $\boldsymbol{b}$.
+\[ A_b = \nabla_b A = \left [ \frac{\partial \mathcal{A}}{\partial b_1} \ldots \frac{\partial \mathcal{A}}{\partial b_n} \right ] \]
 \[ A_b =  \begin{bmatrix} \frac{\partial A_1}{\partial b_1} & \frac{\partial A_1}{\partial b_2} & \cdots & \frac{\partial A_1}{\partial b_s}  \\ 
  \frac{\partial A_2}{\partial b_1} &  \frac{\partial A_2}{\partial b_2} & \cdots & \frac{\partial A_2}{\partial b_s}  \\ 
  \vdots &  \vdots & \ddots & \vdots  \\ 
  \frac{\partial A_r}{\partial b_1} &  \frac{\partial A_r}{\partial b_2} & \cdots & \frac{\partial A_r}{\partial b_s} \end{bmatrix}  \]
  
- \textcolor{red}{Hamilton–Jacobi–Bellman equation?}
-
-This last characteristic is part of the core of the Continuation-Generalized Minimum Residual Method (C/GMRES)\cite{Ohtsuka2004} used to solve the optimization process. Therefore, instead of constraining the input set, a penalty cost will be included in the Lagrangian such that the previous condition is satisfied.
-
-Note that Pontryagin maximum principle is only a necessary condition of optimal trajectory. A sufficient and necessary condition is the Hamilton-Jacobi-Bellman equation, but it must be satisfied on the whole state space. Note also that all the result are presented on a continuous time scale but they can be discretized.
-
-The C/GMRES method is a fast algorithm for nonlinear MPC exploiting the fact that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence using standard iterative methods.
+There exist $\boldsymbol{\lambda}^*$ and $\boldsymbol{\lambda}_h^*$ such that:
+\[ \boldsymbol{\dot x}^* = \mathcal{H}_\lambda^T (\boldsymbol{x}^*, \boldsymbol{u}^*, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*)  \qquad \boldsymbol{\dot \lambda}^*  = -\mathcal{H}_x^T (\boldsymbol{x}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*)\]
+\[ \boldsymbol{\lambda}(t+T)^* = V_x^T(\boldsymbol{x}^*(t+T)) \]
+And:
+\[ H(\boldsymbol{x}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*) \leq H(\boldsymbol{x}^*, \boldsymbol{u}, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*) \forall \boldsymbol{u} \in \mathcal{U} \]
+Additionally, if the input are unconstrained (i.e.: $\mathcal{U}=\mathbb{R}^m$), a necessary condition for optimal input sequence is:
+\[ \mathcal{H}_u (\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{\lambda}, \boldsymbol{\lambda}_h) = \boldsymbol{0}_m \]
+  
+This last characteristic is part of the foundations of the C/GMRES method. Therefore, instead of constraining the input set, a penalty function is incorporated in the Lagrangian such that $\mathcal{U}=\mathbb{R}^m$. Another exploited characteristic in the method, more globally related to nonlinear optimization, is that the optimal trajectory varies smoothly with respect to time. This part of the algorithm is what is called the continuation, or homotopy, method. It is strategically combined with GMRES in order to quickly solve large linear equations. The main idea of C/GMRES is to compute the derivative of the input sequence and to integrate it other time, instead of computing at each step a new input sequence.
 
 Starting from an approximated version of the optimization problem using forward discretization. For simplification,a mapping from $[t; t+T]$ to $[0; T]$ is performed and $\boldsymbol{x}(t = kT_s)$ is denoted $\boldsymbol{x}(k)$ with $T_s$ the sampling time.
 \[ J_k = V(\boldsymbol{x}(N)) + \sum_{k = 0}^{N-1} \mathcal{L}(\boldsymbol{x}(k), \boldsymbol{u}(k))T_s \]
 Subject to:
 \[ \boldsymbol{x}(k+1) = \boldsymbol{x}(k) + f(\boldsymbol{x}(k),\boldsymbol{u}(k))T_s \]
-\[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \cdots, q_k \]
+\[ \psi_i(\boldsymbol{x}(k)) = 0,\ i = 1, \ldots, q_k \]
 
 Then a discretized version of the Pontryagin principle for unconstrained input can be written:
-\[ \mathcal{H}_u(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) = \boldsymbol{0}_m \]
-\[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{\xi}^*, \boldsymbol{\mu}^*, \boldsymbol{\lambda}^*, \boldsymbol{\nu}^*) T_s\]
-\[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{\xi}^*(N)) \]
-The control input $\boldsymbol{\mu}^*$ and the multipliers $\boldsymbol{\nu}^*$ can be computed solving a set of N(m+q) equations. The vector U is defined as follow:
-\[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{v}(0), \boldsymbol{u}(1), \boldsymbol{v}(1), \cdots, \boldsymbol{u}(N-1), \boldsymbol{v}(N-1)]^T \]
-\[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u^T(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{p}(1), \boldsymbol{v}(0)) \\ \boldsymbol{\psi}(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}^T_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{p}(N), \boldsymbol{v}(N-1)) \\ \boldsymbol{\psi}(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
+\[ \mathcal{H}_u(\boldsymbol{x}^*, \boldsymbol{u}^*, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*) = \boldsymbol{0}_m \]
+\[ \boldsymbol{\lambda}^*(k)  = \boldsymbol{\lambda}_i^*(k+1) + \mathcal{H}_x^T(\boldsymbol{x}^*, \boldsymbol{u}^*, \boldsymbol{\lambda}^*, \boldsymbol{\lambda}_h^*) T_s\]
+\[ \boldsymbol{\lambda}^*(N) = V_x^T(\boldsymbol{x}^*(N)) \]
+The control input $\boldsymbol{u}^*$ and the multipliers $\boldsymbol{\lambda}_h^*$ can be computed solving a set of N(m+q) equations. The vector U is defined as follow:
+\[\boldsymbol{U} = [\boldsymbol{u}(0), \boldsymbol{\lambda}_h(0), \boldsymbol{u}(1), \boldsymbol{\lambda}_h(1), \ldots, \boldsymbol{u}(N-1), \boldsymbol{\lambda}_h(N-1)]^T \]
+\[F(\boldsymbol{U},\boldsymbol{x}) := \begin{bmatrix} \mathcal{H}_u^T(\boldsymbol{x}(0), \boldsymbol{u}(0), \boldsymbol{\lambda}(1), \boldsymbol{\lambda}_h(0)) \\ \boldsymbol{\psi}(\boldsymbol{x}(0)) \\ \vdots \\ \mathcal{H}^T_u (\boldsymbol{x}(N-1), \boldsymbol{u}(N-1), \boldsymbol{\lambda}(N), \boldsymbol{\lambda}_h(N-1)) \\ \boldsymbol{\psi}(\boldsymbol{x}(N-1))\end{bmatrix} = \boldsymbol{0}_{N(m+q)}\]
 
 To simplify notation, $F = F(\boldsymbol{U},\boldsymbol{x})$. Continuation method consists of, starting with a solution of a known problem, for example $F = 0$ at time $t$, computing the solution of another problem, about which few knowledge concerning solutions is known, for example $F = 0$ at time $t + T_s$ \cite{Allgower1987}. Applied to the controller, it means that the equations $F = \boldsymbol{0}_{N(m+q)}$ are not computed every sampling time. Instead $\boldsymbol{\dot U}$ is computed such that:
 \[ F(\boldsymbol{U} + \boldsymbol{\dot U}T_s,\boldsymbol{x} + \boldsymbol{\dot x} T_s) = \boldsymbol{0}_{N(m+q)} \]
-\begin{equation}
-\label{eq:dotUFromF}
-\boldsymbol{\dot U} = F_U^{-1}(A_s F - F_x \boldsymbol{\dot x}) 
-\end{equation}
-$A_s$ is a matrix whose role is to stabilize $F = \boldsymbol{0}_{N(m+q)}$ and $F_u$ is required to be nonsingular. \textcolor{red}{conditions on $A_s$}. A noticeable constraint of this method is the requirement to solve the system $F=0$ at least once at $t=0$.
+\[ \boldsymbol{\dot U} = F_U^{-1}(A_s F - F_x \boldsymbol{\dot x}) \]
+$A_s$ is a matrix whose role is to stabilize $F = \boldsymbol{0}_{N(m+q)}$ under certain conditions and $F_u$ is required to be nonsingular. A noticeable constraint of this method is the requirement to solve the system $F=0$ at least once at $t=0$.
 
 In order to reduce the cost of solving the linear equations, two additional tools are used, forward difference approximation for Jacobian and vector products, and the GMRES method for solving linear equations.
 The product approximation is computed as follow:
 \[ F_U(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{W} + F_x(\boldsymbol{U}, \boldsymbol{x}) \boldsymbol{w} \approx D_h F(\boldsymbol{U}, \boldsymbol{x} : \boldsymbol{W}, \boldsymbol{w}) := \frac{F(\boldsymbol{U} + h\boldsymbol{W}, \boldsymbol{x} + h\boldsymbol{w}) - F(\boldsymbol{U}, \boldsymbol{x})}{h} \]
 
-Then the linear equation~\ref{eq:dotUFromF} to solve becomes:
+Then the linear equation to solve becomes:
 \[ D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{\dot U}, 0) = A_s F(\boldsymbol{U}, \boldsymbol{x}) - D_h F(\boldsymbol{U}, \boldsymbol{x} : 0, \boldsymbol{\dot x}) := \boldsymbol{b}(\boldsymbol{U}, \boldsymbol{x}, \boldsymbol{\dot x}) \]
 
 The GMRES tool (or Forward Difference GMRES, FDGMRES, in \cite{Kelley1995}) is an iterative Krylov subspace method to solve linear systems of equations. It can be decomposed in three steps.
@@ -617,9 +616,9 @@ Then, the loop iteration while $k_{loop} < k_{loop,max}$:
 \item $k = k+1$
 \item Compute a new basis vector for $\mathcal{V}_\mathcal{K}$: $\boldsymbol{v}_{k+1} =  D_h F(\boldsymbol{U}, \boldsymbol{x}+ h\boldsymbol{\dot x} : \boldsymbol{v_k}, 0)$.
 \item Normalization, orthogonalization using Gramm-Schmidt process and construction of matrix $H_k$:
-\[ Loop: h_{j,k} = \boldsymbol{v}_{k+1}^T \boldsymbol{v}_j,\ \boldsymbol{v}_{k+1} = \boldsymbol{v}_{k+1} - h_{j,k}\boldsymbol{v}_j, \quad for\ j = 1, \cdots, k \]
+\[ Loop: h_{j,k} = \boldsymbol{v}_{k+1}^T \boldsymbol{v}_j,\ \boldsymbol{v}_{k+1} = \boldsymbol{v}_{k+1} - h_{j,k}\boldsymbol{v}_j, \quad for\ j = 1, \ldots, k \]
 \[ h_{k+1,k} = \norm{\boldsymbol{v}_{k+1}} \]
-\[ h_{k+1, j} =  0\quad for\ j = 1, \cdots, k-1 \]
+\[ h_{k+1, j} =  0\quad for\ j = 1, \ldots, k-1 \]
 \[ \boldsymbol{v}_{k+1} = \frac{\boldsymbol{v}_{k+1}}{\norm{\boldsymbol{v}_{k+1}}} \]
 \item Solve $\min\limits_{y_k}\norm{\beta \boldsymbol{e}_1 - H_k\boldsymbol{y}_k}$, with $\boldsymbol{y}_k in \mathbb{R}^k$.
 \item Residual length $\rho = \norm{\beta \boldsymbol{e_1} - H_k\boldsymbol{y}_k}$.
@@ -633,11 +632,11 @@ In the code, at iteration $k$, the matrix $G_k$ is computed:
 Which result in:
 \[ \min\limits_{y_k}(\norm{\prod\limits_{i=1}^k G_i(i, i+1, \theta_i) (\beta \boldsymbol{e}_1 - H_k \boldsymbol{y}_k)} \]
 
-Moreover, despite being iterative, this step is limited in number of iterations ($k_{max}$) to keep its influence small on the whole algorithm duration. \textcolor{red}{convergence speed, max iteration}
+As an iterative process, it is typically costly. However, limiting the number of iterations to $k_{max}$, keep its influence small on the whole algorithm duration but produces in a suboptimal solution.
 
 The final step is the computation of solution:
 \[ \boldsymbol{\dot U} = \boldsymbol{\hat{ \dot U}} + V_k \boldsymbol{y}_k \]
-With $V_k = [v_1, \cdots, v_k]$ the Krylov subspace basis $\mathcal{V}_\mathcal{K}$.
+With $V_k = [v_1, \ldots, v_k]$ the Krylov subspace basis $\mathcal{V}_\mathcal{K}$.
 
 Now, continuation and GMRES method can be combined to produce C/GMRES:
 \begin{enumerate}
@@ -651,49 +650,72 @@ Now, continuation and GMRES method can be combined to produce C/GMRES:
 \item k = k+1.
 \end{enumerate}
 
-\textcolor{red}{EFFICIENCY, CONVERGENCE SPEED, ROBUSTNESS, APPROXIMATION ERROR}
-
-
 \subsubsection{Model}
-The outer MPC controller controls the position and its derivative and the yaw angle, therefore a 7-states model is considered. 
+The model used in the formation controller, is very generic in order to be easily transferable to other flying (or terrestrial or swimming) platforms. It simply consists of the linear second order translational model augmented with heading control. 
 
-Furthermore, to remove the dependency of the position on the attitude and on the flying platform, the thrust force is represented as:
-\[ R_{BW}^T(x_7, x_8, x_9) \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B = \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \boldsymbol{u_{1:3}}\]
+It is constantly assumed that the working point around which the drone operate is  the hovering point given by:
+\[\boldsymbol{x_s} = \begin{bmatrix}\dot x \\ \dot y \\ \dot z \\ \ddot x \\ \ddot y \\ \ddot z \\ \dot \psi\end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0\end{bmatrix} \quad \boldsymbol{u_s} = \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ mg \\ 0\end{bmatrix} \]
 
-The inner controller, taking as references $\boldsymbol{r_{ic}} = [F_{zB} \ \phi \  \theta \ \dot \psi]^T$, an intermediary block, proper to quadrotors will be implemented to translate the output of the reduced model into adequate commands for the quadrotor.
+Then, the model for one drone is:
 
-The drag force, in a turbulent air flow, is usually defined as:
-\[ \boldsymbol{D} = -(\frac{1}{2} \norm{\boldsymbol{\dot r}}^2 C_D A) \frac{\boldsymbol{\dot r}}{\\norm{\boldsymbol{\dot r}}}\]
-Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid, $\rho$ is the air density, $C_D$  the drag coefficient and $A$t the cross-sectional area (i.e.: the maximal area of the quadrotor in the plane perpendicular to the speed vector $\boldsymbol{\dot r}$). For modeling purpose, it can be simplified as follow:
-\[ \boldsymbol{D} \approx -K_d(\psi) \norm{\boldsymbol{\dot r}} \boldsymbol{\dot r}\]
-
-\textcolor{red}{A DEVELOPPER}
-
-Then, to linearize the model, a working is required. Assuming the state stays around the hovering equilibrium, then only gravity is compensated.
-\[ \boldsymbol{u_s} = \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ mg \\ 0\end{bmatrix} \]
-
-The reduced linearized model is:
- \[\boldsymbol{x_r} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \psi]^T \]
-\[\boldsymbol{\dot x_r} =  A_r \boldsymbol{x_r} + B_r \boldsymbol{u} \]
+ \[\boldsymbol{x} =  [x \ y \ z \ \dot x \ \dot y \ \dot z \ \psi]^T \]
+\[\boldsymbol{\dot x} =  A \boldsymbol{x} + B \boldsymbol{u} \]
 \[\begin{bmatrix}\dot x \\ \dot y \\ \dot z \\ \ddot x \\ \ddot y \\ \ddot z \\ \dot \psi\end{bmatrix}  = 
 \begin{bmatrix}  0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix} 
 \begin{bmatrix} x \\ y \\ z \\ \dot x \\ \dot y \\ \dot z \\ \psi \end{bmatrix}  + \begin{bmatrix}  0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ \frac{1}{m} & 0 & 0 & 0 \\ 0 & \frac{1}{m} & 0 & 0 \\ 0 & 0 & \frac{1}{m} & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} f_x \\ f_y \\ f_z \\ \dot \psi \end{bmatrix} \]
 
-Finally, the model is discretized, with sampling time $T_s$:
-\[\begin{bmatrix} x_{k+1} \\ y_{k+1} \\ z_{k+1} \\ \dot x_{k+1} \\ \dot y_{k+1} \\ \dot z_{k+1} \\ \psi_{k+1} \end{bmatrix}  = 
-\begin{bmatrix}  1 & 0 & 0 & T_s & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & T_s & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & T_s & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} 
-\begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
+The full model is:
+\[\begin{bmatrix}\boldsymbol{\dot x}_1 \\ \boldsymbol{\dot x}_2 \\ \boldsymbol{\dot x}_3 \\ \boldsymbol{\dot x}_4\end{bmatrix}  = 
+\begin{bmatrix}  A & 0 & 0 & 0 \\ 0 & A & 0 & 0 \\ 0 & 0 & A & 0 \\ 0 & 0 & 0 & A \end{bmatrix} 
+\begin{bmatrix}\boldsymbol{x}_1 \\ \boldsymbol{x}_2 \\ \boldsymbol{x}_3 \\ \boldsymbol{x}_4\end{bmatrix}  + 
+\begin{bmatrix}  B & 0 & 0 & 0 \\ 0 & B & 0 & 0 \\ 0 & 0 & B & 0 \\ 0 & 0 & 0 & B \end{bmatrix} 
+\begin{bmatrix}\boldsymbol{u}_1 \\ \boldsymbol{u}_2 \\ \boldsymbol{u}_3 \\ \boldsymbol{u}_4\end{bmatrix} \]
+
+The first part of the control input, for each drone, a 3 dimensional forces vector in thrust, roll and pitch command solving:
+\[ R_{BW}^T(\phi, \theta, \psi) \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B = \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \boldsymbol{u}_{j,1:3} \quad j = 1, \ldots , 4\]
+More details about this operations are given in section \ref{sec:ForceToAngle}
+
+%The drag force, in a turbulent air flow, is usually defined as:
+%\[ \boldsymbol{D} = -(\frac{1}{2} \norm{\boldsymbol{\dot r}}^2 C_D A) \frac{\boldsymbol{\dot r}}{\\norm{\boldsymbol{\dot r}}}\]
+%Where $\boldsymbol{\dot r}$ is the relative speed of the quadcopter to the fluid, $\rho$ is the air density, $C_D$  the drag coefficient and $A$t the cross-sectional area (i.e.: the maximal area of the quadrotor in the plane perpendicular to the speed vector $\boldsymbol{\dot r}$). For modeling purpose, it can be simplified as follow:
+%\[ \boldsymbol{D} \approx -K_d(\psi) \norm{\boldsymbol{\dot r}} \boldsymbol{\dot r}\]
+%
+%\textcolor{red}{A DEVELOPPER}
+
+%The reduced linearized model is:
+%
+%Finally, the model is discretized, with sampling time $T_s$:
+%\[\begin{bmatrix} x_{k+1} \\ y_{k+1} \\ z_{k+1} \\ \dot x_{k+1} \\ \dot y_{k+1} \\ \dot z_{k+1} \\ \psi_{k+1} \end{bmatrix}  = 
+%\begin{bmatrix}  1 & 0 & 0 & T_s & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & T_s & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & T_s & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} 
+%\begin{bmatrix} x_k \\ y_k \\ z_k \\ \dot x_k \\ \dot y_k \\ \dot z_k \\ \psi_k \end{bmatrix}  + \begin{bmatrix}  \frac{T^2_s}{2m} & 0 & 0 & 0 \\ 0 & \frac{T^2_s}{2m} & 0 & 0 \\ 0 & 0 & \frac{T^2_s}{2m} & 0 \\ \frac{T_s}{m} & 0 & 0 & 0 \\ 0 & \frac{T_s}{m} & 0 & 0 \\ 0 & 0 & \frac{T_s}{m} & 0 \\ 0 & 0 & 0 & T_s \end{bmatrix} \begin{bmatrix} f_{x,k} \\ f_{y,k} \\ f_{z,k} \\ \dot \psi_k \end{bmatrix} \]
 \subsubsection{Constraints}
-Coll avoidance
-Angle limit
-Formation
+The following constraints were implemented:
+\begin{itemize}
+\item \emph{collision avoidance}: $ \norm{\boldsymbol{x}_{i,1:3}-\boldsymbol{x}_{j,1:3}}^2 \geq R_r^2, \quad i,j = 1, \ldots, 4, i \neq j$\\
+It simply means that the drones have to keep a certain distance between their positions
+\item \emph{input constraint}:  $ f_{i,x}^2 + f_{i,y}^2 \leq (mg \cdot \alpha_{max})^2 $. \\
+This constraint ensures to stay around the hovering point as well.  Concretely it means that the force in the horizontal plan should not exceed the projection of the gravity force when the drone is moving (c.f.: figure ~\ref{fig:inputConst}). Furthermore as $\alpha_max$ is assumed to be small, small angle approximation is made. One advantage of expressing the constraint in this matter, is that we constraint the combined effect of the pitch and the roll angles instead of  constraining them individually.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.4\textwidth]{Images/inputConst}
+\caption{The input constraint explained}
+\label{fig:inputConst}
+\end{figure}
+
 \subsubsection{Cost Function}
+As said before, the inequalities constraints have to be included in the objective function. It is proposed in \cite{Ohtsuka2004} to use a quadratic penalty function, which is differentiable. Moreover keeping the the place in formation can be considered as a tracking problem in which the reference is unknown. For this, a quadratic cost function is used. Finally, the objective function is:
+\[ J(\boldsymbol{x}, \boldsymbol{u}, t) = (\boldsymbol{x}-\boldsymbol{x}_r)^T(t+T)S(\boldsymbol{x}-\boldsymbol{x}_r)(t+T)  + \int_t^{t+T} (\boldsymbol{x}-\boldsymbol{x}_r)^T(t)Q(\boldsymbol{x}-\boldsymbol{x}_r)(t) + \boldsymbol{u}^T(t)R\boldsymbol{u}(t)  \]
+\[ + \gamma_r \sum_{i=1}^3 \sum_{j=i+1}^4 \max(0; R_r^2 -  \norm{\boldsymbol{x}_{i,1:3}(t)-\boldsymbol{x}_{j,1:3}(t)}^2)^2 \]
+\[+ \gamma_u \sum_{i=1}^4 \max(u_{i,1}^2(t) + u_{i,2}^2(t) - (mg \cdot \alpha_{max})^2)^2 dt \]
+
 
 \newpage
 \section{Low-Level Control - Attitude Control}
-\subsection{Inner Controller}
+\subsection{Attitude Controller}
 \label{sec:innerControl}
-The inner controller, responsible for attitude control can be found in the stabilizer.c module. Its main loop can be divided in four steps, the corresponding file are indicated in brackets:
+The inner controller, responsible for attitude control can be found in the stabilizer.c module. Its main loop can be divided in four steps, the corresponding files are indicated in brackets:
 \begin{itemize}
 \item State acquisition (\emph{sensors\_stock.c} and \emph{estimator\_complementary.c}  or \emph{estimator\_kalman.c}).
 \item Reference acquisition (\emph{commander.c}).
@@ -702,9 +724,10 @@ The inner controller, responsible for attitude control can be found in the stabi
 \end{itemize}
 
 \subsubsection{State and Reference Acquisition}
-Independently of the chosen estimation method, 13-states Kalman filter or attitude update through Mahony or Magdwick quaternion method, the first step will provide data for attitude angles and rates. However, Kalman estimator allows the stabilizer loop to run only at 500 Hz, while the other method allows 1000 Hz. Sensor acquisition runs at 500 Hz for IMU and 100 Hz for barometer. In the second estimaiton method, attitude is updated at 250 Hz and position (if wanted) at 100 Hz. For Kalman, update are performed at 100 Hz for all state, barometer is processed at 25 Hz.
+Independently of the chosen estimation method, 13-states Kalman filter or attitude update through Mahony or Magdwick quaternion method, the first step is to estimate the attitude angles and rates. However, the chosen method will have an impact on the estimation and the stabilizer frequency, a Kalman estimator runs at 100 \emph{Hz} and limits at the stabilizer loop 500 \emph{Hz}, while the other method car run at 250 \emph{Hz} and the stabilizer loop can operate 1000 \emph{Hz}. In both cases, sensor acquisition runs at 500 \emph{Hz} for IMU and 100 \emph{Hz} for barometer.
 
-During the acquisition of the references, the inner control architecture is also defined or updated. Depending on the control mode, the reference are translated differently and the chain of controller is activated accordingly. There are six configuration variables, each can be set in absolute, velocity or disabled mode.  These variables are X, Y, Z, the 3D positions and roll, pitch, yaw, the three attitude angles. For this project, the configuration implies that the reference are always going to be roll angle, pitch angle, yaw rate and thrust (c.f.: table~\ref{tab:setpointConfig}). Despite the presence of a magnetometer in the IMU, it is not yet integrated in the firmware, therefore an absolute yaw positioning is not possible.
+During the acquisition of the references, the inner control architecture is also defined or updated. Depending on the control mode, the reference are translated differently and the chain of controller is activated accordingly. There are six configuration variables, each can be set in absolute, velocity or disabled mode.  These variables are X, Y, Z, the 3D positions and roll, pitch, yaw, the three attitude angles. In this project, the references sent are always roll angle, pitch angle, yaw rate and thrust (c.f.: table~\ref{tab:setpointConfig}). Despite the presence of a magnetometer in the IMU, yaw control is not possible as the estimator has not yet included the sensor data.
+
 \begin{table}[htbp]
 \centering
 \caption{Reference and inner control architecture configuration}
@@ -729,7 +752,7 @@ Attitude Yaw & Velocity\\
 \end{table}
 
 \subsubsection{Controllers}
-The first module, \emph{controller\_pid.c}, defines the control architecture and the rate of the two sub-control loops: PID at 100 Hz for position control or cascade controllers at 500 Hz for attitude control. In the latter (\emph{attitude\_pid\_controller.c}), the yaw rate reference is first integrated to obtain a yaw reference angle, then, the first layer of control is given the attitude angles references and estimations. In the second layer, rates are controlled. The output of the attitude controllers serve as rate reference and the gyros as attitude rate as measurement (c.f.: figure~\ref{fig:controllerCascade}). This assumption can be considered as true for small angles or first-order approximations. For exact attitude rate computation, refer to the section~ref:{sec:dynamicsEquations}.  In the cascade controller, both layers  are composed of standard PID controllers using an integral limit as shown in figure~\ref{fig:controllerPID}. Note also that the estimation method has an influence on the gains. In table~\ref{tab:controllerInnerGains}, gains are provided for a CrazyFlie 2.0 using the stock estimator.
+The first module, \emph{controller\_pid.c}, defines the control architecture and the rate of the two sub-control loops: PID at 100 \emph{Hz} for position control or cascade controllers at 500 \emph{Hz} for attitude control. In the latter (\emph{attitude\_pid\_controller.c}), the yaw rate reference is first integrated to obtain a yaw reference angle, then, the first layer of control is given the attitude angles references and estimations. In the second layer, rates are controlled. The output of the attitude controllers serve as rate reference and the gyros measurements as attitude rate measurement (c.f.: figure~\ref{fig:controllerCascade}). This assumption can be considered as true for small angles or first-order approximations. For exact attitude rate computation, refer to the section~ref:{sec:dynamicsEquations}.  In the cascade controller, both layers  are composed of standard PID controllers using an integral limit as shown in figure~\ref{fig:controllerPID}. Note also that the estimation method has an influence on the gains. In table~\ref{tab:controllerInnerGains}, gains are provided for a CrazyFlie 2.0 using the stock (or attitude-only) estimator.
 
 \begin{figure}[htbp]
 \centering
@@ -769,7 +792,7 @@ Yaw rate rate & 70 & 16.7 & 0 & 166.7  \\
 \end{table}
 
 \subsubsection{Motor Distribution}
-The output of the 3 attitude cascade controllers and the thrust input are combined, with respect to the flying configuration, as shown in table~\ref{tab:motorDistribution}, saturated and converted to a 8-bit value before being sent as PWM commands to the motors. 
+The output of the 3 attitude cascade controllers and the thrust input are combined, with respect to the flying configuration, as shown in table~\ref{tab:motorDistribution}, saturated and converted to a 8-bit PWM value before being transmitted to the motors. 
 
 \begin{table}[htdp]
 \caption{Command summation for a $+$  flying configuration}
@@ -792,41 +815,53 @@ The output of the 3 attitude cascade controllers and the thrust input are combin
 \end{table}
 
 \subsection{Force to Angle and Thrust Commands}
+\label{sec:ForceToAngle}
+For one quadrotor, we have to solve the following nonlinear system of equations to translate the force vector into an appropriate command:
+\[ R_{BW}(\phi, \theta, \psi) \begin{bmatrix}  f_x\\ f_y\\ f_z \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B\]
+
+Recall that, the yaw angle $\psi$ is known and:
+\[R_{BW}(\phi, \theta, \psi)= R_{Ox}(\phi) R_{Oy}(\theta) R_{Oz}(\psi) \]
+Then, we can apply the yaw rotation on the force vector (symbolized as $f'$) and solve:
+\[ R_{Ox}(\phi) R_{Oy}(\theta) \begin{bmatrix}  f'_x\\ f'_y\\ f'_z \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B \]
+\[ \begin{bmatrix}  c_\theta & 0  & -s_\theta  \\ s_\phi s_\theta   & c_\phi & c_\theta s_\phi  \\ c_\phi s_\theta & - s_\phi  & c_\theta c_\phi  \end{bmatrix}   = \begin{bmatrix}  f'_x\\ f'_y\\ f'_z \end{bmatrix} = \begin{bmatrix}  0\\ 0\\ F_z \end{bmatrix}_B \]
+
+As rotations are length-invariant:
+\[ F_{zB} = sign(f'_z) \cdot \norm {[f'_x\ f'_y\ f'z]^T} \]
+
+Then from the first equation:
+\[ c_\theta f'_x - s_\theta f'_z = 0 \]
+\[ \theta =  \arctan \left( \frac{f'_x}{f'_z}\right)\]
+
+And from the second one, substituting $f'_x$ by $t_\theta f'_z$:
+\[ s_\phi \frac{s_\theta^2}{c_\theta} f'_z + c_\phi f'_y + s_\phi \frac{c_\theta^2}{c_\theta} f'_z = 0 \]
+\[ \frac{s_\phi}{c_\theta} f'_z + c_\phi f'_y \]
+\[ \phi = \arctan \left( \frac{- f'_y c_\theta}{f'_z} \right)\]
+
+
+
+
 
 \newpage
-\section{Results - Experiment}
+\section{Results}
 \subsection{Assumptions and Simplifications}
-The simple model relies on a few assumptions and simplifications.
+The simulation model and the model of the controller relies on a few assumptions and simplifications.
 \begin{itemize}
 \item Motor dynamics are considered instantaneous.
 \item In the firmware, motors are controlled thanks to a PWM signal. Hopefully, to ease simulation, bitCraze identified a transfer function from PWM $p\in[0;256]$ to thrust force $F$ in Newton \cite{bitcrazeWiki}.
 \[ F_i = m \cdot (0.409e^{-3}p_i ^2 + 140.5 e^{-6}p_ i - 0.099 )\]
-\item The yaw control is not simulated.
+\item The inertia matrix and the delay in radio communications comes from previous work \cite{Dubois2015} and mass is taken from the specifications on \cite{bitcraze}.
+\item The yaw control is not simulated as it does not come into account in the formation process.
 \end{itemize}
-\textcolor{red}{Identification I, m, rpm/pwm to torque}
-Motor response is assumed immediate.
-\subsection{Measuring Stability}
-\cite{Mataric2002}
+\subsection{Evaluation of formation}
+Performances are evaluated given 2 criterion inspired by \cite{Arkin1999, Mataric2002}.
 \begin{itemize}
-\item distance on formation line.
-\item distance perpendicular to formation line.
-\item angle deviation.
+\item \emph{time to formation} $T_f$: Simply the time to get in formation. Especially used in simulation, when initial conditions can easily be set identically for different configurations.
+\item \emph{Average deviation in formation} $\bar d_{Delta }$: Average in a fixed time window, starting from the moment the drones are in formation, of the distance of all drones to their reference position.
+\item \emph{Max deviation} $d_{max}$: Max deviation among all robots measured once the average deviation has reached a given threshold.
+\item \emph{Time in formation}: Percentage of time in formation once after $T_f$.
 \end{itemize}
 
-\subsection{Measuring Robustness}
 
-\subsection{Evaluation}
-\begin{itemize}
-\item time to formation (static ref) tToForm\_refStatic.
-\item time to formation (dynamic ref) tToForm\_refDynamic.
-\item \% time in formation (normalized by (tTot-tToForm).
-\item average deviation from formation position (after tToForm).
-\item max deviation from formation position (after tToForm).
-
-\end{itemize}
-
-\cite{Arkin1999}
-\cite{Mataric2002}
 %Given the results obtained when experiencing with the real setup, it appears that the simulation is not representative enough. Numerous things aren't taken into account with this model:
 %\begin{itemize}
 %\item The limits of motors in acceleration
@@ -844,53 +879,6 @@ Motor response is assumed immediate.
 \subsection{Without Speed Reference}
 \subsection{With Speed Reference}
 \subsection{Control Loop Timing}
-%First the timing of the control loop. As hopped, the timing of the loop is really near from the timing of Cortex to acquire a new image.
-%\begin{center}
-%Loop period: 4.08-4.11 ms
-%\end{center}
-%This means the limiting parameters is not the developed code but the camera rate, which is not limiting for this type of control.
-
-\subsection{Other Results}
-%\color{red}
-%Here other results that were computed during this project are presented
-%
-%
-%Then, one of the main problem at the beginning of this project was the delay. In fact it came from the Cortex buffer that was not empty and we were using old readings to control the quad. But this problem brought us to still think of a delay, mainly coming from the radio transmission.
-%
-%To measure it, we thought of two possibilities: first start from a thrust command a bit inferior to the hover one (so the quad stays on the ground) then give a maximal thrust command at a precise timing. Due to the danger of sending the quad at full speed into something, we thought of something else.
-%From a quasi-stable position in flight, send a 0 command to the quad and let it fall on the ground from a reasonable height.
-%
-%\begin{figure}[htbp]
-%\centering
-%\subfloat[Position trend]{\includegraphics[width=.45\textwidth]{Images/delay_trend}\label{fig:delay_trend}}
-%\hspace{0.5cm}
-%\subfloat[Delay Estimation]{\includegraphics[width=.45\textwidth]{Images/delay}\label{fig:delay}}
-%\caption{Delay measurement}
-%\label{fig:z_delay}
-%\end{figure}
-%
-%When looking at the figure~\ref{fig:delay}, we can estimate the delay to be smaller than 0.05 seconds which corresponds approximatively to 12 times the period of the control loop. This result is confirmed when looking at the trend of the position before the 0 command (c.f.: figure~\ref{fig:delay_trend}).
-%Such a delay can explain the oscillations and the need for a big derivative gain in the three position controllers
-%
-%We will also repeat the different values of Cortex buffer determined in table~\ref{tab:cortex_param}.
-%
-%\begin{table}[ht]
-%\caption{Cortex buffer parameters}
-%\centering
-%\begin{tabular}{|c|c|}
-%\hline
-%\textbf{Camera rate} & 245 fps (4.08 ms) \\
-%\hline
-%\textbf{Buffer size} & 133\\
-%\hline
-%\textbf{Reading duration (full) } & 0.2-0.04 ms \\
-%\hline
-%\textbf{Reading duration (empty) } & 0.2ms < t < 4.08 ms \\
-%\hline
-%\end{tabular}
-%\label{tab:cortex_param}
-%\end{table}
-%\color{black}
 
 \newpage
 \section{Improvement}

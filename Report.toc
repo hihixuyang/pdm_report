@@ -16,34 +16,30 @@
 \contentsline {subsection}{\numberline {4.1}Formation Taxonomy}{9}
 \contentsline {subsection}{\numberline {4.2}Control Architecture}{12}
 \contentsline {subsubsection}{Centralized, Decentralized and Distributed Control}{12}
-\contentsline {subsection}{\numberline {4.3}Outer Controller}{14}
-\contentsline {subsubsection}{Fomation Controllers}{14}
-\contentsline {subsection}{\numberline {4.4}Model Predictive Controllers}{16}
+\contentsline {subsection}{\numberline {4.3}Fomation Controllers}{14}
+\contentsline {subsection}{\numberline {4.4}Model Predictive Controller}{16}
 \contentsline {subsubsection}{Optimization}{17}
 \contentsline {subsubsection}{Model}{23}
 \contentsline {subsubsection}{Constraints}{24}
-\contentsline {subsubsection}{Cost Function}{24}
-\contentsline {section}{\numberline {5}Low-Level Control - Attitude Control}{25}
-\contentsline {subsection}{\numberline {5.1}Inner Controller}{25}
-\contentsline {subsubsection}{State and Reference Acquisition}{25}
+\contentsline {subsubsection}{Cost Function}{25}
+\contentsline {section}{\numberline {5}Low-Level Control - Attitude Control}{26}
+\contentsline {subsection}{\numberline {5.1}Inner Controller}{26}
+\contentsline {subsubsection}{State and Reference Acquisition}{26}
 \contentsline {subsubsection}{Controllers}{26}
 \contentsline {subsubsection}{Motor Distribution}{27}
-\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{27}
-\contentsline {section}{\numberline {6}Results - Experiment}{28}
-\contentsline {subsection}{\numberline {6.1}Assumptions and Simplifications}{28}
-\contentsline {subsection}{\numberline {6.2}Measuring Stability}{28}
-\contentsline {subsection}{\numberline {6.3}Measuring Robustness}{28}
-\contentsline {subsection}{\numberline {6.4}Evaluation}{28}
-\contentsline {subsection}{\numberline {6.5}Radio Delay Estimation}{29}
-\contentsline {subsection}{\numberline {6.6}Motion Capture System Characterization}{29}
-\contentsline {subsection}{\numberline {6.7}Yaw Control}{29}
-\contentsline {subsection}{\numberline {6.8}Position Control}{29}
-\contentsline {subsection}{\numberline {6.9}Controlled Trajectory}{29}
-\contentsline {subsection}{\numberline {6.10}Without Speed Reference}{29}
-\contentsline {subsection}{\numberline {6.11}With Speed Reference}{29}
-\contentsline {subsection}{\numberline {6.12}Control Loop Timing}{29}
-\contentsline {subsection}{\numberline {6.13}Other Results}{29}
-\contentsline {section}{\numberline {7}Improvement}{30}
-\contentsline {section}{\numberline {8}Conclusion}{31}
+\contentsline {subsection}{\numberline {5.2}Force to Angle and Thrust Commands}{28}
+\contentsline {section}{\numberline {6}Results}{29}
+\contentsline {subsection}{\numberline {6.1}Assumptions and Simplifications}{29}
+\contentsline {subsection}{\numberline {6.2}Evaluation of formation}{29}
+\contentsline {subsection}{\numberline {6.3}Radio Delay Estimation}{30}
+\contentsline {subsection}{\numberline {6.4}Motion Capture System Characterization}{30}
+\contentsline {subsection}{\numberline {6.5}Yaw Control}{30}
+\contentsline {subsection}{\numberline {6.6}Position Control}{30}
+\contentsline {subsection}{\numberline {6.7}Controlled Trajectory}{30}
+\contentsline {subsection}{\numberline {6.8}Without Speed Reference}{30}
+\contentsline {subsection}{\numberline {6.9}With Speed Reference}{30}
+\contentsline {subsection}{\numberline {6.10}Control Loop Timing}{30}
+\contentsline {section}{\numberline {7}Improvement}{31}
+\contentsline {section}{\numberline {8}Conclusion}{32}
 \contentsline {section}{Appendices}{I}
 \contentsline {subsection}{\numberline {A}Attitude Estimation}{I}

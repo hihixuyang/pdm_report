@@ -62,7 +62,10 @@ V.~Manikonda, P.~Arambel, M.~Gopinathan, R.~Mehra, and F.~Hadaegh, ``A model
   the 1999}, pp.~4258--4262, IEEE, 1999.
 
 \bibitem{Lim2009}
-
+H.~Lim, Y.~Kang, J.~Kim, and C.~Kim, ``Formation control of leader following
+  unmanned ground vehicles using nonlinear model predictive control,'' in {\em
+  2009 IEEE/ASME International Conference on Advanced Intelligent
+  Mechatronics}, pp.~945--950, IEEE, 2009.
 
 \bibitem{Fukushima2013}
 H.~Fukushima, K.~Kon, and F.~Matsuno, ``Model predictive formation control
@@ -91,7 +94,9 @@ Z.~Chao, L.~Ming, Z.~Shao-Lei, and Z.~Wenguang, ``Collision-free uav formation
   2011.
 
 \bibitem{Kuriki2015}
-
+Y.~Kuriki and T.~Namerikawa, ``Formation control with collision avoidance for a
+  multi-uav system using decentralized mpc and consensus-based control,'' in
+  {\em Control Conference (ECC), 2015 European}, pp.~3079--3084, IEEE, 2015.
 
 \bibitem{Chao2012}
 Z.~Chao, S.-L. Zhou, L.~Ming, and W.-G. Zhang, ``Uav formation flight based on
@@ -153,11 +158,6 @@ G.~Pannocchia, J.~B. Rawlings, and S.~J. Wright, ``Fast, large-scale model
   predictive control by partial enumeration,'' {\em Automatica}, vol.~43 (5),
   pp.~852 -- 860, 2007.
 
-\bibitem{Wang2008}
-Y.~Wang and S.~Boyd, ``Fast model predictive control using online
-  optimization,'' {\em \{IFAC\} Proceedings Volumes}, vol.~41 (2),
-  pp.~6974--6979, 2008.
-
 \bibitem{Nocedal1999}
 J.~Nocedal and S.~J. Wright, {\em Numerical Optimization}.
 \newblock Springer, 1999.
@@ -165,6 +165,24 @@ J.~Nocedal and S.~J. Wright, {\em Numerical Optimization}.
 \bibitem{Zheng2015}
 T.~Zheng, {\em Advanced Model Predictive Control}.
 \newblock InTech, 2015.
+
+\bibitem{Wang2008}
+Y.~Wang and S.~Boyd, ``Fast model predictive control using online
+  optimization,'' {\em \{IFAC\} Proceedings Volumes}, vol.~41 (2),
+  pp.~6974--6979, 2008.
+
+\bibitem{Bertsekas1999}
+D.~P. Bertsekas, {\em Nonlinear programming}.
+\newblock Athena scientific Belmont, 1999.
+
+\bibitem{Ruszczynski2006}
+A.~P. Ruszczy{\'n}ski, {\em Nonlinear optimization}.
+\newblock Princeton university press, 2006.
+
+\bibitem{Tenny2002}
+M.~J. Tenny, J.~B. Rawlings, and R.~Bindlish, ``Feasible real-time nonlinear
+  model predictive control,'' in {\em AICHE Symposium Series}, pp.~433--437,
+  Citeseer, 2002.
 
 \bibitem{Richter2012}
 S.~Richter, C.~N. Jones, and M.~Morari, ``Computational complexity
@@ -176,11 +194,6 @@ S.~Richter, C.~N. Jones, and M.~Morari, ``Computational complexity
 T.~Ohtsuka, ``A continuation/gmres method for fast computation of nonlinear
   receding horizon control,'' {\em Automatica}, vol.~40 (4), pp.~563--574,
   2004.
-
-\bibitem{Tenny2002}
-M.~J. Tenny, J.~B. Rawlings, and R.~Bindlish, ``Feasible real-time nonlinear
-  model predictive control,'' in {\em AICHE Symposium Series}, pp.~433--437,
-  Citeseer, 2002.
 
 \bibitem{Pontryagin1987}
 L.~Pontryagin, {\em Mathematical Theory of Optimal Processes}.
@@ -210,5 +223,9 @@ A.~Bjõrck, {\em Numerical methods for least squares problems}.
 \bibitem{bitcrazeWiki}
 BitCrazeWiki, ``https://wiki.bitcraze.io/misc:investigations:thrust,'' Oct.
   2016.
+
+\bibitem{Dubois2015}
+L.~Dubois, {\em Control of Crazyflies}.
+\newblock PhD thesis, EPFL, 2015.
 
 \end{thebibliography}
